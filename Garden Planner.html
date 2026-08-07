@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#3F6C4B">
+<title>Garden Planner</title>
+<style>
+  :root{
+    --leaf:#3F6C4B; --leaf-dark:#2C4E36; --sun:#E0A03D;
+    --paper:#FAF6EC; --card:#FFFFFF; --ink:#2B2620; --muted:#8A8172;
+    --line:#E7DFCE; --danger:#B23A48; --radius:14px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; background:var(--paper); color:var(--ink); height:100%; overscroll-behavior:none;}
+  body{display:flex; flex-direction:column; height:100dvh; overflow:hidden;}
+  h1,h2,h3{font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif; font-weight:600; margin:0;}
+  .page{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px 16px calc(90px + env(safe-area-inset-bottom)) 16px;}
+  .page[hidden]{display:none;}
+  .topbar{padding:calc(14px + env(safe-area-inset-top)) 16px 12px 16px; background:var(--leaf); color:#fff; flex-shrink:0;}
+  .topbar h1{font-size:21px; color:#fff;}
+  .topbar p{margin:4px 0 0 0; font-size:12.5px; color:#E3EFE4; font-family:-apple-system,sans-serif;}
+
+  .tabbar{display:flex; border-top:1px solid var(--line); background:var(--card); position:fixed; bottom:0; left:0; right:0; padding-bottom:env(safe-area-inset-bottom); z-index:50;}
+  .tabbtn{flex:1; border:none; background:none; padding:10px 0 8px 0; font-size:10.5px; color:var(--muted); display:flex; flex-direction:column; align-items:center; gap:3px; font-family:-apple-system,sans-serif;}
+  .tabbtn .ic{font-size:20px; line-height:1;}
+  .tabbtn.active{color:var(--leaf-dark); font-weight:600;}
+
+  .mapToolbar{display:flex; gap:8px; margin-bottom:10px; align-items:center;}
+  .btn{border:none; border-radius:10px; padding:10px 14px; font-size:13.5px; font-weight:600; font-family:-apple-system,sans-serif;}
+  .btn-leaf{background:var(--leaf); color:#fff;}
+  .btn-outline{background:#fff; color:var(--leaf-dark); border:1.5px solid var(--leaf);}
+  .btn-danger{background:#fff; color:var(--danger); border:1.5px solid var(--danger);}
+  .zoomGroup{margin-left:auto; display:flex; align-items:center; gap:2px; background:#fff; border:1.5px solid var(--line); border-radius:10px; overflow:hidden;}
+  .zoomGroup button{border:none; background:#fff; width:34px; height:34px; font-size:16px; font-weight:700; color:var(--leaf-dark);}
+  .zoomGroup .zlabel{font-size:11px; font-weight:700; color:var(--muted); width:42px; text-align:center; font-family:-apple-system,sans-serif;}
+
+  #canvasScroll{width:100%; max-height:64vh; overflow:auto; -webkit-overflow-scrolling:touch;
+    border-radius:var(--radius); border:1px solid var(--line); background:#EFE9DA;}
+  #canvasWrap{position:relative;
+    background:
+      repeating-linear-gradient(0deg, rgba(92,70,50,0.08) 0 2px, transparent 2px 26px),
+      repeating-linear-gradient(90deg, rgba(92,70,50,0.06) 0 2px, transparent 2px 26px),
+      linear-gradient(160deg, #EFE6D3, #E5D9BF);
+    touch-action:none;
+  }
+  .bed{position:absolute; border-radius:10px; border:2px solid rgba(0,0,0,0.18); padding:6px 8px; overflow:hidden; box-shadow:0 2px 4px rgba(0,0,0,0.08);}
+  .bed .bname{font-size:10px; font-weight:700; color:rgba(0,0,0,0.55); font-family:-apple-system,sans-serif;}
+  .bed .bcrop{font-size:12.5px; font-weight:700; margin-top:1px; color:rgba(0,0,0,0.82); font-family:-apple-system,sans-serif;}
+  .bed .bharvest{font-size:11px; margin-top:2px; color:rgba(0,0,0,0.6); font-family:-apple-system,sans-serif;}
+  .handle{position:absolute; width:20px; height:20px; margin-left:-10px; margin-top:-10px; border-radius:50%;
+    background:#fff; border:2.5px solid var(--leaf-dark); box-shadow:0 1px 3px rgba(0,0,0,0.3);}
+  .drawPreview{position:absolute; border:2px dashed var(--leaf-dark); border-radius:10px; background:rgba(63,108,75,0.12); pointer-events:none;}
+  .snapline{position:absolute; background:var(--sun); pointer-events:none; z-index:5;}
+
+  .sheetOverlay{position:fixed; inset:0; background:rgba(20,15,10,0.4); z-index:100; display:flex; align-items:flex-end;}
+  .sheetOverlay[hidden]{display:none;}
+  .sheet{background:var(--paper); width:100%; max-height:90vh; border-radius:20px 20px 0 0; overflow-y:auto;
+    padding:14px 18px calc(30px + env(safe-area-inset-bottom)) 18px; -webkit-overflow-scrolling:touch;}
+  .sheetHandle{width:36px; height:4px; background:var(--line); border-radius:2px; margin:0 auto 12px auto;}
+  .sheetHead{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .sheetHead input{font-family:Georgia,serif; font-size:19px; font-weight:700; border:none; background:none; color:var(--ink); width:75%;}
+  .closeX{border:none; background:var(--line); color:var(--ink); width:30px; height:30px; border-radius:50%; font-size:15px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--muted); margin-bottom:5px; font-family:-apple-system,sans-serif;}
+  select, input[type=date], textarea{width:100%; padding:10px 11px; border-radius:10px; border:1.5px solid var(--line);
+    background:#fff; font-size:15px; color:var(--ink); font-family:-apple-system,sans-serif;}
+  textarea{min-height:64px; resize:vertical;}
+  .readout{background:#EFF5EE; border-radius:10px; padding:10px 12px; font-size:13px; color:var(--leaf-dark); line-height:1.5; font-family:-apple-system,sans-serif;}
+  .readout.warn{background:#FBEAEA; color:#7A2430; font-weight:600;}
+  .divider{height:1px; background:var(--line); margin:16px 0;}
+  .colorRow{display:flex; align-items:center; gap:12px;}
+  .colorRow input[type=color]{width:52px; height:40px; border:1.5px solid var(--line); border-radius:10px; padding:2px; background:#fff;}
+  .linkBtn{border:none; background:none; color:var(--leaf-dark); font-weight:700; font-size:12.5px; font-family:-apple-system,sans-serif;}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:12px 14px; margin-bottom:10px;}
+  .countRow{display:flex; gap:8px; margin-bottom:14px;}
+  .countPill{flex:1; text-align:center; border-radius:12px; padding:10px 4px; font-family:-apple-system,sans-serif;}
+  .countPill .n{font-size:20px; font-weight:800; font-family:Georgia,serif;}
+  .countPill .l{font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.03em;}
+  .pill-week{background:#DCF0DD;} .pill-month{background:#FBEFD2;} .pill-past{background:#EDEAE3;}
+  .evtRow{display:flex; align-items:center; gap:10px;}
+  .evtDot{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
+  .dot-week{background:#3F8E52;} .dot-month{background:#D99A2B;} .dot-past{background:#B7AF9E;}
+  .evtMain{flex:1; min-width:0;}
+  .evtMain .t1{font-size:14px; font-weight:700; font-family:-apple-system,sans-serif;}
+  .evtMain .t2{font-size:12px; color:var(--muted); font-family:-apple-system,sans-serif;}
+  .evtDate{font-size:12.5px; font-weight:700; color:var(--ink); text-align:right; font-family:-apple-system,sans-serif; white-space:nowrap;}
+  .frostRow{display:flex; align-items:center; gap:10px; margin-bottom:14px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px;}
+  .frostRow label{font-size:12.5px; font-weight:700; color:var(--muted); flex-shrink:0;}
+  .frostRow input{flex:1;}
+
+  .searchBox{width:100%; padding:11px 13px; border-radius:12px; border:1.5px solid var(--line); background:#fff; font-size:15px; margin-bottom:12px;}
+  .plantRow{padding:12px 4px; border-bottom:1px solid var(--line);}
+  .plantHead{display:flex; justify-content:space-between; align-items:center;}
+  .plantName{font-size:15px; font-weight:700; font-family:-apple-system,sans-serif;}
+  .famBadge{font-size:10px; font-weight:700; padding:3px 8px; border-radius:20px; color:#fff; font-family:-apple-system,sans-serif;}
+  .plantDetail{margin-top:8px; font-size:12.5px; color:#555; line-height:1.6; font-family:-apple-system,sans-serif;}
+  .plantDetail b{color:var(--ink);}
+  .empty{text-align:center; color:var(--muted); padding:40px 20px; font-size:13.5px; font-family:-apple-system,sans-serif;}
+</style>
+</head>
+<body>
+
+<div class="topbar" id="topbar">
+  <h1 id="pageTitle">🌿 Garden Map</h1>
+  <p id="pageSub">Tap a bed to edit it. Drag handles to resize, drag the middle to move — beds snap to each other's edges.</p>
+</div>
+
+<div class="page" id="page-map">
+  <div class="mapToolbar">
+    <button class="btn btn-leaf" id="addBedBtn">+ Add Bed</button>
+    <button class="btn btn-outline" id="drawHintBtn">?</button>
+    <div class="zoomGroup">
+      <button id="zoomOut">−</button>
+      <div class="zlabel" id="zoomLabel">100%</div>
+      <button id="zoomIn">+</button>
+    </div>
+  </div>
+  <div id="canvasScroll"><div id="canvasWrap"></div></div>
+</div>
+
+<div class="page" id="page-month" hidden>
+  <div class="frostRow">
+    <label>Last frost date</label>
+    <input type="date" id="frostInput">
+  </div>
+  <div class="countRow">
+    <div class="countPill pill-week"><div class="n" id="cntWeek">0</div><div class="l">This week</div></div>
+    <div class="countPill pill-month"><div class="n" id="cntMonth">0</div><div class="l">This month</div></div>
+    <div class="countPill pill-past"><div class="n" id="cntPast">0</div><div class="l">Past due</div></div>
+  </div>
+  <div id="eventList"></div>
+</div>
+
+<div class="page" id="page-guide" hidden>
+  <input class="searchBox" id="guideSearch" placeholder="Search vegetables, flowers, berries…">
+  <div id="guideList"></div>
+</div>
+
+<nav class="tabbar">
+  <button class="tabbtn active" data-page="map"><span class="ic">🗺️</span>Map</button>
+  <button class="tabbtn" data-page="month"><span class="ic">📅</span>This Month</button>
+  <button class="tabbtn" data-page="guide"><span class="ic">📖</span>Plant Guide</button>
+</nav>
+
+<div class="sheetOverlay" id="editorOverlay" hidden>
+  <div class="sheet">
+    <div class="sheetHandle"></div>
+    <div class="sheetHead">
+      <input id="edName" placeholder="Bed name">
+      <button class="closeX" id="edClose">✕</button>
+    </div>
+
+    <div class="field">
+      <label>Bed Color</label>
+      <div class="colorRow">
+        <input type="color" id="edColor">
+        <button class="linkBtn" id="edColorReset">Use plant-based color</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="field">
+      <label>Currently Planted</label>
+      <select id="edCurrent"></select>
+    </div>
+    <div class="field">
+      <label>Date Planted</label>
+      <input type="date" id="edDatePlanted">
+    </div>
+    <div class="field">
+      <div class="readout" id="edHarvestReadout">Pick a crop and date to see the estimated harvest.</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="field">
+      <label>Next Crop</label>
+      <select id="edNext"></select>
+    </div>
+    <div class="field">
+      <label>Planned Next Date <span style="font-weight:400; text-transform:none; color:var(--muted);">(optional — auto-suggested if blank)</span></label>
+      <input type="date" id="edPlannedNext">
+    </div>
+    <div class="field">
+      <div class="readout" id="edNextReadout">Pick a next crop to see suggested timing.</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="edNotes" placeholder="Anything worth remembering about this bed…"></textarea>
+    </div>
+
+    <button class="btn btn-danger" id="edDelete" style="width:100%; margin-top:6px;">Delete Bed</button>
+  </div>
+</div>
+
+<script>
+/* ============================= PLANT DATA ============================= */
+const PLANTS = [
+["Tomato","Nightshade","6-8 wks before last frost","Transplant 2 wks after last frost",70,"Jul-Sep","24-36 in","Cage or stake",-7,2,"Basil, carrots, onions, marigold — avoid near brassicas"],
+["Pepper","Nightshade","8-10 wks before last frost","Transplant after last frost, soil warm",70,"Jul-Sep","18-24 in","Likes heat",-9,2,"Basil, onions, carrots"],
+["Eggplant","Nightshade","8-10 wks before last frost","Transplant after last frost",75,"Jul-Sep","18-24 in","Likes heat",-9,2,"Beans, peppers, marigold"],
+["Potato","Nightshade","N/A","Plant seed potatoes 2-4 wks before last frost",90,"Jul-Sep","12 in","Hill soil as it grows",null,-3,"Beans, corn, cabbage family — avoid near tomatoes"],
+["Broccoli","Brassica","6 wks before last frost","Transplant 2 wks before last frost",60,"May-Jul","18 in","Cool season",-6,-2,"Onions, dill, aromatic herbs — avoid near tomatoes/strawberries"],
+["Cabbage","Brassica","6 wks before last frost","Transplant 2 wks before last frost",70,"Jun-Aug","18 in","Cool season",-6,-2,"Onions, dill, celery — avoid near tomatoes/strawberries"],
+["Cauliflower","Brassica","6 wks before last frost","Transplant 2 wks before last frost",65,"Jun-Aug","18 in","Needs steady moisture",-6,-2,"Celery, onions — avoid near tomatoes"],
+["Kale","Brassica","5 wks before last frost","Direct sow or transplant early spring",55,"May-Oct","12-18 in","Frost tolerant",-5,-2,"Onions, herbs — avoid near strawberries"],
+["Radish","Brassica","N/A","Direct sow early spring",25,"Apr-Jun","2 in","Fast crop, succession plant",null,-3,"Carrots, lettuce, cucumbers, peas"],
+["Turnip","Brassica","N/A","Direct sow early spring",50,"May-Jul","4 in","Cool season",null,-3,"Peas, beans"],
+["Peas","Legume","N/A","Direct sow as soon as soil workable",60,"May-Jun","2-3 in","Trellis helps",null,-4,"Carrots, radish, cucumbers — avoid near onions/garlic"],
+["Bush Beans","Legume","N/A","Direct sow after last frost",55,"Jul-Aug","4-6 in","Fixes nitrogen",null,1,"Corn, cucumbers, carrots — avoid near onions/garlic"],
+["Pole Beans","Legume","N/A","Direct sow after last frost",65,"Jul-Sep","6 in","Needs trellis",null,1,"Corn, squash ('Three Sisters') — avoid near onions/garlic"],
+["Cucumber","Cucurbit","3-4 wks before last frost (optional)","Direct sow/transplant after last frost",55,"Jul-Aug","12 in","Trellis saves space",-3,1,"Beans, corn, peas, radish, sunflower"],
+["Zucchini / Summer Squash","Cucurbit","3-4 wks before last frost (optional)","Direct sow/transplant after last frost",50,"Jul-Sep","24-36 in","Prolific",-3,1,"Corn, beans, marigold, nasturtium"],
+["Winter Squash / Pumpkin","Cucurbit","3-4 wks before last frost (optional)","Direct sow/transplant after last frost",90,"Sep-Oct","36-48 in","Needs lots of space",-3,2,"Corn, beans, marigold"],
+["Melon","Cucurbit","3-4 wks before last frost","Transplant after last frost, warm soil",80,"Aug-Sep","36 in","Likes heat",-3,2,"Corn, radish, marigold"],
+["Onion","Allium","8-10 wks before last frost (or use sets)","Transplant/sets 2-4 wks before last frost",100,"Jul-Sep","4 in","Long season",-9,-3,"Carrots, beets, lettuce, tomato — avoid near beans/peas"],
+["Garlic","Allium","N/A","Plant cloves in fall",240,"Jun-Jul (following yr)","4-6 in","Overwinters in ground; offsets not applicable (fall planted)",null,null,"Tomato, roses, fruit trees — avoid near beans/peas"],
+["Leek","Allium","8-10 wks before last frost","Transplant after last frost",100,"Sep-Nov","6 in","Blanch stems with soil",-9,1,"Carrots, celery, onion family"],
+["Carrot","Root","N/A","Direct sow early-mid spring",70,"Jun-Sep","2-3 in","Needs loose soil",null,-2,"Onion, peas, lettuce, tomato, radish"],
+["Beet","Root","N/A","Direct sow early spring",55,"Jun-Sep","3-4 in","Tolerates light frost",null,-2,"Onion, cabbage family, lettuce"],
+["Lettuce","Leafy Green","3-4 wks before last frost (optional)","Direct sow/transplant early spring",45,"May-Jul","8-10 in","Bolts in heat, succession plant",-3,-3,"Carrots, radish, strawberries, cucumbers"],
+["Spinach","Leafy Green","N/A","Direct sow early spring/fall",40,"Apr-Jun","4-6 in","Bolts in heat",null,-3,"Strawberries, peas, beans"],
+["Swiss Chard","Leafy Green","3-4 wks before last frost (optional)","Direct sow/transplant after last frost",55,"Jun-Oct","8-12 in","Heat tolerant, cut-and-come-again",-3,1,"Beans, onion family"],
+["Corn","Grass/Grain","N/A","Direct sow after last frost, warm soil",75,"Aug-Sep","8-12 in","Plant in blocks for pollination",null,1,"Beans, squash, cucumber ('Three Sisters')"],
+["Celery","Umbellifer","10-12 wks before last frost","Transplant after last frost",100,"Aug-Oct","8 in","Needs consistent water",-11,2,"Beans, tomato, cabbage family"],
+["Parsnip","Umbellifer","N/A","Direct sow early spring",120,"Sep-Nov","3-4 in","Slow to germinate",null,-2,"Peas, radish"],
+["Basil","Herb","4-6 wks before last frost","Transplant after last frost, warm soil",60,"Jun-Sep","12 in","Frost sensitive",-5,2,"Tomato, peppers — repels pests"],
+["Cilantro","Herb","N/A","Direct sow spring/fall",45,"May-Jun","6 in","Bolts in heat, succession plant",null,-1,"Spinach, beans — good pollinator attractor"],
+["Marigold","Flower","4-6 wks before last frost (optional)","Direct sow/transplant after last frost",50,"Jun-Sep","8-12 in","Classic pest-deterrent companion flower",-5,1,"Tomato, beans, most vegetables"],
+["Nasturtium","Flower","N/A","Direct sow after last frost",50,"Jun-Sep","10-12 in","Edible flowers/leaves; acts as aphid trap crop",null,1,"Cucumber, squash, tomato"],
+["Zinnia","Flower","4 wks before last frost (optional)","Direct sow/transplant after last frost",60,"Jul-Sep","6-18 in","Great cut flower, attracts pollinators",-4,1,"Tomato, peppers"],
+["Sunflower","Flower","N/A","Direct sow after last frost",70,"Aug-Sep","12-24 in","Tall varieties can support climbing beans",null,1,"Corn, cucumbers"],
+["Cosmos","Flower","4 wks before last frost (optional)","Direct sow/transplant after last frost",60,"Jul-Oct","12-18 in","Thrives in poor soil, self-seeds readily",-4,1,"Most vegetables"],
+["Calendula","Flower","4-6 wks before last frost (optional)","Direct sow 2-3 wks before last frost",50,"Jun-Sep","8-12 in","Cold tolerant, edible petals",-5,-3,"Tomatoes, brassicas"],
+["Sweet Pea","Flower","4 wks before last frost (optional)","Direct sow as soon as soil workable",65,"May-Jul","4-6 in","Fragrant climber, needs trellis; ornamental only",-4,-4,"Peas (shared trellis), beans"],
+["Lavender","Flower","10-12 wks before last frost","Transplant after last frost",90,"Jun-Aug (perennial)","18-24 in","Perennial; drought tolerant once established",-11,2,"Cabbage family, roses"],
+["Dahlia","Flower","N/A","Plant tubers 2 wks after last frost",90,"Jul-Oct","12-24 in","Tender perennial tuber; lift and store over winter in cold climates",null,2,"General border companion, attracts pollinators"],
+["Petunia","Flower","8-10 wks before last frost","Transplant after last frost",60,"Jun-Sep","8-12 in","Great border/container flower",-9,1,"Beans, tomatoes, peppers"],
+["Strawberry","Berry","N/A (grown from crowns/runners)","Plant crowns in early spring or fall",60,"Jun (light in yr 1)","12-18 in","Perennial, productive 3-5 yrs; remove first-year flowers for stronger plants",null,-2,"Lettuce, spinach, beans, onion — avoid brassicas"],
+["Blueberry","Berry","N/A (buy potted plants)","Plant dormant bushes in early spring",730,"Jul-Aug (from yr 2-3)","4-6 ft","Perennial shrub; needs acidic soil and 2+ varieties for pollination",null,-2,"Other acid-loving plants, thyme"],
+["Raspberry","Berry","N/A","Plant bare-root canes in early spring",365,"Jul-Aug (from yr 2)","18-24 in","Perennial cane fruit; spreads via suckers, benefits from trellis",null,-2,"Garlic, marigold — avoid nightshades nearby"],
+["Blackberry","Berry","N/A","Plant bare-root canes in early spring",365,"Jul-Aug (from yr 2)","3-4 ft","Perennial; vigorous, benefits from trellis/pruning",null,-2,"Garlic, tansy — avoid nightshades nearby"],
+["Gooseberry","Berry","N/A","Plant dormant bushes in early spring or fall",365,"Jun-Jul (from yr 2)","4-5 ft","Perennial shrub; tolerates partial shade",null,-2,"Onion family nearby deters pests"],
+].map(r => ({name:r[0], family:r[1], seedIndoors:r[2], sowOutdoor:r[3], dtm:r[4], window:r[5], spacing:r[6], notes:r[7], seedOffset:r[8], sowOffset:r[9], companions:r[10]}));
+
+const FAMILY_COLORS = {
+  "Nightshade":"#8E5B9E","Brassica":"#3F8F8B","Legume":"#D98A3D","Cucurbit":"#8FAE3A",
+  "Allium":"#D9749A","Root":"#9C6B3E","Leafy Green":"#4C8C5B","Grass/Grain":"#C9A227",
+  "Umbellifer":"#6FA8C9","Herb":"#7CB342","Flower":"#C2569E","Berry":"#B23A48"
+};
+const DEFAULT_COLOR = "#B7AF9E";
+function familyColor(fam){ return FAMILY_COLORS[fam] || DEFAULT_COLOR; }
+function plantByName(n){ return PLANTS.find(p => p.name === n) || null; }
+function hexToRgba(hex, alpha){
+  const h = hex.replace("#","");
+  const r = parseInt(h.substring(0,2),16), g = parseInt(h.substring(2,4),16), b = parseInt(h.substring(4,6),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+/* ============================= STORE ============================= */
+const STORAGE_KEY = "gardenPlannerV2";
+function defaultStore(){
+  return {
+    frostDate: "2026-05-01",
+    beds: [
+      {id:"b1", name:"Bed 1", x:4, y:4, w:42, h:20, color:null, current:"Tomato", datePlanted:"2026-05-15", next:"Kale", plannedNext:"", notes:""},
+      {id:"b2", name:"Bed 2", x:54, y:4, w:42, h:20, color:null, current:"Lettuce", datePlanted:"2026-04-01", next:"Bush Beans", plannedNext:"2026-06-01", notes:""}
+    ]
+  };
+}
+let STORE = load();
+function load(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return defaultStore();
+    const parsed = JSON.parse(raw);
+    if(!parsed.beds) return defaultStore();
+    return parsed;
+  }catch(e){ return defaultStore(); }
+}
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(STORE)); }
+
+/* ============================= DATE HELPERS ============================= */
+function addDays(dateStr, days){
+  if(!dateStr || days===null || days===undefined) return null;
+  const d = new Date(dateStr + "T00:00:00");
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0,10);
+}
+function todayISO(){ const d = new Date(); d.setHours(0,0,0,0); return d.toISOString().slice(0,10); }
+function daysUntil(dateStr){
+  const a = new Date(dateStr + "T00:00:00");
+  const b = new Date(todayISO() + "T00:00:00");
+  return Math.round((a-b)/86400000);
+}
+function fmtShort(dateStr){
+  if(!dateStr) return "-";
+  const d = new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString(undefined,{month:"short", day:"numeric"});
+}
+function statusFor(days){
+  if(days < 0) return "past";
+  if(days <= 7) return "week";
+  if(days <= 28) return "month";
+  return "later";
+}
+
+/* ============================= COMPUTED BED INFO ============================= */
+function computeBed(bed){
+  const cur = plantByName(bed.current);
+  const nxt = plantByName(bed.next);
+  let harvestDate = null;
+  if(bed.datePlanted && cur && cur.dtm != null) harvestDate = addDays(bed.datePlanted, cur.dtm);
+  let suggestedSeed = null, suggestedSow = null;
+  if(nxt && STORE.frostDate){
+    if(nxt.seedOffset != null) suggestedSeed = addDays(STORE.frostDate, nxt.seedOffset*7);
+    if(nxt.sowOffset != null) suggestedSow = addDays(STORE.frostDate, nxt.sowOffset*7);
+  }
+  const effectiveNext = bed.plannedNext || suggestedSow;
+  const rotationWarning = !!(cur && nxt && cur.family && nxt.family && cur.family === nxt.family);
+  return {cur, nxt, harvestDate, suggestedSeed, suggestedSow, effectiveNext, rotationWarning};
+}
+
+/* ============================= NAVIGATION ============================= */
+const pages = {
+  map:   {el:document.getElementById("page-map"),   title:"🌿 Garden Map",  sub:"Tap a bed to edit it. Drag handles to resize, drag the middle to move — beds snap to each other's edges."},
+  month: {el:document.getElementById("page-month"), title:"📅 This Month",  sub:"Everything coming up across every bed, in one place."},
+  guide: {el:document.getElementById("page-guide"), title:"📖 Plant Guide", sub:"Vegetables, flowers, and berries — search or browse."}
+};
+document.querySelectorAll(".tabbtn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".tabbtn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    const key = btn.dataset.page;
+    Object.entries(pages).forEach(([k,p])=> p.el.hidden = (k!==key));
+    document.getElementById("pageTitle").textContent = pages[key].title;
+    document.getElementById("pageSub").textContent = pages[key].sub;
+    if(key==="month") renderMonth();
+    if(key==="guide") renderGuide();
+  });
+});
+
+/* ============================= ZOOM / CANVAS SIZE ============================= */
+const canvasScroll = document.getElementById("canvasScroll");
+const canvasWrap = document.getElementById("canvasWrap");
+let zoom = 1;
+const ZOOM_MIN=0.5, ZOOM_MAX=2.2, ZOOM_STEP=0.2;
+let baseWidth = 0;
+
+function layoutCanvas(){
+  baseWidth = canvasScroll.clientWidth || 320;
+  const w = baseWidth * zoom;
+  const h = w * 4/3;
+  canvasWrap.style.width = w+"px";
+  canvasWrap.style.height = h+"px";
+}
+function updateZoomLabel(){ document.getElementById("zoomLabel").textContent = Math.round(zoom*100)+"%"; }
+document.getElementById("zoomOut").addEventListener("click", ()=>{ zoom = Math.max(ZOOM_MIN, +(zoom-ZOOM_STEP).toFixed(2)); layoutCanvas(); updateZoomLabel(); });
+document.getElementById("zoomIn").addEventListener("click", ()=>{ zoom = Math.min(ZOOM_MAX, +(zoom+ZOOM_STEP).toFixed(2)); layoutCanvas(); updateZoomLabel(); });
+window.addEventListener("resize", layoutCanvas);
+
+/* ============================= MAP RENDERING ============================= */
+function renderBeds(){
+  canvasWrap.querySelectorAll(".bed").forEach(n=>n.remove());
+  STORE.beds.forEach(bed=>{
+    const info = computeBed(bed);
+    const fam = info.cur ? info.cur.family : null;
+    const displayColor = bed.color || familyColor(fam);
+    const div = document.createElement("div");
+    div.className = "bed";
+    div.dataset.id = bed.id;
+    div.style.left = bed.x + "%";
+    div.style.top = bed.y + "%";
+    div.style.width = bed.w + "%";
+    div.style.height = bed.h + "%";
+    div.style.background = hexToRgba(displayColor, 0.28);
+    div.style.borderColor = hexToRgba(displayColor, 0.75);
+
+    let html = `<div class="bname">${escapeHtml(bed.name || "Bed")}</div>`;
+    html += `<div class="bcrop">${bed.current ? escapeHtml(bed.current) : "— empty —"}</div>`;
+    html += `<div class="bharvest">${info.harvestDate ? "Harvest: "+fmtShort(info.harvestDate) : ""}</div>`;
+    div.innerHTML = html;
+
+    [["nw",0,0],["ne",1,0],["sw",0,1],["se",1,1]].forEach(([pos,fx,fy])=>{
+      const h = document.createElement("div");
+      h.className = "handle";
+      h.dataset.role = "handle";
+      h.dataset.pos = pos;
+      h.dataset.bed = bed.id;
+      h.style.left = (fx*100) + "%";
+      h.style.top = (fy*100) + "%";
+      div.appendChild(h);
+    });
+    div.dataset.role = "bed";
+    canvasWrap.appendChild(div);
+  });
+}
+function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+/* ---- pointer interaction: move / resize / draw-new, with edge snapping ---- */
+let mode = null;
+let activeBedId = null;
+let startPx = {x:0,y:0};
+let startRectPct = {x:0,y:0,w:0,h:0};
+let moved = false;
+let resizePos = null;
+let drawPreviewEl = null;
+
+function pctFromEvent(e){
+  const r = canvasWrap.getBoundingClientRect();
+  return { x: ((e.clientX - r.left)/r.width)*100, y: ((e.clientY - r.top)/r.height)*100 };
+}
+function snapThresholds(){
+  const r = canvasWrap.getBoundingClientRect();
+  return { x: (9/r.width)*100, y: (9/r.height)*100 };
+}
+function snapSingle(value, candidates, threshold){
+  let best = value, bestDelta = threshold;
+  candidates.forEach(c=>{ const d = Math.abs(c-value); if(d < bestDelta){ bestDelta = d; best = c; } });
+  return best;
+}
+function edgesFor(beds, excludeId){
+  const xs=[0,100], ys=[0,100];
+  beds.forEach(b=>{ if(b.id===excludeId) return; xs.push(b.x, b.x+b.w); ys.push(b.y, b.y+b.h); });
+  return {xs, ys};
+}
+
+canvasWrap.addEventListener("pointerdown", (e)=>{
+  const handleEl = e.target.closest('[data-role="handle"]');
+  const bedEl = e.target.closest('.bed');
+  const p = pctFromEvent(e);
+  startPx = p;
+  moved = false;
+
+  if(handleEl){
+    mode = "resize";
+    activeBedId = handleEl.dataset.bed;
+    resizePos = handleEl.dataset.pos;
+    const bed = STORE.beds.find(b=>b.id===activeBedId);
+    startRectPct = {x:bed.x, y:bed.y, w:bed.w, h:bed.h};
+    e.stopPropagation();
+  } else if(bedEl){
+    mode = "move";
+    activeBedId = bedEl.dataset.id;
+    const bed = STORE.beds.find(b=>b.id===activeBedId);
+    startRectPct = {x:bed.x, y:bed.y, w:bed.w, h:bed.h};
+  } else {
+    mode = "draw";
+    drawPreviewEl = document.createElement("div");
+    drawPreviewEl.className = "drawPreview";
+    drawPreviewEl.style.left = p.x + "%";
+    drawPreviewEl.style.top = p.y + "%";
+    drawPreviewEl.style.width = "0%";
+    drawPreviewEl.style.height = "0%";
+    canvasWrap.appendChild(drawPreviewEl);
+  }
+  canvasWrap.setPointerCapture(e.pointerId);
+});
+
+canvasWrap.addEventListener("pointermove", (e)=>{
+  if(!mode) return;
+  const p = pctFromEvent(e);
+  const dx = p.x - startPx.x, dy = p.y - startPx.y;
+  const thresh = snapThresholds();
+
+  if(mode === "move"){
+    if(Math.abs(dx) > 1.2 || Math.abs(dy) > 1.2) moved = true;
+    const bed = STORE.beds.find(b=>b.id===activeBedId);
+    let nx = clamp(startRectPct.x + dx, 0, 100 - bed.w);
+    let ny = clamp(startRectPct.y + dy, 0, 100 - bed.h);
+    const {xs, ys} = edgesFor(STORE.beds, activeBedId);
+    const snappedLeft = snapSingle(nx, xs, thresh.x);
+    const snappedRight = snapSingle(nx+bed.w, xs, thresh.x) - bed.w;
+    nx = (Math.abs(snappedRight-nx) < Math.abs(snappedLeft-nx)) ? snappedRight : snappedLeft;
+    const snappedTop = snapSingle(ny, ys, thresh.y);
+    const snappedBottom = snapSingle(ny+bed.h, ys, thresh.y) - bed.h;
+    ny = (Math.abs(snappedBottom-ny) < Math.abs(snappedTop-ny)) ? snappedBottom : snappedTop;
+    nx = clamp(nx, 0, 100-bed.w); ny = clamp(ny, 0, 100-bed.h);
+    bed.x = nx; bed.y = ny;
+    const el = canvasWrap.querySelector(`.bed[data-id="${activeBedId}"]`);
+    if(el){ el.style.left = nx+"%"; el.style.top = ny+"%"; }
+  } else if(mode === "resize"){
+    const bed = STORE.beds.find(b=>b.id===activeBedId);
+    let {x,y,w,h} = startRectPct;
+    const minSize = 8;
+    const {xs, ys} = edgesFor(STORE.beds, activeBedId);
+    if(resizePos.includes("e")){ let right = snapSingle(startRectPct.x+startRectPct.w+dx, xs, thresh.x); w = clamp(right-x, minSize, 100-x); }
+    if(resizePos.includes("s")){ let bottom = snapSingle(startRectPct.y+startRectPct.h+dy, ys, thresh.y); h = clamp(bottom-y, minSize, 100-y); }
+    if(resizePos.includes("w")){
+      let left = snapSingle(startRectPct.x+dx, xs, thresh.x);
+      let newW = clamp(startRectPct.w + (startRectPct.x-left), minSize, startRectPct.x+startRectPct.w);
+      x = startRectPct.x + startRectPct.w - newW; w = newW;
+    }
+    if(resizePos.includes("n")){
+      let top = snapSingle(startRectPct.y+dy, ys, thresh.y);
+      let newH = clamp(startRectPct.h + (startRectPct.y-top), minSize, startRectPct.y+startRectPct.h);
+      y = startRectPct.y + startRectPct.h - newH; h = newH;
+    }
+    bed.x=x; bed.y=y; bed.w=w; bed.h=h;
+    const el = canvasWrap.querySelector(`.bed[data-id="${activeBedId}"]`);
+    if(el){ el.style.left=x+"%"; el.style.top=y+"%"; el.style.width=w+"%"; el.style.height=h+"%"; }
+    moved = true;
+  } else if(mode === "draw"){
+    const x = Math.min(startPx.x, p.x), y = Math.min(startPx.y, p.y);
+    const w = Math.abs(p.x - startPx.x), h = Math.abs(p.y - startPx.y);
+    drawPreviewEl.style.left = x+"%"; drawPreviewEl.style.top = y+"%";
+    drawPreviewEl.style.width = w+"%"; drawPreviewEl.style.height = h+"%";
+  }
+});
+
+canvasWrap.addEventListener("pointerup", (e)=>{
+  if(mode === "move"){
+    if(!moved){ openEditor(activeBedId); }
+    else save();
+  } else if(mode === "resize"){
+    save();
+  } else if(mode === "draw"){
+    const p = pctFromEvent(e);
+    const x = Math.min(startPx.x, p.x), y = Math.min(startPx.y, p.y);
+    const w = parseFloat(drawPreviewEl.style.width), h = parseFloat(drawPreviewEl.style.height);
+    drawPreviewEl.remove(); drawPreviewEl = null;
+    if(w > 5 && h > 5){
+      const bed = {id:"b"+Date.now(), name:"New Bed", x:clamp(x,0,100-w), y:clamp(y,0,100-h), w:Math.min(w,100), h:Math.min(h,100),
+        color:null, current:"", datePlanted:"", next:"", plannedNext:"", notes:""};
+      STORE.beds.push(bed);
+      save(); renderBeds();
+      openEditor(bed.id);
+    }
+  }
+  mode = null; activeBedId = null; resizePos = null;
+});
+
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+document.getElementById("addBedBtn").addEventListener("click", ()=>{
+  const n = STORE.beds.length;
+  const bed = {id:"b"+Date.now(), name:"Bed "+(n+1), x:(6+(n*4)%50), y:(6+(n*6)%50), w:30, h:16,
+    color:null, current:"", datePlanted:"", next:"", plannedNext:"", notes:""};
+  STORE.beds.push(bed); save(); renderBeds(); openEditor(bed.id);
+});
+document.getElementById("drawHintBtn").addEventListener("click", ()=>{
+  alert("Two ways to add a bed:\n\n1) Tap '+ Add Bed' for a default rectangle.\n2) Drag on any empty patch of the map to draw a new one.\n\nOnce a bed exists: drag its round corner handles to resize, drag its middle to move (it snaps to nearby edges), or tap it to open its details. Use the − / + buttons to zoom, and scroll the map to pan around when zoomed in.");
+});
+
+/* ============================= EDITOR SHEET ============================= */
+const overlay = document.getElementById("editorOverlay");
+const edName = document.getElementById("edName");
+const edColor = document.getElementById("edColor");
+const edColorReset = document.getElementById("edColorReset");
+const edCurrent = document.getElementById("edCurrent");
+const edDatePlanted = document.getElementById("edDatePlanted");
+const edNext = document.getElementById("edNext");
+const edPlannedNext = document.getElementById("edPlannedNext");
+const edNotes = document.getElementById("edNotes");
+const edHarvestReadout = document.getElementById("edHarvestReadout");
+const edNextReadout = document.getElementById("edNextReadout");
+
+function plantOptions(selected){
+  let html = `<option value="">— none —</option>`;
+  PLANTS.forEach(p=>{ html += `<option value="${escapeHtml(p.name)}" ${p.name===selected?"selected":""}>${escapeHtml(p.name)}</option>`; });
+  return html;
+}
+
+let editingId = null;
+function openEditor(id){
+  editingId = id;
+  const bed = STORE.beds.find(b=>b.id===id);
+  edName.value = bed.name || "";
+  const autoColor = familyColor(plantByName(bed.current)?.family);
+  edColor.value = bed.color || autoColor;
+  edCurrent.innerHTML = plantOptions(bed.current);
+  edDatePlanted.value = bed.datePlanted || "";
+  edNext.innerHTML = plantOptions(bed.next);
+  edPlannedNext.value = bed.plannedNext || "";
+  edNotes.value = bed.notes || "";
+  refreshReadouts();
+  overlay.hidden = false;
+}
+function closeEditor(){ overlay.hidden = true; editingId = null; renderBeds(); }
+document.getElementById("edClose").addEventListener("click", closeEditor);
+overlay.addEventListener("click", (e)=>{ if(e.target === overlay) closeEditor(); });
+
+edColor.addEventListener("input", ()=>{
+  if(!editingId) return;
+  const bed = STORE.beds.find(b=>b.id===editingId);
+  bed.color = edColor.value;
+  save(); renderBeds();
+});
+edColorReset.addEventListener("click", ()=>{
+  if(!editingId) return;
+  const bed = STORE.beds.find(b=>b.id===editingId);
+  bed.color = null;
+  edColor.value = familyColor(plantByName(bed.current)?.family);
+  save(); renderBeds();
+});
+
+function refreshReadouts(){
+  const tmp = {current:edCurrent.value, datePlanted:edDatePlanted.value, next:edNext.value, plannedNext:edPlannedNext.value};
+  const info = computeBed(tmp);
+  if(tmp.current && tmp.datePlanted && info.harvestDate){
+    edHarvestReadout.textContent = `Harvest around ${fmtShort(info.harvestDate)} (${info.cur.dtm} days from planting).`;
+    edHarvestReadout.classList.remove("warn");
+  } else if(tmp.current) {
+    edHarvestReadout.textContent = `Add a planting date to estimate the harvest window (${info.cur.window}).`;
+    edHarvestReadout.classList.remove("warn");
+  } else {
+    edHarvestReadout.textContent = "Pick a crop and date to see the estimated harvest.";
+    edHarvestReadout.classList.remove("warn");
+  }
+
+  if(tmp.next){
+    let txt = `Next up: ${tmp.next}. `;
+    txt += tmp.plannedNext ? `Planned for ${fmtShort(tmp.plannedNext)}.` : (info.suggestedSow ? `Suggested planting: ${fmtShort(info.suggestedSow)} (based on your last frost date).` : `Add your last frost date on the This Month tab to get a suggested date.`);
+    if(info.nxt && info.nxt.companions) txt += ` Goes well with: ${info.nxt.companions}.`;
+    if(info.rotationWarning) txt += ` ⚠ Same plant family as what's there now — consider rotating.`;
+    edNextReadout.textContent = txt;
+    edNextReadout.classList.toggle("warn", info.rotationWarning);
+  } else {
+    edNextReadout.textContent = "Pick a next crop to see suggested timing and companions.";
+    edNextReadout.classList.remove("warn");
+  }
+}
+
+function persistField(){
+  if(!editingId) return;
+  const bed = STORE.beds.find(b=>b.id===editingId);
+  bed.name = edName.value;
+  bed.current = edCurrent.value;
+  bed.datePlanted = edDatePlanted.value;
+  bed.next = edNext.value;
+  bed.plannedNext = edPlannedNext.value;
+  bed.notes = edNotes.value;
+  save();
+  refreshReadouts();
+}
+[edName, edCurrent, edDatePlanted, edNext, edPlannedNext, edNotes].forEach(el=>{
+  el.addEventListener("change", persistField);
+  el.addEventListener("input", persistField);
+});
+
+document.getElementById("edDelete").addEventListener("click", ()=>{
+  if(!editingId) return;
+  if(confirm("Delete this bed? This can't be undone.")){
+    STORE.beds = STORE.beds.filter(b=>b.id!==editingId);
+    save();
+    closeEditor();
+  }
+});
+
+/* ============================= MONTH PAGE ============================= */
+const frostInput = document.getElementById("frostInput");
+frostInput.value = STORE.frostDate || "";
+frostInput.addEventListener("change", ()=>{
+  STORE.frostDate = frostInput.value;
+  save(); renderBeds(); renderMonth();
+});
+
+function renderMonth(){
+  frostInput.value = STORE.frostDate || "";
+  const events = [];
+  STORE.beds.forEach(bed=>{
+    const info = computeBed(bed);
+    if(info.suggestedSeed && bed.next) events.push({bed:bed.name, type:"Seed Start", crop:bed.next, date:info.suggestedSeed});
+    const sowDate = bed.plannedNext || info.suggestedSow;
+    if(sowDate && bed.next) events.push({bed:bed.name, type:"Sow / Transplant", crop:bed.next, date:sowDate});
+    if(info.harvestDate && bed.current) events.push({bed:bed.name, type:"Harvest", crop:bed.current, date:info.harvestDate});
+  });
+  events.forEach(ev=>{ ev.days = daysUntil(ev.date); ev.status = statusFor(ev.days); });
+  const visible = events.filter(e=>e.status!=="later").sort((a,b)=> a.date.localeCompare(b.date));
+
+  document.getElementById("cntWeek").textContent = events.filter(e=>e.status==="week").length;
+  document.getElementById("cntMonth").textContent = events.filter(e=>e.status==="month").length;
+  document.getElementById("cntPast").textContent = events.filter(e=>e.status==="past").length;
+
+  const list = document.getElementById("eventList");
+  if(visible.length===0){
+    list.innerHTML = `<div class="empty">Nothing due in the next 4 weeks. 🌱<br>Add crops to your beds on the Map tab to see them here.</div>`;
+    return;
+  }
+  list.innerHTML = visible.map(ev=>{
+    const dotClass = "dot-"+ev.status;
+    const dateLabel = ev.status==="past" ? `${fmtShort(ev.date)} · past` : fmtShort(ev.date);
+    return `<div class="card evtRow">
+      <div class="evtDot ${dotClass}"></div>
+      <div class="evtMain">
+        <div class="t1">${escapeHtml(ev.crop)} — ${escapeHtml(ev.type)}</div>
+        <div class="t2">${escapeHtml(ev.bed)}</div>
+      </div>
+      <div class="evtDate">${dateLabel}</div>
+    </div>`;
+  }).join("");
+}
+
+/* ============================= GUIDE PAGE ============================= */
+function renderGuide(){
+  const q = document.getElementById("guideSearch").value.trim().toLowerCase();
+  const list = PLANTS.filter(p=> p.name.toLowerCase().includes(q));
+  const el = document.getElementById("guideList");
+  if(list.length===0){ el.innerHTML = `<div class="empty">No plants match "${escapeHtml(q)}".</div>`; return; }
+  el.innerHTML = list.map((p,i)=>{
+    return `<div class="plantRow">
+      <div class="plantHead" data-idx="${i}" style="cursor:pointer;">
+        <div class="plantName">${escapeHtml(p.name)}</div>
+        <div class="famBadge" style="background:${familyColor(p.family)}">${escapeHtml(p.family)}</div>
+      </div>
+      <div class="plantDetail" hidden>
+        <div><b>Start seeds indoors:</b> ${escapeHtml(p.seedIndoors)}</div>
+        <div><b>Sow / transplant outdoors:</b> ${escapeHtml(p.sowOutdoor)}</div>
+        <div><b>Days to maturity:</b> ${p.dtm}</div>
+        <div><b>Typical harvest window:</b> ${escapeHtml(p.window)}</div>
+        <div><b>Spacing:</b> ${escapeHtml(p.spacing)}</div>
+        <div><b>Goes well with:</b> ${escapeHtml(p.companions)}</div>
+        <div><b>Notes:</b> ${escapeHtml(p.notes)}</div>
+      </div>
+    </div>`;
+  }).join("");
+  el.querySelectorAll(".plantHead").forEach(h=>{
+    h.addEventListener("click", ()=>{ const detail = h.nextElementSibling; detail.hidden = !detail.hidden; });
+  });
+}
+document.getElementById("guideSearch").addEventListener("input", renderGuide);
+
+/* ============================= INIT ============================= */
+layoutCanvas();
+updateZoomLabel();
+renderBeds();
+</script>
+</body>
+</html>
