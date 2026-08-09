@@ -85,7 +85,6 @@
   .bgEditing .bgshape{pointer-events:auto;}
   .bgshape.rect{border-radius:10px;}
   .bgshape.circle{border-radius:50%;}
-  .bgshape.path{border-radius:999px;}
   .bgshape.plot{border-radius:0;}
   .bgshape.tree{
     border-radius:58% 42% 61% 39% / 41% 55% 45% 59%;
@@ -134,13 +133,18 @@
   .field{margin-bottom:14px;}
   .field label{display:block; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--muted); margin-bottom:5px; font-family:-apple-system,sans-serif;}
   select, input[type=date], input[type=text], input[type=number], textarea{width:100%; padding:11px 12px; border-radius:13px; border:1.5px solid var(--line);
-    background:#fff; font-size:15px; color:var(--ink); font-family:-apple-system,sans-serif;}
+    background:#fff; font-size:16px; color:var(--ink); font-family:-apple-system,sans-serif;}
   input:disabled{background:#EFF1ED; color:var(--muted);}
   textarea{min-height:64px; resize:vertical;}
   .readout{background:#EEFBF1; border-radius:13px; padding:11px 13px; font-size:13px; color:var(--leaf-dark); line-height:1.5; font-family:-apple-system,sans-serif;}
   .readout.warn{background:#FEEBEA; color:#B23A2A; font-weight:600;}
   .divider{height:1px; background:var(--line); margin:16px 0;}
   .colorRow{display:flex; align-items:center; gap:12px;}
+  .stepperRow{display:flex; align-items:center; gap:6px;}
+  .stepperRow input[type=number]{text-align:center;}
+  .stepperBtn{width:38px; height:38px; border-radius:11px; background:#EFF1ED; border:none; font-size:19px; font-weight:700;
+    color:var(--leaf-dark); flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+  .stepperBtn:active{transform:scale(0.9);}
   .colorRow input[type=color]{width:52px; height:40px; border:1.5px solid var(--line); border-radius:12px; padding:2px; background:#fff;}
   .linkBtn{border:none; background:none; color:var(--leaf-dark); font-weight:700; font-size:12.5px; font-family:-apple-system,sans-serif;}
 
@@ -157,14 +161,14 @@
   .evtMain .t1{font-size:14px; font-weight:700; font-family:-apple-system,sans-serif;}
   .evtMain .t2{font-size:12px; color:var(--muted); font-family:-apple-system,sans-serif;}
   .evtDate{font-size:12.5px; font-weight:700; color:var(--ink); text-align:right; font-family:-apple-system,sans-serif; white-space:nowrap;}
-  .searchBox{width:100%; padding:12px 14px; border-radius:14px; border:1.5px solid var(--line); background:#fff; font-size:15px; margin-bottom:10px;}
+  .searchBox{width:100%; padding:12px 14px; border-radius:14px; border:1.5px solid var(--line); background:#fff; font-size:16px; margin-bottom:10px;}
   .calLegend{display:flex; gap:14px; flex-wrap:wrap; padding:2px 4px 10px 4px; font-size:11px; color:var(--muted); font-family:-apple-system,sans-serif;}
   .calLegendItem{display:flex; align-items:center; gap:5px;}
   .calLegendSwatch{width:12px; height:12px; border-radius:3px; flex-shrink:0;}
-  .calWrap{overflow-x:auto; -webkit-overflow-scrolling:touch; border-radius:16px; background:#fff; box-shadow:0 1px 2px rgba(20,24,27,0.04), 0 4px 14px rgba(20,24,27,0.05);}
+  .calWrap{overflow-x:auto; overflow-y:auto; max-height:56vh; -webkit-overflow-scrolling:touch; border-radius:16px; background:#fff; box-shadow:0 1px 2px rgba(20,24,27,0.04), 0 4px 14px rgba(20,24,27,0.05);}
   .calTable{border-collapse:collapse; font-size:11px; font-family:-apple-system,sans-serif; min-width:640px; width:100%;}
   .calTable th, .calTable td{padding:4px 5px; text-align:center; border-bottom:1px solid var(--line);}
-  .calTable th{font-size:10px; color:var(--muted); font-weight:700; text-transform:uppercase; padding-top:8px;}
+  .calTable th{font-size:10px; color:var(--muted); font-weight:700; text-transform:uppercase; padding-top:8px; position:sticky; top:0; background:#fff; z-index:2; box-shadow:0 1px 0 var(--line);}
   .calTable td.calName{text-align:left; font-weight:700; white-space:nowrap; padding-right:10px; font-size:12px;}
   .calDot{width:100%; height:14px; border-radius:4px; margin:0 auto;}
   .filterRow{display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:12px; -webkit-overflow-scrolling:touch;}
@@ -212,7 +216,6 @@
       <button class="btn btn-plot" id="addPlotBtn">📐 Plot</button>
       <button class="btn btn-sun" id="addRectBtn">+ Rectangle</button>
       <button class="btn btn-sun" id="addCircleBtn">+ Circle</button>
-      <button class="btn btn-sun" id="addPathBtn">+ Path</button>
       <button class="btn btn-sun" id="addTreeBtn">+ Tree</button>
       <button class="btn btn-outline btn-icon" id="settingsBtn" aria-label="Map Settings"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2.2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2.2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2.2" fill="currentColor" stroke="none"/></svg></button>
       <button class="btn btn-outline" id="bgDoneBtn"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:4px;"><path d="M4 12.5l5 5L20 6"/></svg>Done</button>
@@ -222,7 +225,7 @@
         <button id="zoomIn2">+</button>
       </div>
     </div>
-    <div class="bgModeBanner" id="bgModeBanner">🖌 Editing background — tap a shape to recolor or delete it, drag to move/resize. Tap Done when finished.</div>
+    <div class="bgModeBanner" id="bgModeBanner">🖌 Editing background — tap the green open icon (bottom-left of a shape) for its details, drag to move/resize. Tap Done when finished.</div>
   </div>
   <div id="canvasViewport"><div id="world"></div></div>
 </div>
@@ -261,9 +264,17 @@
     </div>
     <div class="field">
       <label>Dimensions <span style="font-weight:400; text-transform:none; color:var(--muted);">(pre-filled from its drawn size — edit to resize the bed)</span></label>
-      <div class="colorRow" style="margin-bottom:8px;">
-        <input type="number" id="edWidthM" min="0.05" step="0.05" placeholder="Width (m)">
-        <input type="number" id="edLengthM" min="0.05" step="0.05" placeholder="Length (m)">
+      <label style="font-size:10.5px; text-transform:none; color:var(--muted); margin-bottom:4px;">Width (m)</label>
+      <div class="stepperRow" style="margin-bottom:8px;">
+        <button type="button" class="stepperBtn" id="edWidthMMinus">−</button>
+        <input type="number" id="edWidthM" min="0.05" step="0.05">
+        <button type="button" class="stepperBtn" id="edWidthMPlus">+</button>
+      </div>
+      <label style="font-size:10.5px; text-transform:none; color:var(--muted); margin-bottom:4px;">Length (m)</label>
+      <div class="stepperRow" style="margin-bottom:8px;">
+        <button type="button" class="stepperBtn" id="edLengthMMinus">−</button>
+        <input type="number" id="edLengthM" min="0.05" step="0.05">
+        <button type="button" class="stepperBtn" id="edLengthMPlus">+</button>
       </div>
       <div class="readout" id="edAreaReadout"></div>
     </div>
@@ -284,7 +295,11 @@
     </div>
     <div class="field">
       <label>Number of Plants <span style="font-weight:400; text-transform:none; color:var(--muted);">(optional)</span></label>
-      <input type="number" id="edPlantCount" min="0" step="1" placeholder="e.g. 6">
+      <div class="stepperRow">
+        <button type="button" class="stepperBtn" id="edPlantCountMinus">−</button>
+        <input type="number" id="edPlantCount" min="0" step="1" placeholder="e.g. 6">
+        <button type="button" class="stepperBtn" id="edPlantCountPlus">+</button>
+      </div>
       <div class="readout" id="edDensityReadout" style="margin-top:8px;"></div>
     </div>
     <div class="field">
@@ -343,9 +358,17 @@
     </div>
     <div class="field" id="bgPlotField">
       <label>Real-World Dimensions <span style="font-weight:400; text-transform:none; color:var(--muted);">(sets your garden's scale)</span></label>
-      <div class="colorRow" style="margin-bottom:8px;">
-        <input type="number" id="bgPlotWidth" min="0.1" step="0.1" placeholder="Width (m)">
-        <input type="number" id="bgPlotLength" min="0.1" step="0.1" placeholder="Length (m)">
+      <label style="font-size:10.5px; text-transform:none; color:var(--muted); margin-bottom:4px;">Width (m)</label>
+      <div class="stepperRow" style="margin-bottom:8px;">
+        <button type="button" class="stepperBtn" id="bgPlotWidthMinus">−</button>
+        <input type="number" id="bgPlotWidth" min="0.1" step="0.1">
+        <button type="button" class="stepperBtn" id="bgPlotWidthPlus">+</button>
+      </div>
+      <label style="font-size:10.5px; text-transform:none; color:var(--muted); margin-bottom:4px;">Length (m)</label>
+      <div class="stepperRow" style="margin-bottom:8px;">
+        <button type="button" class="stepperBtn" id="bgPlotLengthMinus">−</button>
+        <input type="number" id="bgPlotLength" min="0.1" step="0.1">
+        <button type="button" class="stepperBtn" id="bgPlotLengthPlus">+</button>
       </div>
       <div class="readout" id="bgPlotScaleReadout"></div>
     </div>
@@ -376,9 +399,14 @@
     <div class="divider"></div>
     <div class="field">
       <label>Border</label>
-      <div class="colorRow">
+      <div class="colorRow" style="margin-bottom:8px;">
         <input type="color" id="bgBorderColor">
-        <input type="number" id="bgBorderWidth" min="0" max="12" style="width:80px;" placeholder="px">
+        <span style="font-size:12.5px; color:var(--muted);">color</span>
+      </div>
+      <div class="stepperRow">
+        <button type="button" class="stepperBtn" id="bgBorderWidthMinus">−</button>
+        <input type="number" id="bgBorderWidth" min="0" max="12" style="width:70px;" placeholder="px">
+        <button type="button" class="stepperBtn" id="bgBorderWidthPlus">+</button>
         <span style="font-size:12.5px; color:var(--muted);">width (px)</span>
       </div>
     </div>
@@ -406,12 +434,11 @@
       <input type="date" id="settingsFrostDate">
     </div>
     <div class="field">
-      <label>Ground Color</label>
-      <div class="colorRow"><input type="color" id="mapBgColor"></div>
-    </div>
-    <div class="field">
-      <label>Grid Lines</label>
-      <button class="btn btn-outline" id="gridToggleBtn" style="width:100%;">Grid: Off</button>
+      <label>Ground Color & Grid</label>
+      <div class="colorRow">
+        <input type="color" id="mapBgColor">
+        <button class="btn btn-outline" id="gridToggleBtn" style="flex:1;">Grid: Off</button>
+      </div>
     </div>
     <div class="divider"></div>
     <div class="field">
@@ -645,12 +672,13 @@ function migrateParsed(parsed){
   if(!parsed.mapSettings) parsed.mapSettings = {bgColor:"#E9E0CB", showGrid:false};
   if(!parsed.bg) parsed.bg = [];
   parsed.bg.forEach(s=>{
+    if(s.type==="path") s.type="rect"; // path shape type removed — keep former paths as plain rectangles
     if(s.pattern===undefined) s.pattern = "none";
     if(s.pattern==="foliage") s.pattern = "none";
     if(s.borderColor===undefined) s.borderColor = null;
     if(s.borderWidth===undefined) s.borderWidth = 1.5;
     if(s.label===undefined) s.label = "";
-    if(s.cornerRadius===undefined) s.cornerRadius = (s.type==="path" ? 60 : 10);
+    if(s.cornerRadius===undefined) s.cornerRadius = 10;
     if(s.treeStyle===undefined) s.treeStyle = "round";
     if(s.treeStyle==="blob") s.treeStyle = "round";
     if(s.treeStyle==="cluster") s.treeStyle = "star";
@@ -812,6 +840,24 @@ document.getElementById("gridToggleBtn").addEventListener("click", ()=>{
 /* ---- fixed real-world scale: 1 map unit = 1 cm, always ---- */
 const UNITS_PER_METER = 100;
 function unitsToMeters(u){ return u / UNITS_PER_METER; }
+function wireStepper(minusId, inputId, plusId, step, min, max){
+  const input = document.getElementById(inputId);
+  const minus = document.getElementById(minusId);
+  const plus = document.getElementById(plusId);
+  if(!input || !minus || !plus) return;
+  const decimals = (String(step).split(".")[1] || "").length;
+  const nudge = (delta)=>{
+    let v = parseFloat(input.value);
+    if(isNaN(v)) v = (min != null ? min : 0);
+    v = +(v + delta).toFixed(decimals);
+    if(min != null) v = Math.max(min, v);
+    if(max != null) v = Math.min(max, v);
+    input.value = v;
+    input.dispatchEvent(new Event("input", {bubbles:true}));
+  };
+  minus.addEventListener("click", ()=>nudge(-step));
+  plus.addEventListener("click", ()=>nudge(step));
+}
 function metersToUnits(m){ return m * UNITS_PER_METER; }
 function realSizeText(w, h){
   const mw = unitsToMeters(w), mh = unitsToMeters(h);
@@ -1014,6 +1060,7 @@ function renderBg(){
   world.querySelectorAll('.handle[data-role="bghandle"]').forEach(n=>n.remove());
   world.querySelectorAll('[data-role="bglockicon"]').forEach(n=>n.remove());
   world.querySelectorAll('[data-role="bgdeleteicon"]').forEach(n=>n.remove());
+  world.querySelectorAll('[data-role="bgopenicon"]').forEach(n=>n.remove());
   const firstBed = world.querySelector(".bed");
   // plots always paint at the very back, trees always paint above everything else,
   // while stable-sorting keeps each group's own relative order intact
@@ -1031,15 +1078,15 @@ function renderBg(){
     div.style.top = shape.y + "px";
     div.style.width = shape.w + "px";
     div.style.height = shape.h + "px";
-    if(shape.type === "rect" || shape.type === "path"){
+    if(shape.type === "rect" || isPlot){
       div.style.borderRadius = (shape.cornerRadius != null ? shape.cornerRadius : 10) + "px";
     }
 
     if(isPlot){
       div.style.background = shape.color || "transparent";
-      div.style.borderWidth = (shape.borderWidth != null ? shape.borderWidth : 2.5) + "px";
-      div.style.borderStyle = "dashed";
-      div.style.borderColor = shape.borderColor || "#4B6B8A";
+      div.style.borderWidth = (shape.borderWidth != null ? shape.borderWidth : 3) + "px";
+      div.style.borderStyle = "solid";
+      div.style.borderColor = shape.borderColor || "#E1D199";
     } else {
       div.style.background = hasPattern ? "" : shape.color;
       if(isStar){
@@ -1070,6 +1117,15 @@ function renderBg(){
       lock.style.left = (shape.x + shape.w - 24) + "px";
       lock.style.top = (shape.y + 4) + "px";
       world.appendChild(lock);
+
+      const openBtn = document.createElement("div");
+      openBtn.className = "openIcon";
+      openBtn.dataset.role = "bgopenicon";
+      openBtn.dataset.id = shape.id;
+      openBtn.innerHTML = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16L16 8"/><path d="M10 8h6v6"/></svg>';
+      openBtn.style.left = shape.x + "px";
+      openBtn.style.top = (shape.y + shape.h - 26) + "px";
+      world.appendChild(openBtn);
 
       if(!shape.locked){
         const del = document.createElement("div");
@@ -1145,6 +1201,12 @@ function startSinglePointer(e){
       STORE.bg = STORE.bg.filter(x=>x.id!==bgDeleteIcon.dataset.id);
       if(editingBgId === bgDeleteIcon.dataset.id){ editingBgId = null; bgOverlay.hidden = true; }
       save(); renderBg();
+      mode = null;
+      return;
+    }
+    const bgOpenIcon = e.target.closest('[data-role="bgopenicon"]');
+    if(bgOpenIcon){
+      openBgEditor(bgOpenIcon.dataset.id);
       mode = null;
       return;
     }
@@ -1310,13 +1372,15 @@ function repositionBgIcons(id, x, y, w, h){
   if(lockEl){ lockEl.style.left = (x+w-24)+"px"; lockEl.style.top = (y+4)+"px"; }
   const delEl = world.querySelector(`[data-role="bgdeleteicon"][data-id="${id}"]`);
   if(delEl){ delEl.style.left = (x+4)+"px"; delEl.style.top = (y+4)+"px"; }
+  const openEl = world.querySelector(`[data-role="bgopenicon"][data-id="${id}"]`);
+  if(openEl){ openEl.style.left = x+"px"; openEl.style.top = (y+h-26)+"px"; }
 }
 
 function endSinglePointer(){
   if(mode === "pan"){ saveView(); }
   else if(mode === "move"){ if(moved) save(); }
   else if(mode === "resize"){ save(); }
-  else if(mode === "bgmove"){ if(!moved){ openBgEditor(activeId); } else save(); }
+  else if(mode === "bgmove"){ if(moved) save(); }
   else if(mode === "bgresize"){ save(); }
   mode = null; activeId = null; resizePos = null;
 }
@@ -1352,8 +1416,8 @@ document.getElementById("addPlotBtn").addEventListener("click", ()=>{
   }
   const c = viewportCenterWorld();
   const w=420, h=300;
-  const shape = {id:"g"+Date.now(), type:"plot", x:c.x-w/2, y:c.y-h/2, w, h, color:"transparent", pattern:"none",
-    borderColor:"#4B6B8A", borderWidth:2.5, label:"", cornerRadius:0, locked:false, realWidthM:null, realLengthM:null};
+  const shape = {id:"g"+Date.now(), type:"plot", x:c.x-w/2, y:c.y-h/2, w, h, color:"#F9F9DC", pattern:"none",
+    borderColor:"#E1D199", borderWidth:3, label:"", cornerRadius:10, locked:false, realWidthM:null, realLengthM:null};
   STORE.bg.push(shape); save(); renderBg(); openBgEditor(shape.id);
 });
 document.getElementById("addRectBtn").addEventListener("click", ()=>{
@@ -1366,12 +1430,6 @@ document.getElementById("addCircleBtn").addEventListener("click", ()=>{
   const c = viewportCenterWorld();
   const w=90, h=90;
   const shape = {id:"g"+Date.now(), type:"circle", x:c.x-w/2, y:c.y-h/2, w, h, color:"#C9BFA8", pattern:"none", borderColor:null, borderWidth:1.5, label:"", locked:false};
-  STORE.bg.push(shape); save(); renderBg(); openBgEditor(shape.id);
-});
-document.getElementById("addPathBtn").addEventListener("click", ()=>{
-  const c = viewportCenterWorld();
-  const w=170, h=30;
-  const shape = {id:"g"+Date.now(), type:"path", x:c.x-w/2, y:c.y-h/2, w, h, color:"#C9BFA8", pattern:"rocks", borderColor:null, borderWidth:1.5, label:"", cornerRadius:60, locked:false};
   STORE.bg.push(shape); save(); renderBg(); openBgEditor(shape.id);
 });
 document.getElementById("addTreeBtn").addEventListener("click", ()=>{
@@ -1624,7 +1682,7 @@ function updatePlotScaleReadout(s){
 function openBgEditor(id){
   editingBgId = id;
   const s = STORE.bg.find(x=>x.id===id);
-  const labelMap = {tree:"Tree", circle:"Circle", path:"Path", rect:"Rectangle", plot:"Plot"};
+  const labelMap = {tree:"Tree", circle:"Circle", rect:"Rectangle", plot:"Plot"};
   bgShapeLabel.textContent = labelMap[s.type] || "Shape";
   const isPlot = s.type === "plot";
   bgColorInput.value = s.color === "transparent" ? "#ffffff" : s.color;
@@ -1640,15 +1698,15 @@ function openBgEditor(id){
   }
   bgTreeStyleField.style.display = s.type === "tree" ? "block" : "none";
   if(s.type === "tree") updateTreeStyleSelection(s.treeStyle);
-  bgCornerField.style.display = (!isPlot && (s.type === "rect" || s.type === "path")) ? "block" : "none";
-  if(s.type === "rect" || s.type === "path"){
+  bgCornerField.style.display = (s.type === "rect" || isPlot) ? "block" : "none";
+  if(s.type === "rect" || isPlot){
     const cr = s.cornerRadius != null ? s.cornerRadius : 10;
     bgCornerRadius.value = Math.min(cr, 60);
     bgCornerValue.textContent = cr + "px";
   }
   document.getElementById("bgSendBackField").style.display = isPlot ? "none" : "block";
-  document.getElementById("bgBorderColor").value = s.borderColor || (isPlot ? "#4B6B8A" : "#000000");
-  document.getElementById("bgBorderWidth").value = s.borderWidth != null ? s.borderWidth : (isPlot ? 2.5 : 1.5);
+  document.getElementById("bgBorderColor").value = s.borderColor || (isPlot ? "#E1D199" : "#000000");
+  document.getElementById("bgBorderWidth").value = s.borderWidth != null ? s.borderWidth : (isPlot ? 3 : 1.5);
   document.getElementById("bgLabelText").value = s.label || "";
   bgOverlay.hidden = false;
 }
@@ -1748,15 +1806,15 @@ function renderMonth(){
 }
 
 /* ============================= GUIDE PAGE ============================= */
-let guideFamilyFilter = null;
+let guideFamilyFilter = new Set();
 
 function renderFamilyFilters(){
   const families = [...new Set(STORE.plants.map(p=>p.family).filter(Boolean))].sort();
   const row = document.getElementById("familyFilterRow");
-  const allActive = guideFamilyFilter === null;
+  const allActive = guideFamilyFilter.size === 0;
   let html = `<button class="filterChip" data-family="" style="border-color:var(--leaf-dark); ${allActive ? "background:var(--leaf-dark); color:#fff;" : "color:var(--leaf-dark);"}">All</button>`;
   families.forEach(f=>{
-    const isActive = guideFamilyFilter === f;
+    const isActive = guideFamilyFilter.has(f);
     const color = familyColor(f);
     html += `<button class="filterChip" data-family="${escapeHtml(f)}" style="border-color:${color}; ${isActive ? `background:${color}; color:#fff;` : `color:${color};`}">${escapeHtml(f)}</button>`;
   });
@@ -1764,7 +1822,9 @@ function renderFamilyFilters(){
   row.querySelectorAll(".filterChip").forEach(btn=>{
     btn.addEventListener("click", ()=>{
       const fam = btn.dataset.family;
-      guideFamilyFilter = fam === "" ? null : fam;
+      if(fam === ""){ guideFamilyFilter.clear(); }
+      else if(guideFamilyFilter.has(fam)){ guideFamilyFilter.delete(fam); }
+      else{ guideFamilyFilter.add(fam); }
       renderGuide();
     });
   });
@@ -1774,10 +1834,11 @@ function renderGuide(){
   renderFamilyFilters();
   const q = document.getElementById("guideSearch").value.trim().toLowerCase();
   let list = STORE.plants.filter(p=> p.name.toLowerCase().includes(q));
-  if(guideFamilyFilter) list = list.filter(p=> p.family === guideFamilyFilter);
+  if(guideFamilyFilter.size) list = list.filter(p=> guideFamilyFilter.has(p.family));
   list = list.slice().sort((a,b)=> a.name.localeCompare(b.name));
   const el = document.getElementById("guideList");
-  if(list.length===0){ el.innerHTML = `<div class="empty">No plants match${q ? ` "${escapeHtml(q)}"` : ""}${guideFamilyFilter ? ` in ${escapeHtml(guideFamilyFilter)}` : ""}.</div>`; return; }
+  const filterLabel = guideFamilyFilter.size ? ` in ${[...guideFamilyFilter].map(escapeHtml).join(", ")}` : "";
+  if(list.length===0){ el.innerHTML = `<div class="empty">No plants match${q ? ` "${escapeHtml(q)}"` : ""}${filterLabel}.</div>`; return; }
   el.innerHTML = list.map((p,i)=>{
     const follow = goodFollowCrops(p, 6);
     return `<div class="plantRow">
@@ -1847,7 +1908,7 @@ function renderGuideCalendar(){
   const frost = STORE.frostDate || "2000-04-20";
   const q = document.getElementById("guideSearch").value.trim().toLowerCase();
   let list = STORE.plants.filter(p=>p.name.toLowerCase().includes(q));
-  if(guideFamilyFilter) list = list.filter(p=>p.family===guideFamilyFilter);
+  if(guideFamilyFilter.size) list = list.filter(p=>guideFamilyFilter.has(p.family));
   list = list.slice().sort((a,b)=>a.name.localeCompare(b.name));
 
   let html = `<div class="calLegend">
@@ -1984,6 +2045,12 @@ document.getElementById("pDelete").addEventListener("click", ()=>{
 });
 
 /* ============================= INIT ============================= */
+wireStepper("bgBorderWidthMinus", "bgBorderWidth", "bgBorderWidthPlus", 1, 0, 12);
+wireStepper("bgPlotWidthMinus", "bgPlotWidth", "bgPlotWidthPlus", 0.1, 0.1, null);
+wireStepper("bgPlotLengthMinus", "bgPlotLength", "bgPlotLengthPlus", 0.1, 0.1, null);
+wireStepper("edWidthMMinus", "edWidthM", "edWidthMPlus", 0.05, 0.05, null);
+wireStepper("edLengthMMinus", "edLengthM", "edLengthMPlus", 0.05, 0.05, null);
+wireStepper("edPlantCountMinus", "edPlantCount", "edPlantCountPlus", 1, 0, null);
 applyTransform();
 applyMapSettings();
 updateZoomLabels();
