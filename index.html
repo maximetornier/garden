@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#2563EB">
+<meta name="theme-color" content="#16A34A">
 <title>Georgia's Garden</title>
 <style>
   :root{
-    --leaf:#2563EB; --leaf-dark:#1D4ED8; --sun:#F59E0B;
+    --leaf:#16A34A; --leaf-dark:#15803D; --sun:#F59E0B;
     --paper:#F6F7F5; --card:#FFFFFF; --ink:#14181B; --muted:#6B7280;
     --line:#E7E9E4; --danger:#EF4444; --radius:20px;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
@@ -801,6 +801,22 @@ document.querySelectorAll(".topTab[data-page]").forEach(btn=>{
 const viewport = document.getElementById("canvasViewport");
 const world = document.getElementById("world");
 let panX = STORE.view.panX, panY = STORE.view.panY, zoom = STORE.view.zoom;
+// iOS Safari has a separate, non-standard gesture event for native pinch-zoom that
+// operates independently of touch-action/preventDefault on touch events — and iOS is
+// known to loosen the user-scalable=no lock after any form input gains focus. Blocking
+// these directly is the reliable way to stop the whole page (not just our canvas) from
+// zooming once you've opened any sheet with inputs in it.
+document.addEventListener("gesturestart", (e)=>e.preventDefault());
+document.addEventListener("gesturechange", (e)=>e.preventDefault());
+document.addEventListener("gestureend", (e)=>e.preventDefault());
+// iOS can also loosen the meta-viewport zoom lock specifically after a form input
+// loses focus (e.g. closing an editor sheet). Re-applying it on every blur is a
+// cheap extra safeguard against that.
+const viewportMetaTag = document.querySelector('meta[name="viewport"]');
+function relockViewportZoom(){
+  if(viewportMetaTag) viewportMetaTag.setAttribute("content", "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no");
+}
+document.addEventListener("focusout", relockViewportZoom, true);
 const ZOOM_MIN=0.4, ZOOM_MAX=2.5, ZOOM_STEP=0.2, GRID=26;
 
 function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
@@ -1254,8 +1270,10 @@ function startSinglePointer(e){
 }
 
 viewport.addEventListener("pointerdown", (e)=>{
+  e.preventDefault();
+  if(pointers.size > 2){ pointers.clear(); pinch = null; mode = null; activeId = null; resizePos = null; }
   pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
-  viewport.setPointerCapture(e.pointerId);
+  try{ viewport.setPointerCapture(e.pointerId); }catch(err){}
 
   if(pointers.size === 2){
     mode = null; activeId = null; resizePos = null;
@@ -1275,7 +1293,10 @@ viewport.addEventListener("pointerdown", (e)=>{
 });
 
 viewport.addEventListener("pointermove", (e)=>{
-  if(pointers.has(e.pointerId)) pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
+  if(pointers.has(e.pointerId)){
+    e.preventDefault();
+    pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
+  }
 
   if(pinch && pointers.size >= 2){
     const pts = [...pointers.values()].slice(0,2);
@@ -1393,11 +1414,14 @@ viewport.addEventListener("pointerup", (e)=>{
   }
   endSinglePointer();
 });
-viewport.addEventListener("pointercancel", (e)=>{
+function forceReleasePointer(e){
   pointers.delete(e.pointerId);
   if(pointers.size < 2) pinch = null;
   mode = null; activeId = null; resizePos = null;
-});
+}
+viewport.addEventListener("pointercancel", forceReleasePointer);
+viewport.addEventListener("lostpointercapture", forceReleasePointer);
+viewport.addEventListener("touchmove", (e)=>{ e.preventDefault(); }, {passive:false});
 
 document.getElementById("addBedBtn").addEventListener("click", ()=>{
   const n = STORE.beds.length;
