@@ -16,10 +16,10 @@
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{margin:0; padding:0; background:var(--paper); color:var(--ink); height:100%; overscroll-behavior:none;}
+  html,body{margin:0; padding:0; background:var(--paper); color:var(--ink); height:100%; overscroll-behavior:none; touch-action:pan-y; -webkit-text-size-adjust:100%; text-size-adjust:100%;}
   body{display:flex; flex-direction:column; height:100dvh; overflow:hidden;}
   h1,h2,h3{font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif; font-weight:800; letter-spacing:-0.02em; margin:0;}
-  .page{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px 16px calc(16px + env(safe-area-inset-bottom)) 16px;}
+  .page{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; touch-action:pan-y; padding:16px 16px calc(16px + env(safe-area-inset-bottom)) 16px;}
   .page[hidden]{display:none;}
   #page-map{padding:0; overflow:hidden; position:relative;}
   .topbar{padding:calc(14px + env(safe-area-inset-top)) 16px 12px 16px; background:var(--leaf); color:#fff; flex-shrink:0;}
@@ -62,6 +62,7 @@
   .bed, .bgshape{position:absolute; overflow:hidden;}
   .bed{border-radius:14px; border:1.5px solid rgba(0,0,0,0.16); padding:6px 8px; box-shadow:0 3px 10px rgba(0,0,0,0.10); pointer-events:auto;}
   .bgEditing .bed{pointer-events:none; opacity:0.5;}
+  .bgEditing.bedsHidden .bed{display:none;}
   .bed .bname{font-size:10px; font-weight:700; color:rgba(0,0,0,0.55); font-family:-apple-system,sans-serif;}
   .bed .bcrop{font-size:12.5px; font-weight:700; margin-top:1px; color:rgba(0,0,0,0.82); font-family:-apple-system,sans-serif;}
   .bed .bharvest{font-size:10.5px; margin-top:2px; color:rgba(0,0,0,0.6); font-family:-apple-system,sans-serif;}
@@ -75,8 +76,12 @@
   .openIcon:active{transform:scale(0.9);}
   .perennialBadge{position:absolute; bottom:4px; right:4px; width:18px; height:18px; border-radius:50%; background:var(--leaf-dark);
     color:#fff; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; box-shadow:0 1px 3px rgba(0,0,0,0.2); z-index:3;}
+  .bedAreaLabel{position:absolute; bottom:4px; right:4px; font-size:9.5px; font-weight:700; color:var(--muted); font-family:-apple-system,sans-serif; pointer-events:none;}
   .bgDeleteIcon{position:absolute; top:4px; left:4px; width:20px; height:20px; border-radius:50%; background:var(--danger);
     color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(0,0,0,0.25); pointer-events:auto; z-index:3;}
+  .bgDuplicateIcon{position:absolute; width:20px; height:20px; border-radius:50%; background:#3B82F6;
+    color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(0,0,0,0.25); pointer-events:auto; z-index:3;}
+  .bgDuplicateIcon:active{transform:scale(0.9);}
   .bgDeleteIcon:active{transform:scale(0.9);}
 
   .bgshape{border:1.5px solid rgba(0,0,0,0.14); pointer-events:none;}
@@ -125,12 +130,17 @@
   .sheetOverlay{position:fixed; inset:0; background:rgba(12,14,12,0.5); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px); z-index:100; display:flex; align-items:flex-end;}
   .sheetOverlay[hidden]{display:none;}
   .sheet{background:var(--paper); width:100%; max-height:90vh; border-radius:28px 28px 0 0; overflow-y:auto; box-shadow:0 -12px 40px rgba(0,0,0,0.18);
-    padding:14px 18px calc(30px + env(safe-area-inset-bottom)) 18px; -webkit-overflow-scrolling:touch;}
+    padding:14px 18px calc(30px + env(safe-area-inset-bottom)) 18px; -webkit-overflow-scrolling:touch; touch-action:pan-y;}
   .sheetHandle{width:40px; height:4px; background:#D8DBD5; border-radius:2px; margin:0 auto 14px auto;}
-  .sheetHead{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
-  .sheetHead input{font-family:-apple-system,sans-serif; font-size:20px; font-weight:800; letter-spacing:-0.02em; border:none; background:none; color:var(--ink); width:75%;}
-  .sheetHead .stitle{font-family:-apple-system,sans-serif; font-size:20px; font-weight:800; letter-spacing:-0.02em;}
+  .sheetHead{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px;}
+  .sheetHead input{font-family:-apple-system,sans-serif; font-size:20px; font-weight:800; letter-spacing:-0.02em; border:none; background:none; color:var(--ink); flex:1; min-width:0;}
+  .sheetHead .stitle{font-family:-apple-system,sans-serif; font-size:20px; font-weight:800; letter-spacing:-0.02em; flex:1; min-width:0;}
   .closeX{border:none; background:#EFF1ED; color:var(--ink); width:32px; height:32px; border-radius:50%; font-size:15px; flex-shrink:0;}
+  .sheet.stickyHead{display:flex; flex-direction:column; padding:0; overflow:hidden;}
+  .sheetFixedTop{flex-shrink:0; padding:14px 18px 10px 18px; background:var(--paper); position:relative; z-index:2;}
+  .sheetScrollBody{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; touch-action:pan-y; padding:0 18px calc(30px + env(safe-area-inset-bottom)) 18px;}
+  .doneBtn{flex-shrink:0; white-space:nowrap;}
+  .lockToggleSmall{border:none; background:#EFF1ED; width:36px; height:36px; border-radius:50%; font-size:15px; flex-shrink:0;}
   .field{margin-bottom:14px;}
   .field label{display:block; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--muted); margin-bottom:5px; font-family:-apple-system,sans-serif;}
   select, input[type=date], input[type=text], input[type=number], textarea{width:100%; padding:11px 12px; border-radius:13px; border:1.5px solid var(--line);
@@ -166,7 +176,7 @@
   .calLegend{display:flex; gap:14px; flex-wrap:wrap; padding:2px 4px 10px 4px; font-size:11px; color:var(--muted); font-family:-apple-system,sans-serif;}
   .calLegendItem{display:flex; align-items:center; gap:5px;}
   .calLegendSwatch{width:12px; height:12px; border-radius:3px; flex-shrink:0;}
-  .calWrap{overflow-x:auto; overflow-y:auto; max-height:56vh; -webkit-overflow-scrolling:touch; border-radius:16px; background:#fff; box-shadow:0 1px 2px rgba(20,24,27,0.04), 0 4px 14px rgba(20,24,27,0.05);}
+  .calWrap{overflow-x:auto; overflow-y:auto; max-height:56vh; -webkit-overflow-scrolling:touch; touch-action:pan-x pan-y; border-radius:16px; background:#fff; box-shadow:0 1px 2px rgba(20,24,27,0.04), 0 4px 14px rgba(20,24,27,0.05);}
   .calTable{border-collapse:collapse; font-size:11px; font-family:-apple-system,sans-serif; min-width:640px; width:100%;}
   .calTable th, .calTable td{padding:4px 5px; text-align:center; border-bottom:1px solid var(--line);}
   .calTable th{font-size:10px; color:var(--muted); font-weight:700; text-transform:uppercase; padding-top:8px; position:sticky; top:0; background:#fff; z-index:2; box-shadow:0 1px 0 var(--line);}
@@ -218,6 +228,7 @@
       <button class="btn btn-sun" id="addRectBtn">+ Rectangle</button>
       <button class="btn btn-sun" id="addCircleBtn">+ Circle</button>
       <button class="btn btn-sun" id="addTreeBtn">+ Tree</button>
+      <button class="btn btn-outline" id="bedsToggleBtn">Show beds</button>
       <button class="btn btn-outline btn-icon" id="settingsBtn" aria-label="Map Settings"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2.2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2.2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2.2" fill="currentColor" stroke="none"/></svg></button>
       <button class="btn btn-outline" id="bgDoneBtn"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:4px;"><path d="M4 12.5l5 5L20 6"/></svg>Done</button>
       <div class="zoomGroup">
@@ -253,42 +264,16 @@
 
 <!-- BED EDITOR -->
 <div class="sheetOverlay" id="editorOverlay" hidden>
-  <div class="sheet">
-    <div class="sheetHandle"></div>
-    <div class="sheetHead">
-      <input id="edName" placeholder="Bed name">
-      <button class="closeX" id="edClose">✕</button>
-    </div>
-
-    <div class="field">
-      <button class="btn btn-outline" id="edLockToggle" style="width:100%;">🔓 Unlocked — tap to lock in place</button>
-    </div>
-    <div class="field">
-      <label>Dimensions <span style="font-weight:400; text-transform:none; color:var(--muted);">(pre-filled from its drawn size — edit to resize the bed)</span></label>
-      <label style="font-size:10.5px; text-transform:none; color:var(--muted); margin-bottom:4px;">Width (m)</label>
-      <div class="stepperRow" style="margin-bottom:8px;">
-        <button type="button" class="stepperBtn" id="edWidthMMinus">−</button>
-        <input type="number" id="edWidthM" min="0.05" step="0.05">
-        <button type="button" class="stepperBtn" id="edWidthMPlus">+</button>
-      </div>
-      <label style="font-size:10.5px; text-transform:none; color:var(--muted); margin-bottom:4px;">Length (m)</label>
-      <div class="stepperRow" style="margin-bottom:8px;">
-        <button type="button" class="stepperBtn" id="edLengthMMinus">−</button>
-        <input type="number" id="edLengthM" min="0.05" step="0.05">
-        <button type="button" class="stepperBtn" id="edLengthMPlus">+</button>
-      </div>
-      <div class="readout" id="edAreaReadout"></div>
-    </div>
-
-    <div class="field">
-      <label>Bed Color</label>
-      <div class="colorRow">
-        <input type="color" id="edColor">
-        <button class="linkBtn" id="edColorReset">Use plant-based color</button>
+  <div class="sheet stickyHead">
+    <div class="sheetFixedTop">
+      <div class="sheetHandle"></div>
+      <div class="sheetHead">
+        <input id="edName" placeholder="Bed name">
+        <button class="lockToggleSmall" id="edLockToggle" title="Tap to lock/unlock">🔓</button>
+        <button class="btn btn-outline doneBtn" id="edClose"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:4px;"><path d="M4 12.5l5 5L20 6"/></svg>Done</button>
       </div>
     </div>
-
-    <div class="divider"></div>
+    <div class="sheetScrollBody">
 
     <div class="field">
       <label>Currently Planted</label>
@@ -308,7 +293,12 @@
       <input type="date" id="edDatePlanted">
     </div>
     <div class="field">
-      <div class="readout" id="edHarvestReadout">Pick a crop and date to see the estimated harvest.</div>
+      <label>Harvest Date <span style="font-weight:400; text-transform:none; color:var(--muted);">(suggested from days-to-maturity — edit to override)</span></label>
+      <div class="colorRow">
+        <input type="date" id="edHarvestDate">
+        <button class="linkBtn" id="edHarvestReset">Use suggested</button>
+      </div>
+      <div class="readout" id="edHarvestReadout" style="margin-top:8px;">Pick a crop and date to see the estimated harvest.</div>
     </div>
     <div class="field">
       <div class="readout" id="edRotationReadout" style="display:none;"></div>
@@ -339,21 +329,31 @@
       <textarea id="edNotes" placeholder="Anything worth remembering about this bed…"></textarea>
     </div>
 
+    <div class="field">
+      <label>Bed Color</label>
+      <div class="colorRow">
+        <input type="color" id="edColor">
+        <button class="linkBtn" id="edColorReset">Use plant-based color</button>
+      </div>
+    </div>
+
     <button class="btn btn-danger" id="edDelete" style="width:100%; margin-top:6px;">Delete Bed</button>
+    </div>
   </div>
 </div>
 
 <!-- BACKGROUND SHAPE EDITOR -->
 <div class="sheetOverlay" id="bgEditorOverlay" hidden>
-  <div class="sheet">
-    <div class="sheetHandle"></div>
-    <div class="sheetHead">
-      <div class="stitle" id="bgShapeLabel">Shape</div>
-      <button class="closeX" id="bgClose">✕</button>
+  <div class="sheet stickyHead">
+    <div class="sheetFixedTop">
+      <div class="sheetHandle"></div>
+      <div class="sheetHead">
+        <div class="stitle" id="bgShapeLabel">Shape</div>
+        <button class="lockToggleSmall" id="bgLockToggle" title="Tap to lock/unlock">🔓</button>
+        <button class="btn btn-outline doneBtn" id="bgClose"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:4px;"><path d="M4 12.5l5 5L20 6"/></svg>Done</button>
+      </div>
     </div>
-    <div class="field">
-      <button class="btn btn-outline" id="bgLockToggle" style="width:100%;">🔓 Unlocked — tap to lock in place</button>
-    </div>
+    <div class="sheetScrollBody">
     <div class="field">
       <div class="readout" id="bgSizeReadout"></div>
     </div>
@@ -419,6 +419,7 @@
       <button class="btn btn-outline" id="bgSendBack" style="width:100%;">⬇ Send to Back</button>
     </div>
     <button class="btn btn-danger" id="bgDelete" style="width:100%;">Delete Shape</button>
+    </div>
   </div>
 </div>
 
@@ -661,8 +662,8 @@ function defaultStore(){
     bg: [],
     plants: JSON.parse(JSON.stringify(BASE_PLANTS)),
     beds: [
-      {id:"b1", name:"Bed 1", x:0, y:0, w:160, h:100, color:null, locked:false, current:"Tomato", datePlanted:"2026-05-15", next:"Kale", seedDate:"", plantDate:"", plantCount:null, notes:""},
-      {id:"b2", name:"Bed 2", x:190, y:0, w:160, h:100, color:null, locked:false, current:"Lettuce", datePlanted:"2026-04-01", next:"Bush Beans", seedDate:"", plantDate:"2026-06-01", plantCount:null, notes:""}
+      {id:"b1", name:"Bed 1", x:0, y:0, w:160, h:100, color:null, locked:false, current:"Tomato", datePlanted:"2026-05-15", next:"Kale", seedDate:"", plantDate:"", harvestDate:"", plantCount:null, notes:""},
+      {id:"b2", name:"Bed 2", x:190, y:0, w:160, h:100, color:null, locked:false, current:"Lettuce", datePlanted:"2026-04-01", next:"Bush Beans", seedDate:"", plantDate:"2026-06-01", harvestDate:"", plantCount:null, notes:""}
     ]
   };
 }
@@ -716,6 +717,7 @@ function migrateParsed(parsed){
     if(b.plantDate===undefined) b.plantDate = b.plannedNext || "";
     if(b.seedDate===undefined) b.seedDate = "";
     if(b.plantCount===undefined) b.plantCount = null;
+    if(b.harvestDate===undefined) b.harvestDate = "";
   });
   return parsed;
 }
@@ -759,8 +761,9 @@ function statusFor(days){
 function computeBed(bed){
   const cur = plantByName(bed.current);
   const nxt = plantByName(bed.next);
-  let harvestDate = null;
-  if(bed.datePlanted && cur && cur.dtm != null) harvestDate = addDays(bed.datePlanted, cur.dtm);
+  let suggestedHarvest = null;
+  if(bed.datePlanted && cur && cur.dtm != null) suggestedHarvest = addDays(bed.datePlanted, cur.dtm);
+  const harvestDate = bed.harvestDate || suggestedHarvest;
   let suggestedSeed = null, suggestedSow = null;
   if(nxt && STORE.frostDate){
     if(nxt.seedOffset != null) suggestedSeed = addDays(STORE.frostDate, nxt.seedOffset*7);
@@ -775,7 +778,7 @@ function computeBed(bed){
   if(plantDate) candidates.push({label:"Plant", date:plantDate});
   candidates.sort((a,b)=> a.date.localeCompare(b.date));
   if(candidates.length) nextAction = candidates[0];
-  return {cur, nxt, harvestDate, suggestedSeed, suggestedSow, seedDate, plantDate, rotationWarning, nextAction};
+  return {cur, nxt, harvestDate, suggestedHarvest, suggestedSeed, suggestedSow, seedDate, plantDate, rotationWarning, nextAction};
 }
 
 /* ============================= NAVIGATION ============================= */
@@ -818,6 +821,18 @@ function relockViewportZoom(){
   if(viewportMetaTag) viewportMetaTag.setAttribute("content", "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no");
 }
 document.addEventListener("focusout", relockViewportZoom, true);
+// Also block iOS's native double-tap-to-zoom, another zoom trigger independent of
+// pinch/gesture events. Only suppress when two touchends land close together in both
+// time AND position — that's the actual signature of a double-tap-to-zoom gesture,
+// as opposed to two quick taps on different buttons, which should behave normally.
+let lastTouchEnd = 0, lastTouchX = 0, lastTouchY = 0;
+document.addEventListener("touchend", (e)=>{
+  const now = Date.now();
+  const t = e.changedTouches && e.changedTouches[0];
+  const x = t ? t.clientX : 0, y = t ? t.clientY : 0;
+  if(now - lastTouchEnd < 350 && Math.hypot(x-lastTouchX, y-lastTouchY) < 24) e.preventDefault();
+  lastTouchEnd = now; lastTouchX = x; lastTouchY = y;
+}, {passive:false});
 const ZOOM_MIN=0.4, ZOOM_MAX=2.5, ZOOM_STEP=0.2, GRID=26;
 
 function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
@@ -970,15 +985,28 @@ function fitViewToContent(){
 
 /* ============================= BACKGROUND MODE TOGGLE ============================= */
 let editingBackground = false;
+let bedsHiddenInBgMode = true;
 function setBackgroundMode(on){
   editingBackground = on;
+  if(on) bedsHiddenInBgMode = true; // always start hidden when entering background mode
   viewport.classList.toggle("bgEditing", on);
+  viewport.classList.toggle("bedsHidden", on && bedsHiddenInBgMode);
   document.getElementById("normalToolbar").style.display = on ? "none" : "flex";
   document.getElementById("bgToolbar").style.display = on ? "flex" : "none";
   document.getElementById("bgModeBanner").classList.toggle("on", on);
   document.getElementById("pageTitle").textContent = on ? "🖌 Edit Background" : pages.map.title;
+  updateBedsToggleBtn();
   renderBeds(); renderBg();
 }
+function updateBedsToggleBtn(){
+  const btn = document.getElementById("bedsToggleBtn");
+  btn.textContent = bedsHiddenInBgMode ? "Show beds" : "Hide beds";
+}
+document.getElementById("bedsToggleBtn").addEventListener("click", ()=>{
+  bedsHiddenInBgMode = !bedsHiddenInBgMode;
+  viewport.classList.toggle("bedsHidden", bedsHiddenInBgMode);
+  updateBedsToggleBtn();
+});
 document.getElementById("bgModeBtn").addEventListener("click", ()=>setBackgroundMode(true));
 document.getElementById("bgDoneBtn").addEventListener("click", ()=>setBackgroundMode(false));
 
@@ -997,8 +1025,7 @@ function renderBeds(){
   world.querySelectorAll('.handle[data-role="bedhandle"]').forEach(n=>n.remove());
   STORE.beds.forEach(bed=>{
     const info = computeBed(bed);
-    const fam = info.cur ? info.cur.family : null;
-    const displayColor = bed.color || familyColor(fam);
+    const displayColor = bed.color || DEFAULT_COLOR;
     const div = document.createElement("div");
     div.className = "bed";
     div.dataset.id = bed.id;
@@ -1016,6 +1043,13 @@ function renderBeds(){
     }
     div.innerHTML = html;
 
+    const isPerennialBadgeShown = !editingBackground && info.cur && info.cur.perennial;
+    const areaEl = document.createElement("div");
+    areaEl.className = "bedAreaLabel";
+    areaEl.textContent = "~" + bedAreaM2(bed).toFixed(1) + " m²";
+    if(isPerennialBadgeShown) areaEl.style.right = "26px";
+    div.appendChild(areaEl);
+
     if(!editingBackground){
       const lock = document.createElement("div");
       lock.className = "lockIcon";
@@ -1029,7 +1063,7 @@ function renderBeds(){
       openBtn.dataset.id = bed.id;
       openBtn.innerHTML = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16L16 8"/><path d="M10 8h6v6"/></svg>';
       div.appendChild(openBtn);
-      if(info.cur && info.cur.perennial){
+      if(isPerennialBadgeShown){
         const p = document.createElement("div");
         p.className = "perennialBadge";
         p.title = "Perennial";
@@ -1078,6 +1112,7 @@ function renderBg(){
   world.querySelectorAll('[data-role="bglockicon"]').forEach(n=>n.remove());
   world.querySelectorAll('[data-role="bgdeleteicon"]').forEach(n=>n.remove());
   world.querySelectorAll('[data-role="bgopenicon"]').forEach(n=>n.remove());
+  world.querySelectorAll('[data-role="bgduplicateicon"]').forEach(n=>n.remove());
   const firstBed = world.querySelector(".bed");
   // plots always paint at the very back, trees always paint above everything else,
   // while stable-sorting keeps each group's own relative order intact
@@ -1154,6 +1189,17 @@ function renderBg(){
         del.style.top = (shape.y + 4) + "px";
         world.appendChild(del);
 
+        if(shape.type !== "plot"){
+          const dup = document.createElement("div");
+          dup.className = "bgDuplicateIcon";
+          dup.dataset.role = "bgduplicateicon";
+          dup.dataset.id = shape.id;
+          dup.innerHTML = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="12" height="12" rx="2.5"/><path d="M9 9V5.5A2.5 2.5 0 0111.5 3H18a3 3 0 013 3v6.5a2.5 2.5 0 01-2.5 2.5H15"/></svg>';
+          dup.style.left = (shape.x + shape.w - 24) + "px";
+          dup.style.top = (shape.y + shape.h - 26) + "px";
+          world.appendChild(dup);
+        }
+
         [["nw",0,0],["ne",1,0],["sw",0,1],["se",1,1]].forEach(([pos,fx,fy])=>{
           const h = document.createElement("div");
           h.className = "handle bgh";
@@ -1224,6 +1270,20 @@ function startSinglePointer(e){
     const bgOpenIcon = e.target.closest('[data-role="bgopenicon"]');
     if(bgOpenIcon){
       openBgEditor(bgOpenIcon.dataset.id);
+      mode = null;
+      return;
+    }
+    const bgDuplicateIcon = e.target.closest('[data-role="bgduplicateicon"]');
+    if(bgDuplicateIcon){
+      const src = STORE.bg.find(x=>x.id===bgDuplicateIcon.dataset.id);
+      if(src){
+        const copy = JSON.parse(JSON.stringify(src));
+        copy.id = "g"+Date.now();
+        copy.y = src.y + src.h + 20;
+        STORE.bg.push(copy);
+        save(); renderBg();
+        openBgEditor(copy.id);
+      }
       mode = null;
       return;
     }
@@ -1396,6 +1456,8 @@ function repositionBgIcons(id, x, y, w, h){
   if(delEl){ delEl.style.left = (x+4)+"px"; delEl.style.top = (y+4)+"px"; }
   const openEl = world.querySelector(`[data-role="bgopenicon"][data-id="${id}"]`);
   if(openEl){ openEl.style.left = x+"px"; openEl.style.top = (y+h-26)+"px"; }
+  const dupEl = world.querySelector(`[data-role="bgduplicateicon"][data-id="${id}"]`);
+  if(dupEl){ dupEl.style.left = (x+w-24)+"px"; dupEl.style.top = (y+h-26)+"px"; }
 }
 
 function endSinglePointer(){
@@ -1429,7 +1491,7 @@ document.getElementById("addBedBtn").addEventListener("click", ()=>{
   const c = viewportCenterWorld();
   const w=160, h=100;
   const bed = {id:"b"+Date.now(), name:"Bed "+(n+1), x:c.x-w/2, y:c.y-h/2, w, h,
-    color:null, locked:false, current:"", datePlanted:"", next:"", seedDate:"", plantDate:"", plantCount:null, notes:""};
+    color:null, locked:false, current:"", datePlanted:"", next:"", seedDate:"", plantDate:"", harvestDate:"", plantCount:null, notes:""};
   STORE.beds.push(bed); save(); renderBeds(); openEditor(bed.id);
 });
 document.getElementById("addPlotBtn").addEventListener("click", ()=>{
@@ -1483,12 +1545,10 @@ const edSeedDate = document.getElementById("edSeedDate");
 const edPlantDate = document.getElementById("edPlantDate");
 const edNotes = document.getElementById("edNotes");
 const edHarvestReadout = document.getElementById("edHarvestReadout");
+const edHarvestDate = document.getElementById("edHarvestDate");
 const edRotationReadout = document.getElementById("edRotationReadout");
 const edNextReadout = document.getElementById("edNextReadout");
 const edSeedDateHint = document.getElementById("edSeedDateHint");
-const edWidthM = document.getElementById("edWidthM");
-const edLengthM = document.getElementById("edLengthM");
-const edAreaReadout = document.getElementById("edAreaReadout");
 const edPlantCount = document.getElementById("edPlantCount");
 const edDensityReadout = document.getElementById("edDensityReadout");
 
@@ -1501,11 +1561,14 @@ function plantOptions(selected){
 
 let editingId = null;
 function updateLockButton(bed){
-  edLockToggle.textContent = bed.locked ? "🔒 Locked — tap to unlock" : "🔓 Unlocked — tap to lock in place";
+  edLockToggle.textContent = bed.locked ? "🔒" : "🔓";
+  edLockToggle.title = bed.locked ? "Locked — tap to unlock" : "Unlocked — tap to lock in place";
 }
-function updateAreaAndDensity(bed){
-  const areaM2 = unitsToMeters(bed.w) * unitsToMeters(bed.h);
-  edAreaReadout.textContent = `📐 Area: ${areaM2.toFixed(2)} m²`;
+function bedAreaM2(bed){
+  return unitsToMeters(bed.w) * unitsToMeters(bed.h);
+}
+function updateDensity(bed){
+  const areaM2 = bedAreaM2(bed);
   if(bed.plantCount){
     edDensityReadout.textContent = `🌱 ${(bed.plantCount/areaM2).toFixed(1)} plants per m²`;
   } else {
@@ -1517,11 +1580,9 @@ function openEditor(id){
   const bed = STORE.beds.find(b=>b.id===id);
   edName.value = bed.name || "";
   updateLockButton(bed);
-  edWidthM.value = unitsToMeters(bed.w).toFixed(2);
-  edLengthM.value = unitsToMeters(bed.h).toFixed(2);
   edPlantCount.value = bed.plantCount || "";
-  updateAreaAndDensity(bed);
-  edColor.value = bed.color || familyColor(plantByName(bed.current)?.family);
+  updateDensity(bed);
+  edColor.value = bed.color || DEFAULT_COLOR;
   edCurrent.innerHTML = plantOptions(bed.current);
   edDatePlanted.value = bed.datePlanted || "";
   edNext.innerHTML = plantOptions(bed.next);
@@ -1535,23 +1596,23 @@ function openEditor(id){
 function closeEditor(){ overlay.hidden = true; editingId = null; renderBeds(); }
 document.getElementById("edClose").addEventListener("click", closeEditor);
 overlay.addEventListener("click", (e)=>{ if(e.target === overlay) closeEditor(); });
-edWidthM.addEventListener("input", (e)=>{
-  if(!editingId) return;
-  const bed = STORE.beds.find(b=>b.id===editingId);
-  const m = Number(e.target.value);
-  if(m > 0){ bed.w = metersToUnits(m); save(); updateAreaAndDensity(bed); }
-});
-edLengthM.addEventListener("input", (e)=>{
-  if(!editingId) return;
-  const bed = STORE.beds.find(b=>b.id===editingId);
-  const m = Number(e.target.value);
-  if(m > 0){ bed.h = metersToUnits(m); save(); updateAreaAndDensity(bed); }
-});
 edPlantCount.addEventListener("input", (e)=>{
   if(!editingId) return;
   const bed = STORE.beds.find(b=>b.id===editingId);
   bed.plantCount = e.target.value === "" ? null : Number(e.target.value);
-  save(); updateAreaAndDensity(bed);
+  save(); updateDensity(bed); renderBeds();
+});
+edHarvestDate.addEventListener("input", (e)=>{
+  if(!editingId) return;
+  const bed = STORE.beds.find(b=>b.id===editingId);
+  bed.harvestDate = e.target.value || "";
+  save(); renderBeds(); refreshReadouts();
+});
+document.getElementById("edHarvestReset").addEventListener("click", ()=>{
+  if(!editingId) return;
+  const bed = STORE.beds.find(b=>b.id===editingId);
+  bed.harvestDate = "";
+  save(); renderBeds(); refreshReadouts();
 });
 
 edLockToggle.addEventListener("click", ()=>{
@@ -1567,8 +1628,8 @@ edColor.addEventListener("input", ()=>{
 edColorReset.addEventListener("click", ()=>{
   if(!editingId) return;
   const bed = STORE.beds.find(b=>b.id===editingId);
-  bed.color = null;
-  edColor.value = familyColor(plantByName(bed.current)?.family);
+  bed.color = familyColor(plantByName(bed.current)?.family);
+  edColor.value = bed.color;
   save(); renderBeds();
 });
 
@@ -1582,14 +1643,19 @@ function updateSeedDateAvailability(nxt){
 function refreshReadouts(){
   const tmp = {current:edCurrent.value, datePlanted:edDatePlanted.value, next:edNext.value, seedDate:edSeedDate.value, plantDate:edPlantDate.value};
   const info = computeBed(tmp);
-  if(tmp.current && tmp.datePlanted && info.harvestDate){
-    edHarvestReadout.textContent = `Harvest around ${fmtShort(info.harvestDate)} (${info.cur.dtm} days from planting).`;
+  const bed = editingId ? STORE.beds.find(b=>b.id===editingId) : null;
+  const hasOverride = !!(bed && bed.harvestDate);
+  if(!hasOverride) edHarvestDate.value = info.suggestedHarvest || "";
+  if(tmp.current && tmp.datePlanted && info.suggestedHarvest){
+    edHarvestReadout.textContent = hasOverride
+      ? `Suggested: ${fmtShort(info.suggestedHarvest)} (${info.cur.dtm} days from planting) — you've set a custom date above.`
+      : `Estimated from ${info.cur.dtm} days-to-maturity — edit above to override.`;
     edHarvestReadout.classList.remove("warn");
   } else if(tmp.current) {
-    edHarvestReadout.textContent = `Add a planting date to estimate the harvest window (${info.cur.window}).`;
+    edHarvestReadout.textContent = `Add a planting date to estimate the harvest window (${info.cur.window}), or set a harvest date above yourself.`;
     edHarvestReadout.classList.remove("warn");
   } else {
-    edHarvestReadout.textContent = "Pick a crop and date to see the estimated harvest.";
+    edHarvestReadout.textContent = "Pick a crop and date to see the estimated harvest, or set one yourself above.";
     edHarvestReadout.classList.remove("warn");
   }
 
@@ -1697,7 +1763,8 @@ treeStyleButtons.forEach(btn=>{
   });
 });
 function updateBgLockButton(s){
-  bgLockToggle.textContent = s.locked ? "🔒 Locked — tap to unlock" : "🔓 Unlocked — tap to lock in place";
+  bgLockToggle.textContent = s.locked ? "🔒" : "🔓";
+  bgLockToggle.title = s.locked ? "Locked — tap to unlock" : "Unlocked — tap to lock in place";
 }
 
 function updatePlotScaleReadout(s){
@@ -2073,8 +2140,6 @@ document.getElementById("pDelete").addEventListener("click", ()=>{
 wireStepper("bgBorderWidthMinus", "bgBorderWidth", "bgBorderWidthPlus", 1, 0, 12);
 wireStepper("bgPlotWidthMinus", "bgPlotWidth", "bgPlotWidthPlus", 0.1, 0.1, null);
 wireStepper("bgPlotLengthMinus", "bgPlotLength", "bgPlotLengthPlus", 0.1, 0.1, null);
-wireStepper("edWidthMMinus", "edWidthM", "edWidthMPlus", 0.05, 0.05, null);
-wireStepper("edLengthMMinus", "edLengthM", "edLengthMPlus", 0.05, 0.05, null);
 wireStepper("edPlantCountMinus", "edPlantCount", "edPlantCountPlus", 1, 0, null);
 applyTransform();
 applyMapSettings();
