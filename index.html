@@ -118,9 +118,11 @@
   .swPreview{width:32px; height:32px; border-radius:10px; border:1px solid rgba(0,0,0,0.15);}
   .swPreview.pv-none{background-image:linear-gradient(45deg,#ddd 25%,transparent 25%,transparent 75%,#ddd 75%),linear-gradient(45deg,#ddd 25%,transparent 25%,transparent 75%,#ddd 75%); background-size:8px 8px; background-position:0 0,4px 4px;}
   .patternSwatchGroup{display:flex; gap:6px;}
-  .patternSwatchSm{width:34px; height:34px; border-radius:10px; border:1.5px solid var(--line); padding:2px; background:#fff; flex-shrink:0;}
+  .patternSwatchSm{display:flex; flex-direction:column; align-items:center; gap:3px; border:1.5px solid var(--line); border-radius:10px; padding:4px 3px; background:#fff; flex-shrink:0;}
   .patternSwatchSm.selected{border-color:var(--leaf);}
-  .swPreviewSm{width:100%; height:100%; border-radius:7px;}
+  .patternSwatchLabel{font-size:8px; font-weight:700; color:var(--muted); font-family:-apple-system,sans-serif;}
+  .patternSwatchSm.selected .patternSwatchLabel{color:var(--leaf-dark);}
+  .swPreviewSm{width:26px; height:26px; border-radius:7px;}
   .swPreviewSm.pv-none{background-image:linear-gradient(45deg,#ddd 25%,transparent 25%,transparent 75%,#ddd 75%),linear-gradient(45deg,#ddd 25%,transparent 25%,transparent 75%,#ddd 75%); background-size:6px 6px; background-position:0 0,3px 3px;}
   .bgAppearanceCard{background:#F3F1EA; border-radius:16px; padding:14px; margin-bottom:14px;}
   .bgAppearanceCard label{display:block; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--muted); margin-bottom:8px; font-family:-apple-system,sans-serif;}
@@ -149,6 +151,8 @@
   .sheetScrollBody{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; touch-action:pan-y; padding:0 18px calc(30px + env(safe-area-inset-bottom)) 18px;}
   .doneBtn{flex-shrink:0; white-space:nowrap;}
   .lockToggleSmall{border:none; background:#EFF1ED; width:36px; height:36px; border-radius:50%; font-size:15px; flex-shrink:0;}
+  .deleteToggleSmall{border:none; background:#FDEBEA; color:#B23A2A; width:36px; height:36px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+  .deleteToggleSmall:active{transform:scale(0.9);}
   .field{margin-bottom:14px;}
   .field label{display:block; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--muted); margin-bottom:5px; font-family:-apple-system,sans-serif;}
   select, input[type=date], input[type=text], input[type=number], textarea{width:100%; padding:11px 12px; border-radius:13px; border:1.5px solid var(--line);
@@ -291,6 +295,7 @@
       <div class="sheetHandle"></div>
       <div class="sheetHead">
         <input id="edName" placeholder="Bed name">
+        <button class="deleteToggleSmall" id="edDelete" title="Delete bed"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/><path d="M6 7l1 13a1 1 0 001 1h8a1 1 0 001-1l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
         <button class="lockToggleSmall" id="edLockToggle" title="Tap to lock/unlock">🔓</button>
         <button class="btn btn-outline doneBtn" id="edClose"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:4px;"><path d="M4 12.5l5 5L20 6"/></svg>Done</button>
       </div>
@@ -349,7 +354,6 @@
       </div>
     </div>
 
-    <button class="btn btn-danger" id="edDelete" style="width:100%; margin-top:6px;">Delete Bed</button>
     </div>
   </div>
 </div>
@@ -362,6 +366,7 @@
       <div class="sheetHead">
         <div class="stitle" id="bgShapeLabel">Shape</div>
         <div class="bgSizeChip" id="bgSizeReadout"></div>
+        <button class="deleteToggleSmall" id="bgDelete" title="Delete shape"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/><path d="M6 7l1 13a1 1 0 001 1h8a1 1 0 001-1l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
         <button class="lockToggleSmall" id="bgLockToggle" title="Tap to lock/unlock">🔓</button>
         <button class="btn btn-outline doneBtn" id="bgClose"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:4px;"><path d="M4 12.5l5 5L20 6"/></svg>Done</button>
       </div>
@@ -395,10 +400,10 @@
       <label>Fill & color</label>
       <div class="patternRow">
         <div class="patternSwatchGroup" id="bgPatternSwatches">
-          <button class="patternSwatchSm" data-pattern="none" title="Solid"><div class="swPreviewSm pv-none"></div></button>
-          <button class="patternSwatchSm" data-pattern="grass" title="Grass"><div class="swPreviewSm pattern-grass"></div></button>
-          <button class="patternSwatchSm" data-pattern="dirt" title="Dirt"><div class="swPreviewSm pattern-dirt"></div></button>
-          <button class="patternSwatchSm" data-pattern="rocks" title="Rocks"><div class="swPreviewSm pattern-rocks"></div></button>
+          <button class="patternSwatchSm" data-pattern="none" title="Plain"><div class="swPreviewSm pv-none"></div><span class="patternSwatchLabel">Plain</span></button>
+          <button class="patternSwatchSm" data-pattern="grass" title="Grass"><div class="swPreviewSm pattern-grass"></div><span class="patternSwatchLabel">Grass</span></button>
+          <button class="patternSwatchSm" data-pattern="dirt" title="Earth"><div class="swPreviewSm pattern-dirt"></div><span class="patternSwatchLabel">Earth</span></button>
+          <button class="patternSwatchSm" data-pattern="rocks" title="Rocks"><div class="swPreviewSm pattern-rocks"></div><span class="patternSwatchLabel">Rocks</span></button>
         </div>
         <input type="color" id="bgColor" style="margin-left:auto;">
       </div>
@@ -425,7 +430,6 @@
     <div class="field" id="bgSendBackField">
       <button class="btn btn-outline" id="bgSendBack" style="width:100%;">⬇ Send to Back</button>
     </div>
-    <button class="btn btn-danger" id="bgDelete" style="width:100%;">Delete Shape</button>
     </div>
   </div>
 </div>
@@ -1858,8 +1862,10 @@ document.getElementById("bgSendBack").addEventListener("click", ()=>{
 });
 document.getElementById("bgDelete").addEventListener("click", ()=>{
   if(!editingBgId) return;
-  STORE.bg = STORE.bg.filter(x=>x.id!==editingBgId);
-  save(); closeBgEditor();
+  if(confirm("Delete this shape? This can't be undone.")){
+    STORE.bg = STORE.bg.filter(x=>x.id!==editingBgId);
+    save(); closeBgEditor();
+  }
 });
 
 /* ============================= PRIORITIES PAGE ============================= */
