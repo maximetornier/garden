@@ -117,6 +117,14 @@
   .patternSwatch.selected{border-color:var(--leaf); background:#EEFBF1;}
   .swPreview{width:32px; height:32px; border-radius:10px; border:1px solid rgba(0,0,0,0.15);}
   .swPreview.pv-none{background-image:linear-gradient(45deg,#ddd 25%,transparent 25%,transparent 75%,#ddd 75%),linear-gradient(45deg,#ddd 25%,transparent 25%,transparent 75%,#ddd 75%); background-size:8px 8px; background-position:0 0,4px 4px;}
+  .patternSwatchGroup{display:flex; gap:6px;}
+  .patternSwatchSm{width:34px; height:34px; border-radius:10px; border:1.5px solid var(--line); padding:2px; background:#fff; flex-shrink:0;}
+  .patternSwatchSm.selected{border-color:var(--leaf);}
+  .swPreviewSm{width:100%; height:100%; border-radius:7px;}
+  .swPreviewSm.pv-none{background-image:linear-gradient(45deg,#ddd 25%,transparent 25%,transparent 75%,#ddd 75%),linear-gradient(45deg,#ddd 25%,transparent 25%,transparent 75%,#ddd 75%); background-size:6px 6px; background-position:0 0,3px 3px;}
+  .bgAppearanceCard{background:#F3F1EA; border-radius:16px; padding:14px; margin-bottom:14px;}
+  .bgAppearanceCard label{display:block; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--muted); margin-bottom:8px; font-family:-apple-system,sans-serif;}
+  .bgSizeChip{font-size:12px; font-weight:700; color:var(--muted); font-family:-apple-system,sans-serif; white-space:nowrap; flex-shrink:0;}
 
   .treeStyleRow{display:flex; gap:6px;}
   .treeStyleSwatch{flex:1; border:1.5px solid var(--line); border-radius:14px; padding:8px 4px 6px; background:#fff;
@@ -134,7 +142,7 @@
   .sheetHandle{width:40px; height:4px; background:#D8DBD5; border-radius:2px; margin:0 auto 14px auto;}
   .sheetHead{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px;}
   .sheetHead input{font-family:-apple-system,sans-serif; font-size:20px; font-weight:800; letter-spacing:-0.02em; border:none; background:none; color:var(--ink); flex:1; min-width:0;}
-  .sheetHead .stitle{font-family:-apple-system,sans-serif; font-size:20px; font-weight:800; letter-spacing:-0.02em; flex:1; min-width:0;}
+  .sheetHead .stitle{font-family:-apple-system,sans-serif; font-size:20px; font-weight:800; letter-spacing:-0.02em; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .closeX{border:none; background:#EFF1ED; color:var(--ink); width:32px; height:32px; border-radius:50%; font-size:15px; flex-shrink:0;}
   .sheet.stickyHead{display:flex; flex-direction:column; padding:0; overflow:hidden;}
   .sheetFixedTop{flex-shrink:0; padding:14px 18px 10px 18px; background:var(--paper); position:relative; z-index:2;}
@@ -152,11 +160,25 @@
   .divider{height:1px; background:var(--line); margin:16px 0;}
   .colorRow{display:flex; align-items:center; gap:12px;}
   .stepperRow{display:flex; align-items:center; gap:6px;}
+  .bedZone{border-radius:16px; padding:14px; margin-bottom:14px;}
+  .bedZoneNow{background:#E8F5EA;}
+  .bedZoneNext{background:#FCF1DC;}
+  .bedZoneLabel{font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.03em; margin-bottom:10px;}
+  .bedZoneNow .bedZoneLabel{color:var(--leaf-dark);}
+  .bedZoneNext .bedZoneLabel{color:#92601A;}
+  .bedZoneGrid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; margin-bottom:10px;}
+  .bedZoneGrid label{display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.02em; color:var(--muted); margin-bottom:5px; font-family:-apple-system,sans-serif;}
+  .bedZoneNote{font-size:12.5px; line-height:1.5; font-family:-apple-system,sans-serif;}
+  .bedZoneNote:empty{display:none;}
+  .bedZoneNow .bedZoneNote{color:#2F6B3C;}
+  .bedZoneNext .bedZoneNote{color:#8A5A16;}
+  .bedZoneNext .bedZoneNote.warn{color:#B23A2A; font-weight:600;}
+  .bedZoneNext .field label{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.02em; color:var(--muted); margin-bottom:5px;}
   .stepperRow input[type=number]{text-align:center;}
   .stepperBtn{width:38px; height:38px; border-radius:11px; background:#EFF1ED; border:none; font-size:19px; font-weight:700;
     color:var(--leaf-dark); flex-shrink:0; display:flex; align-items:center; justify-content:center;}
   .stepperBtn:active{transform:scale(0.9);}
-  .colorRow input[type=color]{width:52px; height:40px; border:1.5px solid var(--line); border-radius:12px; padding:2px; background:#fff;}
+  input[type=color]{width:52px; height:40px; border:1.5px solid var(--line); border-radius:12px; padding:2px; background:#fff; flex-shrink:0;}
   .linkBtn{border:none; background:none; color:var(--leaf-dark); font-weight:700; font-size:12.5px; font-family:-apple-system,sans-serif;}
 
   .card{background:var(--card); border:none; border-radius:16px; padding:13px 15px; margin-bottom:10px; box-shadow:0 1px 2px rgba(20,24,27,0.04), 0 4px 14px rgba(20,24,27,0.05);}
@@ -275,54 +297,44 @@
     </div>
     <div class="sheetScrollBody">
 
-    <div class="field">
-      <label>Currently Planted</label>
-      <select id="edCurrent"></select>
-    </div>
-    <div class="field">
-      <label>Number of Plants <span style="font-weight:400; text-transform:none; color:var(--muted);">(optional)</span></label>
-      <div class="stepperRow">
-        <button type="button" class="stepperBtn" id="edPlantCountMinus">−</button>
-        <input type="number" id="edPlantCount" min="0" step="1" placeholder="e.g. 6">
-        <button type="button" class="stepperBtn" id="edPlantCountPlus">+</button>
+    <div class="bedZone bedZoneNow">
+      <div class="bedZoneLabel">🌱 Now growing</div>
+      <div class="bedZoneGrid">
+        <div><label>Currently planted</label><select id="edCurrent"></select></div>
+        <div><label>Plants <span style="font-weight:400; text-transform:none;">(optional)</span></label>
+          <div class="stepperRow">
+            <button type="button" class="stepperBtn" id="edPlantCountMinus">−</button>
+            <input type="number" id="edPlantCount" min="0" step="1" placeholder="6">
+            <button type="button" class="stepperBtn" id="edPlantCountPlus">+</button>
+          </div>
+        </div>
       </div>
-      <div class="readout" id="edDensityReadout" style="margin-top:8px;"></div>
-    </div>
-    <div class="field">
-      <label>Date Planted</label>
-      <input type="date" id="edDatePlanted">
-    </div>
-    <div class="field">
-      <label>Harvest Date <span style="font-weight:400; text-transform:none; color:var(--muted);">(suggested from days-to-maturity — edit to override)</span></label>
-      <div class="colorRow">
-        <input type="date" id="edHarvestDate">
-        <button class="linkBtn" id="edHarvestReset">Use suggested</button>
+      <div class="bedZoneGrid">
+        <div><label>Date planted</label><input type="date" id="edDatePlanted"></div>
+        <div><label>Harvest date</label>
+          <div class="colorRow" style="gap:6px;">
+            <input type="date" id="edHarvestDate">
+            <button type="button" class="stepperBtn" id="edHarvestReset" title="Reset to suggested" style="display:none;">↺</button>
+          </div>
+        </div>
       </div>
-      <div class="readout" id="edHarvestReadout" style="margin-top:8px;">Pick a crop and date to see the estimated harvest.</div>
-    </div>
-    <div class="field">
-      <div class="readout" id="edRotationReadout" style="display:none;"></div>
+      <div class="bedZoneNote" id="edDensityReadout"></div>
+      <div class="bedZoneNote" id="edHarvestReadout">Pick a crop and date to see the estimated harvest.</div>
     </div>
 
-    <div class="divider"></div>
-
-    <div class="field">
-      <label>Next Crop</label>
-      <select id="edNext"></select>
+    <div class="bedZone bedZoneNext">
+      <div class="bedZoneLabel">→ Up next</div>
+      <div class="bedZoneNote" id="edRotationReadout" style="display:none; margin-top:0; margin-bottom:10px;"></div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Next crop</label>
+        <select id="edNext"></select>
+      </div>
+      <div class="bedZoneGrid">
+        <div><label>When to seed <span id="edSeedDateHint" style="font-weight:400; text-transform:none;"></span></label><input type="date" id="edSeedDate"></div>
+        <div><label>When to plant</label><input type="date" id="edPlantDate"></div>
+      </div>
+      <div class="bedZoneNote" id="edNextReadout">Pick a next crop to see suggested timing.</div>
     </div>
-    <div class="field">
-      <label>When to Seed <span style="font-weight:400; text-transform:none; color:var(--muted);" id="edSeedDateHint">(auto-filled from plant guide)</span></label>
-      <input type="date" id="edSeedDate">
-    </div>
-    <div class="field">
-      <label>When to Plant <span style="font-weight:400; text-transform:none; color:var(--muted);">(auto-filled from plant guide)</span></label>
-      <input type="date" id="edPlantDate">
-    </div>
-    <div class="field">
-      <div class="readout" id="edNextReadout">Pick a next crop to see suggested timing.</div>
-    </div>
-
-    <div class="divider"></div>
 
     <div class="field">
       <label>Notes</label>
@@ -349,14 +361,12 @@
       <div class="sheetHandle"></div>
       <div class="sheetHead">
         <div class="stitle" id="bgShapeLabel">Shape</div>
+        <div class="bgSizeChip" id="bgSizeReadout"></div>
         <button class="lockToggleSmall" id="bgLockToggle" title="Tap to lock/unlock">🔓</button>
         <button class="btn btn-outline doneBtn" id="bgClose"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:4px;"><path d="M4 12.5l5 5L20 6"/></svg>Done</button>
       </div>
     </div>
     <div class="sheetScrollBody">
-    <div class="field">
-      <div class="readout" id="bgSizeReadout"></div>
-    </div>
     <div class="field" id="bgPlotField">
       <label>Real-World Dimensions <span style="font-weight:400; text-transform:none; color:var(--muted);">(sets your garden's scale)</span></label>
       <label style="font-size:10.5px; text-transform:none; color:var(--muted); margin-bottom:4px;">Width (m)</label>
@@ -380,37 +390,34 @@
         <button class="treeStyleSwatch" data-treestyle="star">Star</button>
       </div>
     </div>
-    <div class="field" id="bgPatternField">
-      <label>Fill</label>
+
+    <div class="bgAppearanceCard">
+      <label>Fill & color</label>
       <div class="patternRow">
-        <button class="patternSwatch" data-pattern="none"><div class="swPreview pv-none"></div>Solid</button>
-        <button class="patternSwatch" data-pattern="grass"><div class="swPreview pattern-grass"></div>Grass</button>
-        <button class="patternSwatch" data-pattern="dirt"><div class="swPreview pattern-dirt"></div>Dirt</button>
-        <button class="patternSwatch" data-pattern="rocks"><div class="swPreview pattern-rocks"></div>Rocks</button>
+        <div class="patternSwatchGroup" id="bgPatternSwatches">
+          <button class="patternSwatchSm" data-pattern="none" title="Solid"><div class="swPreviewSm pv-none"></div></button>
+          <button class="patternSwatchSm" data-pattern="grass" title="Grass"><div class="swPreviewSm pattern-grass"></div></button>
+          <button class="patternSwatchSm" data-pattern="dirt" title="Dirt"><div class="swPreviewSm pattern-dirt"></div></button>
+          <button class="patternSwatchSm" data-pattern="rocks" title="Rocks"><div class="swPreviewSm pattern-rocks"></div></button>
+        </div>
+        <input type="color" id="bgColor" style="margin-left:auto;">
+      </div>
+      <div class="field" id="bgCornerField" style="margin:12px 0 0;">
+        <label>Corner Roundness <span style="font-weight:400; text-transform:none; color:var(--muted);" id="bgCornerValue">10px</span></label>
+        <input type="range" id="bgCornerRadius" min="0" max="60" step="1" style="width:100%;">
       </div>
     </div>
-    <div class="field" id="bgColorField">
-      <label>Color</label>
-      <div class="colorRow"><input type="color" id="bgColor"></div>
-    </div>
-    <div class="field" id="bgCornerField">
-      <label>Corner Roundness <span style="font-weight:400; text-transform:none; color:var(--muted);" id="bgCornerValue">10px</span></label>
-      <input type="range" id="bgCornerRadius" min="0" max="60" step="1" style="width:100%;">
-    </div>
-    <div class="divider"></div>
-    <div class="field">
+
+    <div class="bgAppearanceCard">
       <label>Border</label>
-      <div class="colorRow" style="margin-bottom:8px;">
+      <div class="colorRow" style="gap:8px;">
         <input type="color" id="bgBorderColor">
-        <span style="font-size:12.5px; color:var(--muted);">color</span>
-      </div>
-      <div class="stepperRow">
         <button type="button" class="stepperBtn" id="bgBorderWidthMinus">−</button>
-        <input type="number" id="bgBorderWidth" min="0" max="12" style="width:70px;" placeholder="px">
+        <input type="number" id="bgBorderWidth" min="0" max="12" style="width:56px;" placeholder="px">
         <button type="button" class="stepperBtn" id="bgBorderWidthPlus">+</button>
-        <span style="font-size:12.5px; color:var(--muted);">width (px)</span>
       </div>
     </div>
+
     <div class="field">
       <label>Label Text <span style="font-weight:400; text-transform:none; color:var(--muted);">(optional, shown on the shape)</span></label>
       <input type="text" id="bgLabelText" placeholder="e.g. Lawn, Path to shed…">
@@ -1282,7 +1289,6 @@ function startSinglePointer(e){
         copy.y = src.y + src.h + 20;
         STORE.bg.push(copy);
         save(); renderBg();
-        openBgEditor(copy.id);
       }
       mode = null;
       return;
@@ -1569,11 +1575,7 @@ function bedAreaM2(bed){
 }
 function updateDensity(bed){
   const areaM2 = bedAreaM2(bed);
-  if(bed.plantCount){
-    edDensityReadout.textContent = `🌱 ${(bed.plantCount/areaM2).toFixed(1)} plants per m²`;
-  } else {
-    edDensityReadout.textContent = "Add a plant count above to see plants per m².";
-  }
+  edDensityReadout.textContent = bed.plantCount ? `🌱 ${(bed.plantCount/areaM2).toFixed(1)} plants per m²` : "";
 }
 function openEditor(id){
   editingId = id;
@@ -1636,7 +1638,8 @@ edColorReset.addEventListener("click", ()=>{
 function updateSeedDateAvailability(nxt){
   const canSeed = nxt && nxt.seedOffset != null;
   edSeedDate.disabled = !canSeed;
-  edSeedDateHint.textContent = canSeed ? "(auto-filled from plant guide)" : "(direct sow only — no seed-starting step for this plant)";
+  edSeedDateHint.textContent = canSeed ? "" : "(direct sow)";
+  edSeedDateHint.title = canSeed ? "Auto-filled from plant guide" : "Direct sow only — no seed-starting step for this plant";
   if(!canSeed) edSeedDate.value = "";
 }
 
@@ -1646,28 +1649,26 @@ function refreshReadouts(){
   const bed = editingId ? STORE.beds.find(b=>b.id===editingId) : null;
   const hasOverride = !!(bed && bed.harvestDate);
   if(!hasOverride) edHarvestDate.value = info.suggestedHarvest || "";
+  document.getElementById("edHarvestReset").style.display = hasOverride ? "flex" : "none";
   if(tmp.current && tmp.datePlanted && info.suggestedHarvest){
     edHarvestReadout.textContent = hasOverride
-      ? `Suggested: ${fmtShort(info.suggestedHarvest)} (${info.cur.dtm} days from planting) — you've set a custom date above.`
-      : `Estimated from ${info.cur.dtm} days-to-maturity — edit above to override.`;
-    edHarvestReadout.classList.remove("warn");
+      ? `Suggested ${fmtShort(info.suggestedHarvest)} — custom date set.`
+      : `~${info.cur.dtm} days to maturity.`;
   } else if(tmp.current) {
-    edHarvestReadout.textContent = `Add a planting date to estimate the harvest window (${info.cur.window}), or set a harvest date above yourself.`;
-    edHarvestReadout.classList.remove("warn");
+    edHarvestReadout.textContent = `Harvest window: ${info.cur.window}.`;
   } else {
-    edHarvestReadout.textContent = "Pick a crop and date to see the estimated harvest, or set one yourself above.";
-    edHarvestReadout.classList.remove("warn");
+    edHarvestReadout.textContent = "";
   }
 
   if(info.cur){
     let rtxt = "";
     if(info.cur.perennial){
-      rtxt += `🌳 Perennial. ${info.cur.overwinterGuidance || "Check local advice on overwintering."}`;
+      rtxt += `🌳 Perennial — ${info.cur.overwinterGuidance || "check local advice on overwintering."}`;
     }
     const follow = goodFollowCrops(info.cur, 6);
     if(follow.length){
       if(rtxt) rtxt += " ";
-      rtxt += `Good to follow with (crop rotation): ${follow.join(", ")}.`;
+      rtxt += `Good to follow with: ${follow.join(", ")}.`;
     }
     if(rtxt){ edRotationReadout.textContent = rtxt; edRotationReadout.style.display = "block"; }
     else{ edRotationReadout.style.display = "none"; }
@@ -1676,14 +1677,14 @@ function refreshReadouts(){
   }
 
   if(tmp.next){
-    let txt = `Next up: ${tmp.next}.`;
-    if(info.nxt && info.nxt.companions) txt += ` Goes well with: ${info.nxt.companions}.`;
-    if(info.rotationWarning) txt += ` ⚠ Same plant family as what's there now — consider rotating.`;
-    if(!STORE.frostDate && !tmp.seedDate && !tmp.plantDate) txt += ` Add your last frost date in Map Settings (⚙️) to auto-fill seed/plant dates.`;
+    let txt = "";
+    if(info.nxt && info.nxt.companions) txt += `Goes well with: ${info.nxt.companions}.`;
+    if(info.rotationWarning) txt += `${txt ? " " : ""}⚠ Same family as current crop — consider rotating.`;
+    if(!STORE.frostDate && !tmp.seedDate && !tmp.plantDate) txt += `${txt ? " " : ""}Add a frost date (⚙️) to auto-fill dates.`;
     edNextReadout.textContent = txt;
     edNextReadout.classList.toggle("warn", info.rotationWarning);
   } else {
-    edNextReadout.textContent = "Pick a next crop to see companions and rotation notes.";
+    edNextReadout.textContent = "";
     edNextReadout.classList.remove("warn");
   }
 }
@@ -1727,21 +1728,20 @@ document.getElementById("edDelete").addEventListener("click", ()=>{
 const bgOverlay = document.getElementById("bgEditorOverlay");
 const bgColorInput = document.getElementById("bgColor");
 const bgShapeLabel = document.getElementById("bgShapeLabel");
-const bgPatternField = document.getElementById("bgPatternField");
-const bgColorField = document.getElementById("bgColorField");
+const bgPatternSwatches = document.getElementById("bgPatternSwatches");
 const bgCornerField = document.getElementById("bgCornerField");
 const bgCornerRadius = document.getElementById("bgCornerRadius");
 const bgCornerValue = document.getElementById("bgCornerValue");
 const bgTreeStyleField = document.getElementById("bgTreeStyleField");
 const bgLockToggle = document.getElementById("bgLockToggle");
-const patternButtons = document.querySelectorAll(".patternSwatch");
+const patternButtons = document.querySelectorAll(".patternSwatchSm");
 const treeStyleButtons = document.querySelectorAll(".treeStyleSwatch");
 let editingBgId = null;
 
 function updatePatternSelection(pattern){
   const p = pattern || "none";
   patternButtons.forEach(b=> b.classList.toggle("selected", b.dataset.pattern === p));
-  bgColorField.style.display = (p === "none") ? "block" : "none";
+  bgColorInput.style.display = (p === "none") ? "inline-block" : "none";
 }
 patternButtons.forEach(btn=>{
   btn.addEventListener("click", ()=>{
@@ -1778,10 +1778,10 @@ function openBgEditor(id){
   bgShapeLabel.textContent = labelMap[s.type] || "Shape";
   const isPlot = s.type === "plot";
   bgColorInput.value = s.color === "transparent" ? "#ffffff" : s.color;
-  bgPatternField.style.display = isPlot ? "none" : "block";
+  bgPatternSwatches.style.display = isPlot ? "none" : "flex";
   updatePatternSelection(s.pattern);
   updateBgLockButton(s);
-  document.getElementById("bgSizeReadout").textContent = `📐 Real-world size ≈ ${realSizeText(s.w, s.h)}.`;
+  document.getElementById("bgSizeReadout").textContent = realSizeText(s.w, s.h);
   document.getElementById("bgPlotField").style.display = isPlot ? "block" : "none";
   if(isPlot){
     document.getElementById("bgPlotWidth").value = s.realWidthM || unitsToMeters(s.w).toFixed(2);
@@ -1809,13 +1809,13 @@ document.getElementById("bgPlotWidth").addEventListener("input", (e)=>{
   if(!editingBgId) return;
   const s = STORE.bg.find(x=>x.id===editingBgId);
   const m = Number(e.target.value);
-  if(m > 0){ s.realWidthM = m; s.w = metersToUnits(m); save(); renderBg(); updatePlotScaleReadout(s); document.getElementById("bgSizeReadout").textContent = `📐 Real-world size ≈ ${realSizeText(s.w, s.h)}.`; }
+  if(m > 0){ s.realWidthM = m; s.w = metersToUnits(m); save(); renderBg(); updatePlotScaleReadout(s); document.getElementById("bgSizeReadout").textContent = realSizeText(s.w, s.h); }
 });
 document.getElementById("bgPlotLength").addEventListener("input", (e)=>{
   if(!editingBgId) return;
   const s = STORE.bg.find(x=>x.id===editingBgId);
   const m = Number(e.target.value);
-  if(m > 0){ s.realLengthM = m; s.h = metersToUnits(m); save(); renderBg(); updatePlotScaleReadout(s); document.getElementById("bgSizeReadout").textContent = `📐 Real-world size ≈ ${realSizeText(s.w, s.h)}.`; }
+  if(m > 0){ s.realLengthM = m; s.h = metersToUnits(m); save(); renderBg(); updatePlotScaleReadout(s); document.getElementById("bgSizeReadout").textContent = realSizeText(s.w, s.h); }
 });
 bgLockToggle.addEventListener("click", ()=>{
   if(!editingBgId) return;
