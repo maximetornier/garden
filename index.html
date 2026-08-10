@@ -28,7 +28,7 @@
 
   .topbarTabs{display:flex; gap:5px; flex-shrink:0;}
   .topTab{border:none; background:rgba(255,255,255,0.16); color:rgba(255,255,255,0.75); width:40px; height:40px;
-    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    border-radius:2px; display:flex; align-items:center; justify-content:center;
     transition:background .12s ease, color .12s ease, transform .08s ease;}
   .topTab:active{transform:scale(0.92);}
   .topTab svg{stroke-width:1.8; flex-shrink:0;}
@@ -38,15 +38,15 @@
   .mapOverlay{position:absolute; top:12px; left:12px; right:12px; z-index:10; pointer-events:none; display:flex; flex-direction:column; gap:8px;}
   .mapOverlay .mapToolbar{pointer-events:auto;}
   .mapToolbar{display:flex; gap:8px; margin-bottom:0; align-items:center; flex-wrap:wrap;}
-  .btn{border:none; border-radius:14px; padding:10px 15px; font-size:13.5px; font-weight:700; font-family:-apple-system,sans-serif; transition:transform .08s ease;}
+  .btn{border:1.5px solid #000; border-radius:2px; padding:10px 15px; font-size:13.5px; font-weight:700; font-family:-apple-system,sans-serif; transition:transform .08s ease; box-shadow:none;}
   .btn:active{transform:scale(0.96);}
-  .btn-leaf{background:var(--leaf); color:#fff; box-shadow:0 4px 14px rgba(22,163,74,0.28);}
-  .btn-outline{background:#EFF1ED; color:var(--ink); border:none; box-shadow:0 2px 10px rgba(20,24,27,0.14);}
+  .btn-leaf{background:var(--leaf); color:#fff; border:none; box-shadow:none;}
+  .btn-outline{background:#fff; color:var(--ink); border:1.5px solid #000; box-shadow:none;}
   .btn-danger{background:#FEE7E7; color:#C0362C; border:none;}
-  .btn-sun{background:var(--sun); color:#fff; box-shadow:0 4px 14px rgba(245,158,11,0.28);}
-  .btn-plot{background:#4B6B8A; color:#fff; box-shadow:0 4px 14px rgba(75,107,138,0.28);}
+  .btn-sun{background:var(--leaf); color:#fff; border:none; box-shadow:0 4px 14px rgba(22,163,74,0.28);}
+  .btn-plot{background:#4B6B8A; color:#fff; border:none; box-shadow:0 4px 14px rgba(75,107,138,0.28);}
   .btn-icon{padding:9px 12px; display:inline-flex; align-items:center; justify-content:center;}
-  .zoomGroup{margin-left:auto; display:flex; align-items:center; gap:2px; background:#EFF1ED; border:none; border-radius:14px; overflow:hidden; box-shadow:0 2px 10px rgba(20,24,27,0.14);}
+  .zoomGroup{margin-left:auto; display:flex; align-items:center; gap:2px; background:#EFF1ED; border:none; border-radius:2px; overflow:hidden; box-shadow:none;}
   .zoomGroup button{border:none; background:transparent; width:34px; height:34px; font-size:16px; font-weight:700; color:var(--leaf-dark);}
   .zoomGroup .zlabel{font-size:11px; font-weight:700; color:var(--muted); width:42px; text-align:center; font-family:-apple-system,sans-serif;}
 
@@ -58,7 +58,7 @@
   }
   #world{position:absolute; top:0; left:0; transform-origin:0 0;}
   .bed, .bgshape{position:absolute; overflow:hidden;}
-  .bed{border-radius:14px; border:1.5px solid rgba(0,0,0,0.16); padding:6px 8px; box-shadow:0 3px 10px rgba(0,0,0,0.10); pointer-events:auto;}
+  .bed{border-radius:2px; border:1.5px solid rgba(0,0,0,0.16); padding:6px 8px; box-shadow:none; pointer-events:auto;}
   .bgEditing .bed{pointer-events:none; opacity:0.5;}
   .bgEditing.bedsHidden .bed{display:none;}
   .bed .bname{font-size:10px; font-weight:700; color:rgba(0,0,0,0.55); font-family:-apple-system,sans-serif;}
@@ -126,11 +126,11 @@
   .colorSwatchBtn:active{transform:scale(0.9);}
   .swPreviewSm{width:26px; height:26px; border-radius:7px;}
   .swPreviewSm.pv-none{background-image:linear-gradient(45deg,#ddd 25%,transparent 25%,transparent 75%,#ddd 75%),linear-gradient(45deg,#ddd 25%,transparent 25%,transparent 75%,#ddd 75%); background-size:6px 6px; background-position:0 0,3px 3px;}
-  .bgAppearanceCard{background:#F3F1EA; border-radius:16px; padding:14px; margin-bottom:14px;}
+  .bgAppearanceCard{background:#F3F1EA; border-radius:2px; padding:14px; margin-bottom:14px;}
   .bgAppearanceCard label{display:block; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--muted); margin-bottom:8px; font-family:-apple-system,sans-serif;}
   .bgSizeChip{font-size:12px; font-weight:700; color:var(--muted); font-family:-apple-system,sans-serif; white-space:nowrap; flex-shrink:0;}
-  .menuActionBtn{flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; padding:16px 10px; border-radius:14px; border:none;
-    background:#fff; font-family:-apple-system,sans-serif; font-size:13px; font-weight:700; color:var(--ink); box-shadow:0 1px 2px rgba(20,24,27,0.06);}
+  .menuActionBtn{flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; padding:16px 10px; border-radius:2px; border:none;
+    background:#fff; font-family:-apple-system,sans-serif; font-size:13px; font-weight:700; color:var(--ink); box-shadow:none;}
   .menuActionBtn:active{transform:scale(0.96);}
 
   .treeStyleRow{display:flex; gap:6px;}
@@ -144,7 +144,7 @@
 
   .sheetOverlay{position:fixed; inset:0; background:rgba(12,14,12,0.5); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px); z-index:100; display:flex; align-items:flex-end;}
   .sheetOverlay[hidden]{display:none;}
-  .sheet{background:var(--paper); width:100%; max-height:90vh; border-radius:28px 28px 0 0; overflow-y:auto; box-shadow:0 -12px 40px rgba(0,0,0,0.18);
+  .sheet{background:var(--paper); width:100%; max-height:90vh; border-radius:0; overflow-y:auto; box-shadow:none;
     padding:14px 18px calc(30px + env(safe-area-inset-bottom)) 18px; -webkit-overflow-scrolling:touch; touch-action:pan-y;}
   .sheetHandle{width:40px; height:4px; background:#D8DBD5; border-radius:2px; margin:0 auto 14px auto;}
   .sheetHead{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px;}
@@ -152,7 +152,7 @@
   .edNameWrap{position:relative; flex:1; min-width:0; display:flex; align-items:center;}
   .edNamePencil{position:absolute; right:0; top:50%; transform:translateY(-50%); border:none; background:none; color:var(--muted); padding:4px; display:flex; align-items:center; justify-content:center; pointer-events:none;}
   .sheetHead .stitle{font-family:-apple-system,sans-serif; font-size:20px; font-weight:800; letter-spacing:-0.02em; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .closeX{border:none; background:#EFF1ED; color:var(--ink); width:32px; height:32px; border-radius:50%; font-size:15px; flex-shrink:0;}
+  .closeX{border:1.5px solid #000; background:#fff; color:var(--ink); width:32px; height:32px; border-radius:2px; font-size:15px; flex-shrink:0;}
   .sheet.stickyHead{display:flex; flex-direction:column; padding:0; overflow:hidden;}
   .sheetFixedTop{flex-shrink:0; padding:14px 18px 10px 18px; background:var(--paper); position:relative; z-index:2;}
   .sheetScrollBody{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; touch-action:pan-y; padding:0 18px calc(30px + env(safe-area-inset-bottom)) 18px;}
@@ -160,10 +160,10 @@
   .lockToggleSmall{border:none; background:#EFF1ED; width:36px; height:36px; border-radius:50%; font-size:15px; flex-shrink:0;}
   .deleteToggleSmall{border:none; background:#FDEBEA; color:#B23A2A; width:36px; height:36px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;}
   .deleteToggleSmall:active{transform:scale(0.9);}
-  .helpIconPreview{width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .helpIconPreview{width:30px; height:30px; border-radius:2px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
   .field{margin-bottom:14px;}
   .field label{display:block; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--muted); margin-bottom:5px; font-family:-apple-system,sans-serif;}
-  select, input[type=date], input[type=text], input[type=number], textarea{width:100%; padding:11px 12px; border-radius:13px; border:1.5px solid var(--line);
+  select, input[type=date], input[type=text], input[type=number], textarea{width:100%; padding:11px 12px; border-radius:2px; border:1.5px solid #000;
     background:#fff; font-size:16px; color:var(--ink); font-family:-apple-system,sans-serif;}
   input[type=date]{padding-left:8px; padding-right:4px;}
   input:disabled{background:#EFF1ED; color:var(--muted);}
@@ -174,8 +174,8 @@
   .colorRow{display:flex; align-items:center; gap:12px;}
   .stepperRow{display:flex; align-items:center; gap:6px;}
   .bedZone{border-radius:16px; padding:14px; margin-bottom:14px;}
-  .bedZoneNow{background:#E8F5EA;}
-  .bedZoneNext{background:#FCF1DC;}
+  .bedZoneNow{background:#E8F5EA; border-radius:2px;}
+  .bedZoneNext{background:#FCF1DC; border-radius:2px;}
   .bedZoneLabel{font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.03em; margin-bottom:10px;}
   .bedZoneNow .bedZoneLabel{color:var(--leaf-dark);}
   .bedZoneNext .bedZoneLabel{color:#92601A;}
@@ -188,15 +188,15 @@
   .bedZoneNext .bedZoneNote.warn{color:#B23A2A; font-weight:600;}
   .bedZoneNext .field label{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.02em; color:var(--muted); margin-bottom:5px;}
   .stepperRow input[type=number]{text-align:center;}
-  .stepperBtn{width:38px; height:38px; border-radius:11px; background:#EFF1ED; border:none; font-size:19px; font-weight:700;
+  .stepperBtn{width:38px; height:38px; border-radius:2px; background:#EFF1ED; border:none; font-size:19px; font-weight:700;
     color:var(--leaf-dark); flex-shrink:0; display:flex; align-items:center; justify-content:center;}
   .stepperBtn:active{transform:scale(0.9);}
   input[type=color]{width:52px; height:40px; border:1.5px solid var(--line); border-radius:12px; padding:2px; background:#fff; flex-shrink:0;}
   .linkBtn{border:none; background:none; color:var(--leaf-dark); font-weight:700; font-size:12.5px; font-family:-apple-system,sans-serif;}
 
-  .card{background:var(--card); border:none; border-radius:16px; padding:13px 15px; margin-bottom:10px; box-shadow:0 1px 2px rgba(20,24,27,0.04), 0 4px 14px rgba(20,24,27,0.05);}
+  .card{background:var(--card); border:none; border-radius:2px; padding:13px 15px; margin-bottom:10px; box-shadow:none;}
   .countRow{display:flex; gap:8px; margin-bottom:14px;}
-  .countPill{flex:1; text-align:center; border-radius:14px; padding:11px 4px; font-family:-apple-system,sans-serif;}
+  .countPill{flex:1; text-align:center; border-radius:2px; padding:11px 4px; font-family:-apple-system,sans-serif;}
   .countPill .n{font-size:20px; font-weight:800; font-family:-apple-system,sans-serif; letter-spacing:-0.02em;}
   .countPill .l{font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.03em;}
   .pill-week{background:#DCFCE7;} .pill-month{background:#FEF3C7;} .pill-past{background:#EFF1ED;}
@@ -207,7 +207,7 @@
   .evtMain .t1{font-size:14px; font-weight:700; font-family:-apple-system,sans-serif;}
   .evtMain .t2{font-size:12px; color:var(--muted); font-family:-apple-system,sans-serif;}
   .evtDate{font-size:12.5px; font-weight:700; color:var(--ink); text-align:right; font-family:-apple-system,sans-serif; white-space:nowrap;}
-  .searchBox{width:100%; padding:12px 14px; border-radius:14px; border:1.5px solid var(--line); background:#fff; font-size:16px; margin-bottom:10px;}
+  .searchBox{width:100%; padding:12px 14px; border-radius:2px; border:1.5px solid var(--line); background:#fff; font-size:16px; margin-bottom:10px;}
   .calLegend{display:flex; gap:14px; flex-wrap:wrap; padding:2px 4px 10px 4px; font-size:11px; color:var(--muted); font-family:-apple-system,sans-serif;}
   .calLegendItem{display:flex; align-items:center; gap:5px;}
   .calLegendSwatch{width:12px; height:12px; border-radius:3px; flex-shrink:0;}
@@ -219,7 +219,7 @@
   .calDot{width:100%; height:14px; border-radius:4px; margin:0 auto;}
   .filterRow{display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:12px; -webkit-overflow-scrolling:touch;}
   .filterRow::-webkit-scrollbar{display:none;}
-  .filterChip{flex:0 0 auto; padding:6px 13px; border-radius:20px; font-size:12px; font-weight:700; border:1.5px solid var(--line);
+  .filterChip{flex:0 0 auto; padding:6px 13px; border-radius:2px; font-size:12px; font-weight:700; border:1.5px solid var(--line);
     background:#fff; color:var(--ink); white-space:nowrap; font-family:-apple-system,sans-serif;}
   .plantRow{padding:12px 4px; border-bottom:1px solid var(--line);}
   .plantHead{display:flex; justify-content:space-between; align-items:center;}
@@ -239,7 +239,7 @@
       <button class="topTab active" data-page="map" aria-label="Map"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14"/><path d="M15 6v14"/></svg></button>
       <button class="topTab" data-page="month" aria-label="Priorities"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="6" height="6" rx="1.3"/><path d="M4.3 7l1.2 1.2 2.2-2.4" stroke-width="1.6"/><rect x="3" y="14" width="6" height="6" rx="1.3"/><path d="M4.3 17l1.2 1.2 2.2-2.4" stroke-width="1.6"/><path d="M12 7h9M12 17h9" stroke-width="1.8"/></svg></button>
       <button class="topTab" data-page="guide" aria-label="Plant Guide"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-8"/><path d="M12 13c0-4.2-3.1-6.4-7.2-6.4-.1 4.2 3 6.4 7.2 6.4z"/><path d="M12 13c0-5.1 3.2-8.4 8.2-8.4.1 5.1-3.1 8.4-8.2 8.4z"/></svg></button>
-      <button class="topTab" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.6"/><path d="M5 9v8.5a2 2 0 002 2h10a2 2 0 002-2V9"/><path d="M10 13.2h4"/></svg></button>
+      <button class="topTab" id="menuBtn" aria-label="Save"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.6"/><path d="M5 9v8.5a2 2 0 002 2h10a2 2 0 002-2V9"/><path d="M10 13.2h4"/></svg></button>
       <button class="topTab" id="helpTabBtn" aria-label="Help"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.7 2.7 0 015.2.9c0 1.8-2.5 2-2.5 3.6"/><circle cx="12" cy="16.8" r="0.15" fill="currentColor" stroke-width="1.4"/></svg></button>
     </nav>
   </div>
@@ -478,7 +478,7 @@
   <div class="sheet">
     <div class="sheetHandle"></div>
     <div class="sheetHead">
-      <div class="stitle">Menu</div>
+      <div class="stitle">Save</div>
       <button class="closeX" id="mainMenuClose">✕</button>
     </div>
 
@@ -1138,7 +1138,7 @@ function renderBeds(){
     div.style.top = bed.y + "px";
     div.style.width = bed.w + "px";
     div.style.height = bed.h + "px";
-    div.style.background = hexToRgba(displayColor, 0.30);
+    div.style.background = hexToRgba(displayColor, 0.40);
     div.style.borderColor = hexToRgba(displayColor, 0.8);
 
     let html = `<div class="bcrop">${bed.current ? escapeHtml(bed.current) : "— empty —"}</div>`;
