@@ -164,13 +164,13 @@
   .field label{display:block; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--muted); margin-bottom:5px; font-family:-apple-system,sans-serif;}
   select, input[type=date], input[type=text], input[type=number], textarea{width:100%; padding:11px 12px; border-radius:2px; border:1.5px solid #000;
     background:#fff; font-size:16px; color:var(--ink); font-family:-apple-system,sans-serif;}
-  input[type=date]{padding-left:8px; padding-right:4px;}
+  input[type=date]{padding-left:8px; padding-right:4px; min-width:0;}
   input:disabled{background:#EFF1ED; color:var(--muted);}
   textarea{min-height:64px; resize:vertical;}
   .readout{background:#EEFBF1; border-radius:13px; padding:11px 13px; font-size:13px; color:var(--leaf-dark); line-height:1.5; font-family:-apple-system,sans-serif;}
   .readout.warn{background:#FEEBEA; color:#B23A2A; font-weight:600;}
   .divider{height:1px; background:var(--line); margin:16px 0;}
-  .colorRow{display:flex; align-items:center; gap:12px;}
+  .colorRow{display:flex; align-items:center; gap:12px; min-width:0;}
   .stepperRow{display:flex; align-items:center; gap:6px;}
   .bedZone{border-radius:16px; padding:14px; margin-bottom:14px;}
   .bedZoneNow{background:#E8F5EA; border-radius:2px;}
@@ -179,9 +179,8 @@
   .bedZoneNow .bedZoneLabel{color:var(--leaf-dark);}
   .bedZoneNext .bedZoneLabel{color:#92601A;}
   .bedZoneGrid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; margin-bottom:10px;}
+  .bedZoneGrid > div{min-width:0;}
   .bedZoneGrid label{display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.02em; color:var(--muted); margin-bottom:5px; font-family:-apple-system,sans-serif;}
-  .bedZoneStack{display:flex; flex-direction:column; gap:10px; margin-bottom:10px;}
-  .bedZoneStack label{display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.02em; color:var(--muted); margin-bottom:5px; font-family:-apple-system,sans-serif;}
   .bedZoneNote{font-size:12.5px; line-height:1.5; font-family:-apple-system,sans-serif;}
   .bedZoneNote:empty{display:none;}
   .bedZoneNow .bedZoneNote{color:#2F6B3C;}
@@ -327,7 +326,7 @@
           </div>
         </div>
       </div>
-      <div class="bedZoneStack">
+      <div class="bedZoneGrid">
         <div><label>Date planted</label><input type="date" id="edDatePlanted"></div>
         <div><label>Harvest date</label>
           <div class="colorRow" style="gap:6px;">
