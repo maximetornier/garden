@@ -83,10 +83,9 @@
   .bgDeleteIcon:active{transform:scale(0.9);}
 
   .bgshape{border:1.5px solid rgba(0,0,0,0.14); pointer-events:none;}
-  .bgLabel{position:absolute; left:50%; bottom:8px; transform:translateX(-50%); max-width:calc(100% - 16px);
-    background:rgba(22,26,22,0.6); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px);
-    color:#fff; font-size:11px; font-weight:700; padding:4px 11px; border-radius:999px;
-    font-family:-apple-system,sans-serif; pointer-events:none; text-align:center; overflow-wrap:anywhere; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .bgLabel{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; padding:6px;
+    font-size:12px; font-weight:700; color:#fff;
+    font-family:-apple-system,sans-serif; pointer-events:none; overflow-wrap:anywhere;}
   .bgEditing .bgshape{pointer-events:auto;}
   .bgshape.rect{border-radius:10px;}
   .bgshape.circle{border-radius:50%;}
