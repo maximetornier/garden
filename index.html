@@ -180,6 +180,8 @@
   .bedZoneNext .bedZoneLabel{color:#92601A;}
   .bedZoneGrid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; margin-bottom:10px;}
   .bedZoneGrid label{display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.02em; color:var(--muted); margin-bottom:5px; font-family:-apple-system,sans-serif;}
+  .bedZoneStack{display:flex; flex-direction:column; gap:10px; margin-bottom:10px;}
+  .bedZoneStack label{display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.02em; color:var(--muted); margin-bottom:5px; font-family:-apple-system,sans-serif;}
   .bedZoneNote{font-size:12.5px; line-height:1.5; font-family:-apple-system,sans-serif;}
   .bedZoneNote:empty{display:none;}
   .bedZoneNow .bedZoneNote{color:#2F6B3C;}
@@ -325,7 +327,7 @@
           </div>
         </div>
       </div>
-      <div class="bedZoneGrid">
+      <div class="bedZoneStack">
         <div><label>Date planted</label><input type="date" id="edDatePlanted"></div>
         <div><label>Harvest date</label>
           <div class="colorRow" style="gap:6px;">
@@ -345,7 +347,7 @@
         <label>Next crop</label>
         <select id="edNext"></select>
       </div>
-      <div class="bedZoneGrid">
+      <div class="bedZoneStack">
         <div><label>When to seed <span id="edSeedDateHint" style="font-weight:400; text-transform:none;"></span></label><input type="date" id="edSeedDate"></div>
         <div><label>When to plant</label><input type="date" id="edPlantDate"></div>
       </div>
