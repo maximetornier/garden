@@ -17,7 +17,8 @@
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0; padding:0; background:var(--paper); color:var(--ink); height:100%; overscroll-behavior:none; touch-action:pan-y; -webkit-text-size-adjust:100%; text-size-adjust:100%;}
-  body{display:flex; flex-direction:column; height:100dvh; overflow:hidden;}
+  html{height:-webkit-fill-available;}
+  body{display:flex; flex-direction:column; height:100dvh; height:-webkit-fill-available; overflow:hidden;}
   h1,h2,h3{font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif; font-weight:800; letter-spacing:-0.02em; margin:0;}
   .page{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; touch-action:pan-y; padding:16px 16px calc(16px + env(safe-area-inset-bottom)) 16px;}
   .page[hidden]{display:none;}
@@ -180,7 +181,7 @@
   .bedZoneNext .bedZoneLabel{color:#92601A;}
   .bedZoneGrid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; margin-bottom:10px;}
   .bedZoneGrid > div{min-width:0;}
-  .bedZoneGrid label{display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.02em; color:var(--muted); margin-bottom:5px; font-family:-apple-system,sans-serif;}
+  .bedZoneGrid label{display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.02em; color:var(--muted); margin-bottom:5px; font-family:-apple-system,sans-serif; line-height:1.3; min-height:28px;}
   .bedZoneNote{font-size:12.5px; line-height:1.5; font-family:-apple-system,sans-serif;}
   .bedZoneNote:empty{display:none;}
   .bedZoneNow .bedZoneNote{color:#2F6B3C;}
@@ -1325,6 +1326,8 @@ let resizePos = null;
 
 let pointers = new Map();
 let pinch = null;
+let lastTapTime = 0, lastTapX = 0, lastTapY = 0;
+let zoomDrag = null;
 
 function snapThreshold(){ return 9/zoom; }
 function snapSingle(value, candidates, threshold){
@@ -1346,6 +1349,22 @@ function bgEdges(excludeId){
 function dist(p1,p2){ return Math.hypot(p1.x-p2.x, p1.y-p2.y); }
 function midpoint(p1,p2){ return {x:(p1.x+p2.x)/2, y:(p1.y+p2.y)/2}; }
 
+function tryStartZoomDrag(e){
+  const isDouble = (Date.now() - lastTapTime < 350) && (Math.hypot(e.clientX-lastTapX, e.clientY-lastTapY) < 30);
+  if(!isDouble) return false;
+  lastTapTime = 0;
+  const rect = viewport.getBoundingClientRect();
+  zoomDrag = {
+    startZoom: zoom,
+    startY: e.clientY,
+    anchorX: e.clientX - rect.left,
+    anchorY: e.clientY - rect.top,
+    worldX: (e.clientX - rect.left - panX)/zoom,
+    worldY: (e.clientY - rect.top - panY)/zoom
+  };
+  mode = "zoomdrag";
+  return true;
+}
 function startSinglePointer(e){
   startClient = {x:e.clientX, y:e.clientY};
   moved = false;
@@ -1396,7 +1415,7 @@ function startSinglePointer(e){
       const s = STORE.bg.find(x=>x.id===activeId);
       startRect = {x:s.x, y:s.y, w:s.w, h:s.h};
     } else {
-      mode = "pan"; startPan = {x:panX, y:panY};
+      if(!tryStartZoomDrag(e)){ mode = "pan"; startPan = {x:panX, y:panY}; }
     }
   } else {
     const openIcon = e.target.closest('[data-role="openicon"]');
@@ -1416,7 +1435,7 @@ function startSinglePointer(e){
       const b = STORE.beds.find(x=>x.id===activeId);
       startRect = {x:b.x, y:b.y, w:b.w, h:b.h};
     } else {
-      mode = "pan"; startPan = {x:panX, y:panY};
+      if(!tryStartZoomDrag(e)){ mode = "pan"; startPan = {x:panX, y:panY}; }
     }
   }
 }
@@ -1458,6 +1477,15 @@ viewport.addEventListener("pointermove", (e)=>{
     zoom = clamp(pinch.startZoom * (d/pinch.startDist), ZOOM_MIN, ZOOM_MAX);
     panX = (m.x - rect.left) - pinch.worldX*zoom;
     panY = (m.y - rect.top) - pinch.worldY*zoom;
+    applyTransform(); updateZoomLabels();
+    return;
+  }
+  if(mode === "zoomdrag" && zoomDrag){
+    const dy = e.clientY - zoomDrag.startY;
+    const factor = Math.pow(1.006, -dy);
+    zoom = clamp(zoomDrag.startZoom * factor, ZOOM_MIN, ZOOM_MAX);
+    panX = zoomDrag.anchorX - zoomDrag.worldX*zoom;
+    panY = zoomDrag.anchorY - zoomDrag.worldY*zoom;
     applyTransform(); updateZoomLabels();
     return;
   }
@@ -1552,7 +1580,15 @@ function repositionBgIcons(id, x, y, w, h){
 }
 
 function endSinglePointer(){
-  if(mode === "pan"){ saveView(); }
+  if(mode === "pan"){
+    saveView();
+    if(!moved){
+      const isDouble = (Date.now() - lastTapTime < 350) && (Math.hypot(startClient.x-lastTapX, startClient.y-lastTapY) < 30);
+      if(!isDouble){ lastTapTime = Date.now(); lastTapX = startClient.x; lastTapY = startClient.y; }
+      else{ lastTapTime = 0; } // consumed — don't chain a third tap into another double-tap
+    }
+  }
+  else if(mode === "zoomdrag"){ saveView(); }
   else if(mode === "move"){ if(moved) save(); }
   else if(mode === "resize"){ save(); }
   else if(mode === "bgmove"){ if(moved) save(); }
