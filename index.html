@@ -81,6 +81,8 @@
   .bgDuplicateIcon{position:absolute; width:20px; height:20px; border-radius:2px; background:#3B82F6;
     color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:none; pointer-events:auto; z-index:3;}
   .bgDuplicateIcon:active{transform:scale(0.9);}
+  .bgDimChip{position:absolute; transform:translate(-50%, -50%); background:rgba(0,0,0,0.6); color:#fff; font-size:9px; font-weight:700;
+    padding:2px 6px; border-radius:2px; font-family:-apple-system,sans-serif; pointer-events:none; white-space:nowrap; z-index:4;}
   .bgDeleteIcon:active{transform:scale(0.9);}
 
   .bgshape{border:1.5px solid rgba(0,0,0,0.14); pointer-events:none;}
@@ -1213,6 +1215,7 @@ function renderBg(){
   world.querySelectorAll('[data-role="bgdeleteicon"]').forEach(n=>n.remove());
   world.querySelectorAll('[data-role="bgopenicon"]').forEach(n=>n.remove());
   world.querySelectorAll('[data-role="bgduplicateicon"]').forEach(n=>n.remove());
+  world.querySelectorAll('[data-role="bgdimchip"]').forEach(n=>n.remove());
   const firstBed = world.querySelector(".bed");
   // plots always paint at the very back, trees always paint above everything else,
   // while stable-sorting keeps each group's own relative order intact
@@ -1261,6 +1264,15 @@ function renderBg(){
     }
 
     if(editingBackground){
+      const dimChip = document.createElement("div");
+      dimChip.className = "bgDimChip";
+      dimChip.dataset.role = "bgdimchip";
+      dimChip.dataset.id = shape.id;
+      dimChip.textContent = realSizeText(shape.w, shape.h);
+      dimChip.style.left = (shape.x + shape.w/2) + "px";
+      dimChip.style.top = (shape.y + shape.h - 8) + "px";
+      world.appendChild(dimChip);
+
       const lock = document.createElement("div");
       lock.className = "lockIcon";
       lock.dataset.role = "bglockicon";
@@ -1534,7 +1546,11 @@ viewport.addEventListener("pointermove", (e)=>{
     if(resizePos.includes("n")){ let top = snapSingle(startRect.y+wdy, ys, thresh); let newH = Math.max(minSize, startRect.h+(startRect.y-top)); y = startRect.y+startRect.h-newH; h = newH; }
     bed.x=x; bed.y=y; bed.w=w; bed.h=h;
     const el = world.querySelector(`.bed[data-id="${activeId}"]`);
-    if(el){ el.style.left=x+"px"; el.style.top=y+"px"; el.style.width=w+"px"; el.style.height=h+"px"; }
+    if(el){
+      el.style.left=x+"px"; el.style.top=y+"px"; el.style.width=w+"px"; el.style.height=h+"px";
+      const areaEl = el.querySelector(".bedAreaLabel");
+      if(areaEl) areaEl.textContent = "~" + bedAreaM2(bed).toFixed(1) + " m²";
+    }
     repositionHandles("bedhandle", activeId, x, y, w, h);
   } else if(mode === "bgmove"){
     const s = STORE.bg.find(x=>x.id===activeId);
@@ -1577,6 +1593,8 @@ function repositionBgIcons(id, x, y, w, h){
   if(openEl){ openEl.style.left = x+"px"; openEl.style.top = (y+h-26)+"px"; }
   const dupEl = world.querySelector(`[data-role="bgduplicateicon"][data-id="${id}"]`);
   if(dupEl){ dupEl.style.left = (x+w-24)+"px"; dupEl.style.top = (y+h-26)+"px"; }
+  const dimEl = world.querySelector(`[data-role="bgdimchip"][data-id="${id}"]`);
+  if(dimEl){ dimEl.style.left = (x+w/2)+"px"; dimEl.style.top = (y+h-8)+"px"; dimEl.textContent = realSizeText(w, h); }
 }
 
 function endSinglePointer(){
