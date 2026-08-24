@@ -23,7 +23,9 @@
   .page{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; touch-action:pan-y; padding:16px 16px calc(16px + env(safe-area-inset-bottom)) 16px;}
   .page[hidden]{display:none;}
   #page-map{padding:0; overflow:hidden; position:relative;}
-  .topbar{padding:calc(14px + env(safe-area-inset-top)) 16px 12px 16px; background:var(--leaf); color:#fff; flex-shrink:0;}
+  .topbar{padding:calc(14px + env(safe-area-inset-top)) 16px 12px 16px; background:var(--leaf); color:#fff; flex-shrink:0; transition:background .15s ease;}
+  body.futureEditing .topbar{background:#5B5FA8;}
+  body.futureEditing .topTab.active{color:#5B5FA8;}
   .topbarRow{display:flex; align-items:center; justify-content:space-between; gap:10px;}
   .topbar h1{font-size:19px; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 
@@ -43,6 +45,7 @@
   .btn:active{transform:scale(0.96);}
   .btn-leaf{background:var(--leaf); color:#fff; border:none; box-shadow:none;}
   .btn-outline{background:#fff; color:var(--ink); border:1.5px solid #000; box-shadow:none;}
+  .undoBtnEl:disabled{opacity:0.3; pointer-events:none;}
   .btn-danger{background:#FEE7E7; color:#C0362C; border:none;}
   .btn-sun{background:var(--leaf); color:#fff; border:none; box-shadow:0 4px 14px rgba(22,163,74,0.28);}
   .btn-plot{background:#4B6B8A; color:#fff; border:none; box-shadow:0 4px 14px rgba(75,107,138,0.28);}
@@ -64,6 +67,7 @@
   .bgEditing.bedsHidden .bed{display:none;}
   .bed .bname{font-size:10px; font-weight:700; color:rgba(0,0,0,0.55); font-family:-apple-system,sans-serif;}
   .bed .bcrop{font-size:12.5px; font-weight:700; margin-top:1px; color:rgba(0,0,0,0.82); font-family:-apple-system,sans-serif;}
+  .bed .bcurrently{font-size:9.5px; font-weight:600; font-style:italic; color:rgba(0,0,0,0.5); font-family:-apple-system,sans-serif;}
   .bed .bharvest{font-size:10.5px; margin-top:2px; color:rgba(0,0,0,0.6); font-family:-apple-system,sans-serif;}
   .bed .bnext{font-size:10.5px; margin-top:3px; padding-top:3px; border-top:1px dashed rgba(0,0,0,0.15); color:rgba(0,0,0,0.68); font-family:-apple-system,sans-serif;}
   .bed .bnextdate{font-size:10.5px; font-weight:700; color:rgba(0,0,0,0.7); font-family:-apple-system,sans-serif;}
@@ -76,6 +80,7 @@
   .perennialBadge{position:absolute; bottom:4px; right:4px; width:18px; height:18px; border-radius:50%; background:var(--leaf-dark);
     color:#fff; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; box-shadow:none; z-index:3;}
   .bedAreaLabel{position:absolute; bottom:4px; right:4px; font-size:9.5px; font-weight:700; color:var(--muted); font-family:-apple-system,sans-serif; pointer-events:none;}
+  .cropIcon{display:inline-flex; align-items:center; justify-content:center; vertical-align:-2.5px; margin-left:4px; pointer-events:none;}
   .bgDeleteIcon{position:absolute; top:4px; left:4px; width:20px; height:20px; border-radius:2px; background:var(--danger);
     color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:none; pointer-events:auto; z-index:3;}
   .bgDuplicateIcon{position:absolute; width:20px; height:20px; border-radius:2px; background:#3B82F6;
@@ -252,13 +257,27 @@
   <div class="mapOverlay">
     <div class="mapToolbar" id="normalToolbar">
       <button class="btn btn-outline btn-icon" id="bgModeBtn" aria-label="Edit Background"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5a8.5 8.5 0 100 17c1.3 0 1.9-.9 1.9-1.8 0-.5-.2-.9-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1 .8-1.6 1.7-1.6h1.9a3 3 0 003-3c0-4.4-3.8-8-7.5-8z"/><circle cx="7.2" cy="10.3" r="1" fill="currentColor" stroke="none"/><circle cx="9.3" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="14.5" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="16.6" cy="10.3" r="1" fill="currentColor" stroke="none"/></svg></button>
+      <button class="btn btn-outline btn-icon" id="futureModeBtn" aria-label="Future Layout"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg></button>
       <button class="btn btn-leaf" id="addBedBtn">+ Add Bed</button>
       <div style="margin-left:auto; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <button class="btn btn-outline btn-icon undoBtnEl" aria-label="Undo" disabled><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8H4V4"/><path d="M4 8c2.4-2.4 5-4 8-4a9 9 0 110 18"/></svg></button>
         <button class="btn btn-outline btn-icon" id="fitAllBtn" aria-label="Fit All"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V5a1 1 0 011-1h4"/><path d="M20 9V5a1 1 0 00-1-1h-4"/><path d="M4 15v4a1 1 0 001 1h4"/><path d="M20 15v4a1 1 0 01-1 1h-4"/></svg></button>
         <div class="zoomGroup">
           <button id="zoomOut">−</button>
           <div class="zlabel" id="zoomLabel">100%</div>
           <button id="zoomIn">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="mapToolbar" id="futureToolbar" style="display:none;">
+      <button class="btn btn-leaf" id="addFutureBedBtn">+ Add Bed</button>
+      <div style="margin-left:auto; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <button class="btn btn-outline btn-icon undoBtnEl" aria-label="Undo" disabled><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8H4V4"/><path d="M4 8c2.4-2.4 5-4 8-4a9 9 0 110 18"/></svg></button>
+        <button class="btn btn-outline" id="futureDoneBtn"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:4px;"><path d="M4 12.5l5 5L20 6"/></svg>Done</button>
+        <div class="zoomGroup">
+          <button id="zoomOut3">−</button>
+          <div class="zlabel" id="zoomLabel3">100%</div>
+          <button id="zoomIn3">+</button>
         </div>
       </div>
     </div>
@@ -268,6 +287,7 @@
       <button class="btn btn-sun" id="addCircleBtn">+ Circle</button>
       <button class="btn btn-sun" id="addTreeBtn">+ Tree</button>
       <button class="btn btn-outline" id="bedsToggleBtn">Show beds</button>
+      <button class="btn btn-outline btn-icon undoBtnEl" aria-label="Undo" disabled><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8H4V4"/><path d="M4 8c2.4-2.4 5-4 8-4a9 9 0 110 18"/></svg></button>
       <button class="btn btn-outline btn-icon" id="settingsBtn" aria-label="Map Settings"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2.2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2.2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2.2" fill="currentColor" stroke="none"/></svg></button>
       <button class="btn btn-outline" id="bgDoneBtn"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:4px;"><path d="M4 12.5l5 5L20 6"/></svg>Done</button>
       <div class="zoomGroup">
@@ -369,6 +389,13 @@
         <button class="colorSwatchBtn" data-color="#BA7517" style="background:#BA7517;" title="Amber"></button>
         <button class="colorSwatchBtn" data-color="#639922" style="background:#639922;" title="Green"></button>
         <button class="colorSwatchBtn" data-color="#378ADD" style="background:#378ADD;" title="Blue"></button>
+      </div>
+    </div>
+
+    <div class="field" id="edApplyPlanField" style="display:none;">
+      <div style="background:#FCF1DC; border-radius:2px; padding:12px;">
+        <div style="font-size:12.5px; color:#8A5A16; margin-bottom:8px; display:flex; align-items:center; gap:6px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#8A5A16" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg><span>This bed has a planned layout that isn't applied yet.</span></div>
+        <button class="btn btn-leaf" id="edApplyPlan" style="width:100%;">✓ Apply Planned Layout Now</button>
       </div>
     </div>
 
@@ -653,8 +680,9 @@ const BASE_PLANTS = [
 ["Bush Beans","Legume","N/A","Direct sow after last frost",55,"Jul-Aug","10-15 cm","Fixes nitrogen",null,1,"Corn, cucumbers, carrots — avoid near onions/garlic","Well-drained, average","Full sun","Regular, moderate","Legume",false,""],
 ["Pole Beans","Legume","N/A","Direct sow after last frost",65,"Jul-Sep","15 cm","Needs trellis",null,1,"Corn, squash ('Three Sisters') — avoid near onions/garlic","Well-drained, average","Full sun","Regular, moderate","Legume",false,""],
 ["Cucumber","Cucurbit","3-4 wks before last frost (optional)","Direct sow/transplant after last frost",55,"Jul-Aug","30 cm","Trellis saves space",-3,1,"Beans, corn, peas, radish, sunflower","Rich, well-drained","Full sun","Regular, consistent (high)","Heavy Feeder",false,""],
-["Zucchini / Summer Squash","Cucurbit","3-4 wks before last frost (optional)","Direct sow/transplant after last frost",50,"Jul-Sep","60-90 cm","Prolific",-3,1,"Corn, beans, marigold, nasturtium","Rich, well-drained","Full sun","Regular, consistent","Heavy Feeder",false,""],
-["Winter Squash / Pumpkin","Cucurbit","3-4 wks before last frost (optional)","Direct sow/transplant after last frost",90,"Sep-Oct","90-120 cm","Needs lots of space",-3,2,"Corn, beans, marigold","Rich, well-drained","Full sun","Regular, deep","Heavy Feeder",false,""],
+["Courgette","Cucurbit","3-4 wks before last frost (optional)","Direct sow/transplant after last frost",50,"Jul-Sep","60-90 cm","Prolific — harvest young and often",-3,1,"Corn, beans, marigold, nasturtium","Rich, well-drained","Full sun","Regular, consistent","Heavy Feeder",false,""],
+["Butternut Squash","Cucurbit","3-4 wks before last frost (optional)","Direct sow/transplant after last frost",100,"Sep-Oct","90-120 cm","Long vines — needs lots of space or a sturdy trellis",-3,2,"Corn, beans, marigold","Rich, well-drained","Full sun","Regular, deep","Heavy Feeder",false,""],
+["Pumpkin","Cucurbit","3-4 wks before last frost (optional)","Direct sow/transplant after last frost",110,"Sep-Oct","120-180 cm","Needs lots of space; feed heavily for large fruit",-3,2,"Corn, beans, marigold","Rich, well-drained","Full sun","Regular, deep","Heavy Feeder",false,""],
 ["Melon","Cucurbit","3-4 wks before last frost","Transplant after last frost, warm soil",80,"Aug-Sep","90 cm","Likes heat",-3,2,"Corn, radish, marigold","Rich, sandy loam","Full sun","Regular, consistent (high)","Heavy Feeder",false,""],
 ["Onion","Allium","8-10 wks before last frost (or use sets)","Transplant/sets 2-4 wks before last frost",100,"Jul-Sep","10 cm","Long season",-9,-3,"Carrots, beets, lettuce, tomato — avoid near beans/peas","Loose, fertile, well-drained","Full sun","Regular, moderate","Allium",false,""],
 ["Garlic","Allium","N/A","Plant cloves in fall",240,"Jun-Jul (following yr)","10-15 cm","Overwinters in ground; offsets not applicable (fall planted)",null,null,"Tomato, roses, fruit trees — avoid near beans/peas","Loose, well-drained, fertile","Full sun","Low-moderate, reduce near harvest","Allium",false,""],
@@ -730,6 +758,178 @@ function familyColor(fam){
   let hash=0; for(let i=0;i<fam.length;i++) hash = fam.charCodeAt(i)+((hash<<5)-hash);
   return EXTRA_PALETTE[Math.abs(hash)%EXTRA_PALETTE.length];
 }
+const FAMILY_ICONS = {
+  "Nightshade": '<circle cx="8" cy="9" r="5"/><path d="M8 4V2M6.3 3l1-1M9.7 3l-1-1" stroke-width="1.2" fill="none" stroke-linecap="round"/>',
+  "Brassica": '<circle cx="8" cy="8" r="2.4"/><circle cx="4.3" cy="6" r="1.9"/><circle cx="11.7" cy="6" r="1.9"/><circle cx="4.3" cy="10.3" r="1.9"/><circle cx="11.7" cy="10.3" r="1.9"/>',
+  "Legume": '<rect x="2" y="6.7" width="12" height="2.8" rx="1.4"/><circle cx="4.7" cy="8.1" r="0.8" fill="#00000030" stroke="none"/><circle cx="8" cy="8.1" r="0.8" fill="#00000030" stroke="none"/><circle cx="11.3" cy="8.1" r="0.8" fill="#00000030" stroke="none"/>',
+  "Cucurbit": '<ellipse cx="8" cy="9.2" rx="6" ry="4.3"/><path d="M8 4.9V2.2" stroke-width="1.2" fill="none" stroke-linecap="round"/>',
+  "Allium": '<path d="M8 3c3 0 4.5 2.8 4.5 5.2A4.5 4.5 0 018 12.7a4.5 4.5 0 01-4.5-4.5C3.5 5.8 5 3 8 3z"/><path d="M8 3V1" stroke-width="1.2" fill="none" stroke-linecap="round"/>',
+  "Root": '<path d="M8 5.2l2.3 7.6-2.3-1.4-2.3 1.4L8 5.2z"/><path d="M5.3 4l1.4 1M8 3v2M10.7 4l-1.4 1" stroke-width="1" fill="none" stroke-linecap="round"/>',
+  "Leafy Green": '<path d="M8 2c4 1 5.3 4.8 5.3 7.7-4-1-5.3-4.8-5.3-7.7z"/><path d="M8 2c-4 1-5.3 4.8-5.3 7.7 4-1 5.3-4.8 5.3-7.7z"/><path d="M8 2v11" stroke-width="0.9" fill="none"/>',
+  "Grass/Grain": '<path d="M5 14V6.2M8 14V4.2M11 14V6.2" stroke-width="1.3" fill="none" stroke-linecap="round"/><ellipse cx="5" cy="4.6" rx="1" ry="1.7"/><ellipse cx="8" cy="2.6" rx="1" ry="1.7"/><ellipse cx="11" cy="4.6" rx="1" ry="1.7"/>',
+  "Umbellifer": '<path d="M8 13V6M8 6L3.3 3.3M8 6l4.7-2.7M8 6L4.3 8M8 6l3.7 2" stroke-width="1" fill="none" stroke-linecap="round"/><circle cx="8" cy="6" r="1.1" stroke="none"/>',
+  "Herb": '<path d="M8 14V4.5" stroke-width="1.1" fill="none" stroke-linecap="round"/><ellipse cx="5.6" cy="6.2" rx="1.9" ry="1.1" transform="rotate(-30 5.6 6.2)"/><ellipse cx="10.4" cy="6.2" rx="1.9" ry="1.1" transform="rotate(30 10.4 6.2)"/><ellipse cx="8" cy="3.8" rx="1.4" ry="0.9"/>',
+  "Flower": '<circle cx="8" cy="8" r="1.7" stroke="none"/><circle cx="8" cy="3.9" r="1.7" opacity="0.75" stroke="none"/><circle cx="8" cy="12.1" r="1.7" opacity="0.75" stroke="none"/><circle cx="3.9" cy="8" r="1.7" opacity="0.75" stroke="none"/><circle cx="12.1" cy="8" r="1.7" opacity="0.75" stroke="none"/>',
+  "Berry": '<circle cx="6" cy="6.6" r="2.2" stroke="none"/><circle cx="10.3" cy="6.2" r="2.2" stroke="none"/><circle cx="8" cy="10.4" r="2.2" stroke="none"/>'
+};
+const PLANT_ICONS = {
+  'Asparagus': '<path d="M20 32V15" stroke="#5C9E5C" stroke-width="3" stroke-linecap="round"/><path d="M20 15c0-1.5.8-2.5 2-3.5-.3 1.8-.9 2.9-2 3.5zM20 15c0-1.5-.8-2.5-2-3.5.3 1.8.9 2.9 2 3.5z" fill="#3F7A3F"/><path d="M18.5 20l3-.5M18.5 24l3-.5" stroke="#3F7A3F" stroke-width="1"/>',
+  'Basil': '<path d="M20 30V17" stroke="#5C7A3E" stroke-width="1.3"/><ellipse cx="15.5" cy="17" rx="4.3" ry="3" fill="#5C9E5C" transform="rotate(-20 15.5 17)"/><ellipse cx="24.5" cy="17" rx="4.3" ry="3" fill="#5C9E5C" transform="rotate(20 24.5 17)"/>',
+  'Bay Leaf': '<path d="M14 25c-1-4 2-7 6-6-1-3 1-6 4-6-1 3 0 5 2 6 3-1 6 2 5 6-1 3-4 4-7 3.5-3.5-.5-8-.5-10-3.5z" fill="#4E7A4E"/>',
+  'Beet': '<circle cx="20" cy="23" r="8.5" fill="#7A2438"/><path d="M18 15c0-2 .8-3.5 2-4.5.5 2-.3 3.7-2 4.5zM22 15c0-2-.8-3.5-2-4.5-.5 2 .3 3.7 2 4.5z" fill="#5C9E5C"/>',
+  'Blackberry': '<g fill="#2E1F3D"><circle cx="18" cy="18" r="3"/><circle cx="22" cy="18" r="3"/><circle cx="16" cy="22" r="3"/><circle cx="20" cy="22" r="3"/><circle cx="24" cy="22" r="3"/><circle cx="18" cy="26" r="3"/><circle cx="22" cy="26" r="3"/></g>',
+  'Blackcurrant': '<path d="M20 12v6" stroke="#5C7A3E" stroke-width="1.2"/><circle cx="17" cy="21" r="2.3" fill="#241830"/><circle cx="20" cy="24.5" r="2.3" fill="#241830"/><circle cx="23" cy="28" r="2.3" fill="#241830"/><path d="M17 18.5v2.5M20 22v2.5M23 25.5v2.5" stroke="#5C7A3E" stroke-width="0.8"/>',
+  'Redcurrant': '<path d="M20 12v6" stroke="#5C7A3E" stroke-width="1.2"/><circle cx="17" cy="21" r="2.3" fill="#C6242F"/><circle cx="20" cy="24.5" r="2.3" fill="#C6242F"/><circle cx="23" cy="28" r="2.3" fill="#C6242F"/><path d="M17 18.5v2.5M20 22v2.5M23 25.5v2.5" stroke="#5C7A3E" stroke-width="0.8"/>',
+'Borage': '<path d="M20 27c-8 3-5-8-5-8" stroke="#7A9C6E" stroke-width="1.2" fill="none"/><g fill="#3F6BC4"><path d="M20 21l0-7 1.6 1z"/><path d="M20 21l6.3-3.5 1 1.4z"/><path d="M20 21l6.7 3.9-1 1.4z"/><path d="M20 21l0 7-1.6-1z"/><path d="M20 21l-6.3 3.5-1-1.4z"/></g><circle cx="20" cy="21" r="2" fill="#1F3D8A"/>',
+  'Blueberry': '<circle cx="15" cy="24" r="5" fill="#4B5C99"/><circle cx="23" cy="21" r="5" fill="#5A6DB0"/><circle cx="22" cy="29" r="5" fill="#3F4E82"/><path d="M15 19.3l.9.9-.9.9-.9-.9zM23 16.3l.9.9-.9.9-.9-.9z" fill="#2E3A63"/>',
+  'Broad Bean': '<path d="M13 22c0-2.5 1.5-4 3.5-3.7-.5-2 .8-3.8 3-3.8 2 0 3.3 1.5 3 3.3 2-.5 3.7.8 3.7 3 0 2.5-2 4.2-6 4.2-4.5 0-7.2-1.3-7.2-3z" fill="#8FAE3A"/>',
+  'Broccoli': '<path d="M20 26V32" stroke="#7A9C5E" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="18" r="5" fill="#4E7A4E"/><circle cx="24" cy="18" r="5" fill="#4E7A4E"/><circle cx="20" cy="14" r="5.5" fill="#5C8E5C"/>',
+  'Brussels Sprouts': '<path d="M20 32V10" stroke="#5C7A3E" stroke-width="2" stroke-linecap="round"/><circle cx="17" cy="14" r="3" fill="#5C8E5C"/><circle cx="23.5" cy="18" r="3" fill="#6E9C5E"/><circle cx="17" cy="22" r="3" fill="#5C8E5C"/><circle cx="23.5" cy="26" r="3" fill="#6E9C5E"/>',
+  'Bush Beans': '<path d="M16 30c-2-6 0-14 3-18 1 5 1 12-1 18zM24 30c2-6 0-14-3-18-1 5-1 12 1 18z" fill="#4C8C3E"/>',
+  'Cabbage': '<path d="M20 12c6 0 10 4.5 10 10s-4 10-10 10-10-4.5-10-10S14 12 20 12z" fill="#7CAE6E"/><path d="M20 12c6 0 10 4.5 10 10s-4 10-10 10" stroke="#5C8E5C" stroke-width="1" fill="none" opacity="0.6"/><path d="M20 15c4 0 7 3 7 7s-3 7-7 7" stroke="#5C8E5C" stroke-width="0.9" fill="none" opacity="0.5"/>',
+  'Calendula': '<g fill="#E8B830"><path d="M20 21l-1-9 1.6.2z"/><path d="M20 21l3.4-8.3 1.4.9z"/><path d="M20 21l6.5-5.6 1 1.3z"/><path d="M20 21l8-1.7.3 1.6z"/><path d="M20 21l8 2.3-.4 1.6z"/><path d="M20 21l6 6-1.2 1.1z"/><path d="M20 21l3 8.3-1.5.6z"/><path d="M20 21l-.3 9-1.6-.2z"/><path d="M20 21l-3.6 8.2-1.4-.8z"/><path d="M20 21l-6.6 5.5-1-1.2z"/><path d="M20 21l-8 1.5-.3-1.6z"/><path d="M20 21l-7.8-2.7.5-1.5z"/></g><circle cx="20" cy="21" r="3.5" fill="#8A5222"/>',
+  'Carrot': '<path d="M20 14l3.5 17-3.5-2-3.5 2L20 14z" fill="#E0752A"/><path d="M16 11l2.5 2.5M20 9v3.5M24 11l-2.5 2.5" stroke="#5C7A3E" stroke-width="1.5" stroke-linecap="round" fill="none"/>',
+  'Cauliflower': '<g fill="#F5E9C8"> <circle cx="15" cy="18" r="4.2"/> <circle cx="25" cy="18" r="4.2"/> <circle cx="20" cy="14.3" r="4.8"/> <circle cx="17" cy="21.5" r="3.8"/> <circle cx="23" cy="21.5" r="3.8"/> <circle cx="20" cy="19" r="4.5"/> </g> <path d="M14 17c-.5 1-.5 2 0 3M26 17c.5 1 .5 2 0 3M18 15c-.5 1.5 0 2.7 1 3.3" stroke="#C9A24A" stroke-width="0.8" fill="none" opacity="0.5" stroke-linecap="round"/> <path d="M9.5 24c.3 3.3 2.7 5.5 5.8 5.7-.6-1.4-.6-3-.3-4.2z" fill="#7CB35C"/> <path d="M30.5 24c-.3 3.3-2.7 5.5-5.8 5.7.6-1.4.6-3 .3-4.2z" fill="#7CB35C"/> <path d="M16.5 27.5c.6 2.3 1.8 4.8 3.5 6.3 1.7-1.5 2.9-4 3.5-6.3-2.3.8-4.7.8-7 0z" fill="#6EA84C"/>',
+  'Celery': '<path d="M15 32V17M20 32V15M25 32V17" stroke="#8FBF7A" stroke-width="2.2" stroke-linecap="round"/><path d="M15 17c1-2 2-3 3-3M20 15c0-2 0-3 1-4M25 17c-1-2-2-3-3-3" stroke="#5C9E5C" stroke-width="1.3" fill="none" stroke-linecap="round"/>',
+  'Chervil': '<path d="M20 30c-6-1-9-5-8-9 3 0 4 2 5 4-1-3 0-6 2-8-1 3 0 5 1 7 1-3 3-5 6-5-1 3-3 5-5 6 3-1 5 0 6 3-2 2-4 3-7 2z" fill="#6E9C5E" opacity="0.9"/>',
+  'Chicory': '<path d="M20 32c-3-5-3-12-1-19-1 6 0 12 1 19zM20 32c3-5 3-12 1-19 1 6 0 12-1 19zM20 32c-1-6-1-13 0-20-1 7-1 14 0 20zM20 32c1-6 1-13 0-20 1 7 1 14 0 20z" fill="#7CAE6E"/>',
+  'Chilli Pepper': '<path d="M22 11c3.5.5 6.5 3 7.5 6.5 1 3.5-.3 6.5-3 8.5-4 3-9.5 4.5-16.2 2.8-.9-.2-.9-1.3-.1-1.7 5-2.5 9-6 11-10 .8-1.6 1.1-3.2.8-4.6z" fill="#D6392C"/> <path d="M21 11.5c.3-2.4 1.5-4.5 3.2-6" stroke="#3F8A2E" stroke-width="2" fill="none" stroke-linecap="round"/>',
+  'Chives': '<path d="M14.5 32c0-7 1-12 2-16M17.5 32c0-8 .5-13.5 1-17M20 32V13M22.5 32c0-8-.5-13.5-1-17M25.5 32c0-7-1-12-2-16" stroke="#5C9E5C" stroke-width="1.4" fill="none" stroke-linecap="round"/> <circle cx="20" cy="11" r="3.5" fill="#A874C4"/> <g stroke="#8E5CA8" stroke-width="0.8"><path d="M20 7.5v-1.5M23 8.5l1-1.3M24 11h1.5M23 13.5l1 1.3M20 14.5V16M17 13.5l-1 1.3M16 11h-1.5M17 8.5l-1-1.3"/></g>',
+  'Cilantro': '<path d="M20 30c-5 0-8-4-8-9 0-4 2-7 5-8-2 3-2 6-1 9 1-3 4-5 7-5-1 3-3 5-5 6 3-1 6 0 8 3-2 3-4 4-6 4z" fill="#5C9E5C"/>',
+  'Corn': '<ellipse cx="20" cy="21" rx="6" ry="10.5" fill="#E8C13E"/><g fill="#C9A227" opacity="0.7"><circle cx="17" cy="15" r="0.9"/><circle cx="20" cy="15" r="0.9"/><circle cx="23" cy="15" r="0.9"/><circle cx="17" cy="18.5" r="0.9"/><circle cx="20" cy="18.5" r="0.9"/><circle cx="23" cy="18.5" r="0.9"/><circle cx="17" cy="22" r="0.9"/><circle cx="20" cy="22" r="0.9"/><circle cx="23" cy="22" r="0.9"/><circle cx="17" cy="25.5" r="0.9"/><circle cx="20" cy="25.5" r="0.9"/><circle cx="23" cy="25.5" r="0.9"/></g><path d="M15 12c-2-1-3-3-3-5 2.3.3 4 2 3 5zM25 12c2-1 3-3 3-5-2.3.3-4 2-3 5z" fill="#6E9C4E"/>',
+  'Cosmos': '<g fill="#E85C7A"><ellipse cx="20" cy="14" rx="2.6" ry="4"/><ellipse cx="27" cy="18" rx="2.6" ry="4" transform="rotate(72 27 18)"/><ellipse cx="24.5" cy="27" rx="2.6" ry="4" transform="rotate(144 24.5 27)"/><ellipse cx="15.5" cy="27" rx="2.6" ry="4" transform="rotate(216 15.5 27)"/><ellipse cx="13" cy="18" rx="2.6" ry="4" transform="rotate(288 13 18)"/></g><circle cx="20" cy="20" r="2.6" fill="#8A5222"/>',
+  'Cucumber': '<rect x="13" y="16" width="14" height="9" rx="4.5" fill="#4E8E4E"/><path d="M15 16v9M18 16v9M22 16v9M25 16v9" stroke="#3A6E3A" stroke-width="0.7" opacity="0.5"/>',
+  'Dahlia': '<g fill="#C6428E"><path d="M20 21l-1.5-8.5 3 0z"/><path d="M20 21l3-8 2.6 1.5z"/><path d="M20 21l6-5.3 2 2.2z"/><path d="M20 21l7.7-2 1 2.8z"/><path d="M20 21l7.7 3-1 2.8z"/><path d="M20 21l5 6.6-2.3 1.7z"/><path d="M20 21l1.5 8.3-3-.2z"/><path d="M20 21l-3.3 7.8-2.6-1.4z"/><path d="M20 21l-6.3-5-2 2.2z"/><path d="M20 21l-7.7-1.8-1 2.7z"/></g><g fill="#E874B4" opacity="0.7"><path d="M20 21l-1-5-1.7.2z"/><path d="M20 21l2 4.7 1.7-1z"/><path d="M20 21l4-3.3 1.3 1.5z"/></g><circle cx="20" cy="21" r="3.2" fill="#7A3560"/>',
+  'Dill': '<path d="M20 32V13" stroke="#8FA870" stroke-width="1.2"/><g stroke="#6E9C4E" stroke-width="0.9" stroke-linecap="round"><path d="M20 15l-5-2M20 15l5-2M20 18l-5-2M20 18l5-2M20 21l-5-2M20 21l5-2M20 24l-5-2M20 24l5-2M20 27l-5-2M20 27l5-2"/></g>',
+  'Eggplant': '<path d="M20 17c5 0 8 4 8 9.5 0 4.7-3.3 8-8 8s-8-3.3-8-8c0-5.5 3-9.5 8-9.5z" fill="#5B3A6E"/> <path d="M13.5 16.5c1-1.3 2.2-2 3.3-2.1-.3 1.4-1.4 2.4-3.3 2.1zM26.5 16.5c-1-1.3-2.2-2-3.3-2.1.3 1.4 1.4 2.4 3.3 2.1zM16 15c.7-1.4 1.7-2.3 2.6-2.6-.1 1.5-.9 2.6-2.6 2.6zM24 15c-.7-1.4-1.7-2.3-2.6-2.6.1 1.5.9 2.6 2.6 2.6zM20 12.2c.5-.9 1.2-1.4 2-1.5.1 1.1-.6 2-2 1.5z" fill="#4A6B32"/> <path d="M20 13v3" stroke="#4A6B32" stroke-width="1.3" stroke-linecap="round"/> <ellipse cx="16" cy="24" rx="2" ry="3.4" fill="#9C7EB0" opacity="0.5"/>',
+  'Florence Fennel': '<ellipse cx="20" cy="23" rx="8.5" ry="7" fill="#DCE8C4"/><path d="M13 21c1-1.5 2.5-2 4-2M27 21c-1-1.5-2.5-2-4-2" stroke="#B4CC8E" stroke-width="0.8" fill="none"/><path d="M17 16c-1-2-1-4 0-6M20 16c0-2 0-4 1-6M23 16c1-2 1-4 0-6" stroke="#6E9C5E" stroke-width="1.1" fill="none" stroke-linecap="round"/>',
+  'Garlic': '<path d="M20 13c4.3 0 6.5 4.3 6.5 8.5S24.3 30 20 30s-6.5-4.3-6.5-8.5S15.7 13 20 13z" fill="#F0E9D8"/> <path d="M20 13v17M15.5 15.5c1.5 5 1.5 11.5 0 14M24.5 15.5c-1.5 5-1.5 11.5 0 14M17.7 13.8c1 5.5 1 12 0 15.5M22.3 13.8c-1 5.5-1 12 0 15.5" stroke="#D6C9A3" stroke-width="0.9" fill="none"/> <path d="M20 13c0-2 .8-3.5 2-4.5-.3 2.3-1 3.8-2 4.5z" fill="#C9BFA2"/>',
+  'Globe Artichoke': '<ellipse cx="20" cy="23" rx="9.5" ry="8.5" fill="#6E9C5E"/> <path d="M20 8.5l3 7-3-1.8-3 1.8 3-7z" fill="#8ECC5C"/> <path d="M13.5 11.5l2.8 7-3.6-2.4-2-2.4 2.8-2.2z" fill="#5B8E2E"/> <path d="M26.5 11.5l-2.8 7 3.6-2.4 2-2.4-2.8-2.2z" fill="#5B8E2E"/> <path d="M20 14.5l3.5 8.5-3.5-2.4-3.5 2.4 3.5-8.5z" fill="#8ECC5C"/> <path d="M18.4 32v-5h3.2v5z" fill="#5B8E2E"/>',
+  'Gooseberry': '<ellipse cx="20" cy="22" rx="7" ry="8.5" fill="#B8C97A" opacity="0.85"/><path d="M20 13.5v17M14 22c0-4.5 2.7-8 6-8.5M26 22c0-4.5-2.7-8-6-8.5M14 22c0 4.5 2.7 8 6 8.5M26 22c0 4.5-2.7 8-6 8.5" stroke="#8FA34F" stroke-width="0.8" fill="none"/>',
+  'Jerusalem Artichoke': '<path d="M13 24c-1-4 2-8 6-8.5 4.5-.6 8.5 2.5 8.7 7 .2 4-3 8-8.2 8.5-4.5.4-7.5-3-6.5-7z" fill="#B98A55"/><circle cx="16.5" cy="21" r="0.9" fill="#8A5F32"/><circle cx="23" cy="20" r="0.9" fill="#8A5F32"/><circle cx="21" cy="27" r="0.9" fill="#8A5F32"/>',
+  'Kale': '<path d="M20 30c-6-2-9-8-7-14 2 1 3 3 3 5 0-4 2-8 5-9 1 3 0 6-2 8 3-2 6-2 9 0-2 3-5 4-8 3 3 1 5 3 6 6-3 2-6 2-6 1z" fill="#5C8E5C"/>',
+  'Kohlrabi': '<circle cx="20" cy="23" r="8.5" fill="#C8D9A0"/><path d="M15 17l-2-3M20 15l0-4M25 17l2-3" stroke="#5C9E5C" stroke-width="1.6" fill="none" stroke-linecap="round"/>',
+  'Lavender': '<path d="M20 32V19" stroke="#7A9C6E" stroke-width="1.6"/><g fill="#8E6EB0"><ellipse cx="20" cy="11" rx="2" ry="2.6"/><ellipse cx="20" cy="15" rx="2.1" ry="2.6"/><ellipse cx="20" cy="19" rx="2.2" ry="2.6"/></g>',
+  'Leek': '<path d="M17.3 32V17c0-2 1.2-3.3 2.7-3.3s2.7 1.3 2.7 3.3v15z" fill="#F0E9D8"/> <path d="M17.8 17V7.5M20 17V6.5M22.2 17V7.5" stroke="#5C9E5C" stroke-width="2" fill="none" stroke-linecap="round"/>',
+  'Lettuce': '<path d="M20 33c-5-6.5-7.5-11.5-7-15.5a4.2 4.2 0 017.5-2.3 4.2 4.2 0 017.5 2.3c.5 4-2 9-7 15.5-.5.6-1 .6-1 0z" fill="#7CAE56"/> <circle cx="14" cy="14.5" r="4" fill="#8BBE64"/> <circle cx="26" cy="14.5" r="4" fill="#8BBE64"/> <circle cx="20" cy="12" r="4.6" fill="#93C86C"/> <path d="M20 15v15M20 19l-2.8 1.2M20 22.3l2.8-1.2M20 25.6l-2.4-.9" stroke="#DCE4B8" stroke-width="1.3" stroke-linecap="round" fill="none"/>',
+  'Lovage': '<path d="M20 30V17" stroke="#4A6B3E" stroke-width="1.6"/><path d="M20 19c-5-1-7-5-6-9 4 0 6 3 6.5 7M20 19c5-1 7-5 6-9-4 0-6 3-6.5 7" fill="#4E7A4E"/>',
+  'Mangetout': '<path d="M11 21c6-2.5 16-2.5 22 0-.7 1-.7 1.5 0 2.5-6 2.5-16 2.5-22 0 .7-1 .7-1.5 0-2.5z" fill="#6EAE4E"/>',
+  'Marigold': '<circle cx="20" cy="21" r="8" fill="#E0862C"/><circle cx="20" cy="21" r="5.3" fill="#F0A845"/><circle cx="20" cy="21" r="2.6" fill="#F7C36B"/>',
+  'Marjoram': '<path d="M20 30V17" stroke="#7A9C6E" stroke-width="1.2"/><g fill="#8FA870"><ellipse cx="17" cy="19" rx="1.8" ry="2.3"/><ellipse cx="23" cy="19" rx="1.8" ry="2.3"/><ellipse cx="17" cy="24" rx="1.8" ry="2.3"/><ellipse cx="23" cy="24" rx="1.8" ry="2.3"/></g><circle cx="20" cy="14.5" r="2.2" fill="#B8CC8E"/>',
+  'Melon': '<circle cx="20" cy="22" r="9.5" fill="#C9A24A"/><path d="M13 18c3 1 5 2 14 2M12 24c4 0 6-1 15-1M15 15c1.5 3 2 8 2 14M25 15c-1.5 3-2 8-2 14" stroke="#A17E30" stroke-width="0.8" fill="none" opacity="0.6"/>',
+  'Nasturtium': '<path d="M17 22c-4 1-6-1-6-4 3-1 5.5.3 6.5 2.3M17 22c-3-3-3-7 0-9.5 2.7 2 3.3 6 0 9.5" fill="#5C9E5C"/><path d="M23 22c3-3 7.5-2.5 9 .5-2.5 2.7-7 2.3-9-.5z" fill="#E0752A"/><path d="M23 22c1.5-3.5 5-4.3 7.5-2.3-1.3 3-4.8 4-7.5 2.3z" fill="#F0952C"/><circle cx="23" cy="22" r="1.6" fill="#8A5222"/>',
+  'Onion': '<path d="M18.3 13c-1.3-2-1-4.3.7-6.2 1.4 2 1.2 4.2-.7 6.2z" fill="#5C9E5C"/> <path d="M21.7 13c1.3-2 1-4.3-.7-6.2-1.4 2-1.2 4.2.7 6.2z" fill="#4C8C3E"/> <path d="M20 12.5c4.8 0 7 4.8 7 9 0 4.7-2.5 9.5-7 9.5s-7-4.8-7-9.5c0-4.2 2.2-9 7-9z" fill="#D9A441"/> <path d="M14.5 19c1-2 3-3 5.5-3s4.5 1 5.5 3M14 23c1.5-1.5 3.5-2.3 6-2.3s4.5.8 6 2.3" stroke="#B8863A" stroke-width="0.9" fill="none" opacity="0.7"/> <path d="M17.5 30.5l.8 2.5M20 31v3M22.5 30.5l-.8 2.5" stroke="#B8863A" stroke-width="1" stroke-linecap="round"/>',
+  'Oregano': '<path d="M20 30V16" stroke="#7A9C6E" stroke-width="1.1"/><g fill="#6E9C5E"><ellipse cx="17.3" cy="18" rx="1.5" ry="1.9"/><ellipse cx="22.7" cy="18" rx="1.5" ry="1.9"/><ellipse cx="17.3" cy="22.5" rx="1.5" ry="1.9"/><ellipse cx="22.7" cy="22.5" rx="1.5" ry="1.9"/><ellipse cx="17.3" cy="27" rx="1.5" ry="1.9"/><ellipse cx="22.7" cy="27" rx="1.5" ry="1.9"/></g>',
+  'Pak Choi': '<path d="M15 32c-1-6 0-11 2-14M20 32c-.5-7 0-12.5 1-16M25 32c1-6 0-11-2-14" stroke="#EDE9DC" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M17 18c-1-2-1-4 0-6M20 16c0-2.5 0-5 .5-7M23 18c1-2 1-4 0-6" stroke="#4C8C5B" stroke-width="1.6" fill="none" stroke-linecap="round"/>',
+  'Parsley': '<path d="M20 32c-6-1-9-6-8-11 3 1 4 3 5 5-1-4 0-8 3-10-1 4 0 7 2 9 2-3 5-4 8-3-1 4-4 6-7 6 2 1 3 2 4 4-3 2-5 1-7 0z" fill="#6E9C5E"/>',
+  'Parsnip': '<path d="M20 14l3 17-3-2-3 2 3-17z" fill="#E8D9A8"/><path d="M16 11l2.5 2.5M20 9v3.5M24 11l-2.5 2.5" stroke="#5C9E5C" stroke-width="1.4" stroke-linecap="round" fill="none"/>',
+  'Peas': '<path d="M12 22c1-6 5-9 8-9s7 3 8 9c-1 6-5 9-8 9s-7-3-8-9z" fill="#6E9C4E" opacity="0.7"/><circle cx="16" cy="22" r="2.4" fill="#4C8C3E"/><circle cx="20" cy="20" r="2.4" fill="#4C8C3E"/><circle cx="24" cy="22" r="2.4" fill="#4C8C3E"/>',
+  'Pepper': '<path d="M20 12.5c1.3 0 1.8.9 1.9 1.7 3.8.7 6.6 4.6 6.6 9.3 0 3.6-1.3 6.7-3.3 8.7-1.1 1.1-2.2 1.3-3.2.6-.6-.4-1.3-.4-2 0-1 .7-2.1.5-3.2-.6-2-2-3.3-5.1-3.3-8.7 0-4.7 2.8-8.6 6.6-9.3.1-.8.6-1.7 1.9-1.7z" fill="#4F9C4A"/> <path d="M18.3 14.2c.5-1 1-1.5 1.7-1.7.7.2 1.2.7 1.7 1.7" stroke="#3A6B32" stroke-width="1.1" fill="none" stroke-linecap="round"/> <ellipse cx="15.5" cy="21" rx="1.7" ry="3.2" fill="#A8D4A2" opacity="0.55"/>',
+  'Petunia': '<path d="M20 30c0-9-3-13-3-13a5 5 0 0110 0s-3 4-3 13" fill="#B85CC4"/><path d="M17.5 16c.6-1 1.4-1.5 2.5-1.5s1.9.5 2.5 1.5" stroke="#8A3C96" stroke-width="1" fill="none"/><path d="M20 30v-3" stroke="#5C7A3E" stroke-width="1.3"/>',
+  'Pole Beans': '<path d="M16 30c-1-5 0-11 2-15M20 30c-.5-6 0-12 1-16M24 30c1-5 0-11-2-15" stroke="#4C8C3E" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M22 12c1.5-1 2-2.3 1.5-4-1.6.3-2.3 1.7-1.5 4z" fill="#5C7A3E"/>',
+  'Potato': '<path d="M12 22c0-4 3-7 8-7.3 5.3-.3 9 3 9.3 7.3.3 4.5-3.3 8.3-8.3 8.7-5.3.4-9.3-3.7-9-8.7z" fill="#A67C52"/> <circle cx="15.5" cy="20.5" r="1" fill="#7A5A38"/> <circle cx="23" cy="19" r="1" fill="#7A5A38"/> <circle cx="24.5" cy="25" r="1" fill="#7A5A38"/> <circle cx="17" cy="27" r="1" fill="#7A5A38"/> <ellipse cx="16" cy="20" rx="2.3" ry="1.6" fill="#D3B896" opacity="0.55"/>',
+  'Radish': '<path d="M20 21c3.5 0 5.5 2.5 5.5 6S23.5 32 20 32s-5.5-2-5.5-5 2-6 5.5-6z" fill="#C6414F"/><path d="M17 21c0-2 1.5-4 3-4s3 2 3 4" fill="#F3E9DC"/><path d="M20 17c0-2 1-4 3-5-.2 2.3-1.2 4-3 5zM20 17c0-2-1-4-3-5 .2 2.3 1.2 4 3 5z" fill="#5C9E5C"/>',
+  'Raspberry': '<g fill="#C4425A"><circle cx="18" cy="18" r="3"/><circle cx="22" cy="18" r="3"/><circle cx="16" cy="22" r="3"/><circle cx="20" cy="22" r="3"/><circle cx="24" cy="22" r="3"/><circle cx="18" cy="26" r="3"/><circle cx="22" cy="26" r="3"/></g>',
+  'Rhubarb': '<path d="M16 32c-1-6 0-13 3-16M24 32c1-6 0-13-3-16" stroke="#C6414F" stroke-width="2.6" stroke-linecap="round" fill="none"/><path d="M20 16c-5-3-4-8 1-10 4 2 4 7-1 10z" fill="#4C8C5B"/>',
+  'Rocket': '<path d="M20 32c-3-6-2-12 1-16-3 0-6-2-7-5 3-1 6 0 8 2-1-3 0-6 2-8 1.5 2.5 1.5 5.5.3 8 2.7-1.7 5.7-1 7.7 1.3-2 2.3-5 3-8 2 2.3 3.3 3 8 1 15.7-1.2.2-2.6.2-4 0z" fill="#6EAE4E"/>',
+  'Rosemary': '<path d="M20 32V13" stroke="#5C7A3E" stroke-width="1.4"/><g stroke="#3F7A3F" stroke-width="1.5" stroke-linecap="round"><path d="M20 16l-4-2M20 16l4-2M20 20l-4-2M20 20l4-2M20 24l-4-2M20 24l4-2M20 28l-4-2M20 28l4-2"/></g>',
+  'Runner Bean': '<path d="M11 20c6-2 16-2 22 0-1 2-1 3 0 5-6 2-16 2-22 0 1-2 1-3 0-5z" fill="#5CA13E"/>',
+  'Sage': '<path d="M20 30V18" stroke="#7A9C6E" stroke-width="1.3"/><g fill="#8FA870"><ellipse cx="16" cy="16" rx="3" ry="4.3" transform="rotate(-25 16 16)"/><ellipse cx="24" cy="16" rx="3" ry="4.3" transform="rotate(25 24 16)"/><ellipse cx="20" cy="22" rx="3" ry="4.3"/></g>',
+  'Spinach': '<path d="M20 30V16" stroke="#3F6E3F" stroke-width="1.4"/><path d="M20 16c-4-4-2-8 0-10 2 2 4 6 0 10z" fill="#3F6E3F"/>',
+  'Strawberry': '<path d="M20 15c7 0 9 6.5 9 11s-4 9-9 9-9-4.5-9-9 2-11 9-11z" fill="#D6707E"/><circle cx="16" cy="21" r="0.9" fill="#F4D4D4"/><circle cx="24" cy="25" r="0.9" fill="#F4D4D4"/><path d="M20 9c1.5 0 3 .8 3.5 2-1.7.3-3-.2-3.5-2zM20 9c-1.5 0-3 .8-3.5 2 1.7.3 3-.2 3.5-2z" fill="#5C7A3E"/>',
+  'Sunflower': '<circle cx="20" cy="21" r="5.5" fill="#7A5222"/><g fill="#E8B830"><ellipse cx="20" cy="10.5" rx="2.2" ry="4"/><ellipse cx="20" cy="31.5" rx="2.2" ry="4"/><ellipse cx="9.5" cy="21" rx="4" ry="2.2"/><ellipse cx="30.5" cy="21" rx="4" ry="2.2"/><ellipse cx="12.7" cy="13.7" rx="2.2" ry="4" transform="rotate(-45 12.7 13.7)"/><ellipse cx="27.3" cy="28.3" rx="2.2" ry="4" transform="rotate(-45 27.3 28.3)"/><ellipse cx="27.3" cy="13.7" rx="2.2" ry="4" transform="rotate(45 27.3 13.7)"/><ellipse cx="12.7" cy="28.3" rx="2.2" ry="4" transform="rotate(45 12.7 28.3)"/></g>',
+  'Swede': '<path d="M12.5 22a7.5 7.5 0 0115 0" fill="#8E6EB0"/><path d="M12.5 22a7.5 7.5 0 0015 0v3.5a7.5 7.5 0 01-15 0z" fill="#E8D9A8"/><path d="M20 14.5v-3" stroke="#5C9E5C" stroke-width="1.4" stroke-linecap="round"/>',
+  'Sweet Pea': '<path d="M20 24c-5-1-8-5-7-9 3 0 6 2 7 5 1-3 4-5 7-5 1 4-2 8-7 9z" fill="#D680B0"/><ellipse cx="20" cy="26" rx="3.5" ry="3" fill="#B85C93"/>',
+  'Sweet William': '<path d="M20 30V19" stroke="#7A9C6E" stroke-width="1.4"/><g fill="#E0527A"><circle cx="14" cy="16" r="2.6"/><circle cx="20" cy="13" r="2.6"/><circle cx="26" cy="16" r="2.6"/><circle cx="17" cy="19" r="2.6"/><circle cx="23" cy="19" r="2.6"/></g>',
+  'Swiss Chard': '<path d="M20 32V16" stroke="#D6486E" stroke-width="2.4" stroke-linecap="round"/><path d="M20 18c-5-3-4-8 0-9 4 1 5 6 0 9z" fill="#5C9E5C"/>',
+  'Tarragon': '<path d="M20 31V13" stroke="#5C7A3E" stroke-width="1.1"/><g stroke="#4C8C5B" stroke-width="1.1" stroke-linecap="round"><path d="M20 15l-5-1M20 15l5-1M20 19l-5-1M20 19l5-1M20 23l-5-1M20 23l5-1M20 27l-5-1M20 27l5-1"/></g>',
+  'Thyme': '<path d="M20 30V16" stroke="#7A9C6E" stroke-width="1.1"/><g fill="#6E9C5E"><ellipse cx="17" cy="18" rx="1.2" ry="1.7"/><ellipse cx="23" cy="18" rx="1.2" ry="1.7"/><ellipse cx="17" cy="22" rx="1.2" ry="1.7"/><ellipse cx="23" cy="22" rx="1.2" ry="1.7"/><ellipse cx="17" cy="26" rx="1.2" ry="1.7"/><ellipse cx="23" cy="26" rx="1.2" ry="1.7"/></g>',
+  'Tomato': '<ellipse cx="20" cy="23" rx="10" ry="9.5" fill="#D6392C"/> <path d="M20 13.5c.8-1.6 1.9-2.1 3-1.9-.3 1.4-1.3 2.1-3 1.9z" fill="#4A6B32"/> <path d="M20 13.5c-.8-1.6-1.9-2.1-3-1.9.3 1.4 1.3 2.1 3 1.9z" fill="#4A6B32"/> <path d="M20 13.5c1.7-.6 3-.1 3.7 1-1.4.8-2.8.4-3.7-1z" fill="#4A6B32"/> <path d="M20 13.5c-1.7-.6-3-.1-3.7 1 1.4.8 2.8.4 3.7-1z" fill="#4A6B32"/> <path d="M20 13.5v-2.2" stroke="#4A6B32" stroke-width="1.3" stroke-linecap="round"/> <ellipse cx="16" cy="20" rx="2.2" ry="1.4" fill="#F0A89E" opacity="0.6"/>',
+  'Turnip': '<ellipse cx="20" cy="23" rx="7.5" ry="8" fill="#E8D9A8"/><path d="M18 15c0-2 .8-3.5 2-4.5.5 2-.3 3.7-2 4.5zM22 15c0-2-.8-3.5-2-4.5-.5 2 .3 3.7 2 4.5z" fill="#5C9E5C"/>',
+  'Pumpkin': '<path d="M20 13c6 0 9 5 9 10.5S26 32 20 32s-9-4-9-8.5S14 13 20 13z" fill="#D9862F"/><path d="M20 13v19M15 15c2-1.3 3.4-1.6 5-1.6M25 15c-2-1.3-3.4-1.6-5-1.6" stroke="#B8691F" stroke-width="0.8" fill="none" opacity="0.6"/><path d="M20 13c0-2 1-3.5 2-4" stroke="#5C7A3E" stroke-width="1.3" fill="none" stroke-linecap="round"/>',
+  'Butternut Squash': '<path d="M20 14c1.5 0 2.3 1.2 2 2.8-.2 1-.7 1.8-.7 2.7 0 .8.4 1.3 1 1.8 2.8 1.8 4.2 5 3.8 8.2-.4 3.5-3.2 5.5-6.1 5.5s-5.7-2-6.1-5.5c-.4-3.2 1-6.4 3.8-8.2.6-.5 1-1 1-1.8 0-.9-.5-1.7-.7-2.7-.3-1.6.5-2.8 2-2.8z" fill="#E4C994"/><path d="M20 14v3.5" stroke="#C9A968" stroke-width="1" opacity="0.5"/><path d="M16.5 26c1 2 2 3.3 3.5 3.8M23.5 26c-1 2-2 3.3-3.5 3.8" stroke="#C9A968" stroke-width="0.7" fill="none" opacity="0.5"/><path d="M20 14c0-1.7.8-3 2-3.7" stroke="#5C7A3E" stroke-width="1.2" fill="none" stroke-linecap="round"/>',
+  'Zinnia': '<g fill="#D6486E"><path d="M20 21l0-9 2 9z"/><path d="M20 21l6.4-6.4-4.4 8.4z"/><path d="M20 21l9-2-7 4z"/><path d="M20 21l6.4 6.4-8.4-4.4z"/><path d="M20 21l0 9-2-9z"/><path d="M20 21l-6.4 6.4 4.4-8.4z"/><path d="M20 21l-9 2 7-4z"/><path d="M20 21l-6.4-6.4 8.4 4.4z"/></g><circle cx="20" cy="21" r="3" fill="#8A5222"/>',
+  'Courgette': '<path d="M10.2 26.5c-1.2-4.3 1.3-9.5 6-13.2 5-4 11.2-4.7 14.8-2 1.2 4.3-1.3 9.5-6 13.2-5 4-11.2 4.7-14.8 2z" fill="#5C9457"/> <path d="M12.3 24.3c3-6.3 8.2-11.5 14.3-14" stroke="#8FC285" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.75"/> <ellipse cx="14.3" cy="22.3" rx="1.9" ry="1.2" fill="#B7DDA8" opacity="0.65" transform="rotate(-32 14.3 22.3)"/> <path d="M27.8 11.7c1-1.4 1-2.8.2-3.7-1.3.4-2 1.7-1.7 3.2z" fill="#BCE0A2"/>',
+};
+const PLANT_ICON_VIEWBOX = {
+  'Asparagus': '7.29 9.04 25.42 25.42',
+  'Basil': '9.25 11.16 21.50 21.50',
+  'Bay Leaf': '11.72 10.03 21.56 21.56',
+  'Beet': '6.98 7.98 26.04 26.04',
+  'Blackberry': '11.32 13.32 17.36 17.36',
+  'Blackcurrant': '8.65 9.80 22.69 22.69',
+  'Blueberry': '7.84 13.84 22.32 22.32',
+  'Borage': '10.95 11.95 18.10 18.10',
+  'Broad Bean': '11.42 11.57 16.37 16.37',
+  'Broccoli': '5.43 5.68 29.14 29.14',
+  'Brussels Sprouts': '6.61 7.36 27.28 27.28',
+  'Bush Beans': '8.84 9.84 22.32 22.32',
+  'Cabbage': '7.60 9.60 24.80 24.80',
+  'Calendula': '8.84 9.84 22.32 22.32',
+  'Carrot': '6.36 6.36 27.28 27.28',
+  'Cauliflower': '4.93 6.58 30.13 30.13',
+  'Celery': '6.98 8.48 26.04 26.04',
+  'Chervil': '9.99 14.28 18.83 18.83',
+  'Chicory': '7.60 9.60 24.80 24.80',
+  'Chilli Pepper': '4.84 2.62 29.77 29.77',
+  'Chives': '3.88 2.88 32.24 32.24',
+  'Cilantro': '8.46 10.96 21.08 21.08',
+  'Corn': '4.81 4.06 30.38 30.38',
+  'Cosmos': '6.51 6.79 26.99 26.99',
+  'Cucumber': '11.32 11.82 17.36 17.36',
+  'Dahlia': '9.21 10.11 21.58 21.58',
+  'Dill': '8.22 10.72 23.56 23.56',
+  'Eggplant': '5.24 7.84 29.51 29.51',
+  'Florence Fennel': '7.60 7.60 24.80 24.80',
+  'Garlic': '6.67 5.92 26.66 26.66',
+  'Globe Artichoke': '5.43 5.68 29.14 29.14',
+  'Gooseberry': '9.46 11.46 21.08 21.08',
+  'Jerusalem Artichoke': '10.58 13.56 19.35 19.35',
+  'Kale': '8.63 9.76 23.13 23.13',
+  'Kohlrabi': '7.29 8.54 25.42 25.42',
+  'Lavender': '5.37 5.57 29.26 29.26',
+  'Leek': '4.19 3.44 31.62 31.62',
+  'Lettuce': '3.85 4.27 32.30 32.30',
+  'Lovage': '7.60 7.60 24.80 24.80',
+  'Mangetout': '8.36 8.61 27.28 27.28',
+  'Marigold': '10.08 11.08 19.84 19.84',
+  'Marjoram': '9.03 10.18 21.95 21.95',
+  'Melon': '8.22 10.22 23.56 23.56',
+  'Nasturtium': '8.48 5.39 26.04 26.04',
+  'Onion': '3.14 3.54 33.73 33.73',
+  'Oregano': '11.32 14.32 17.36 17.36',
+  'Pak Choi': '5.74 6.24 28.52 28.52',
+  'Parsley': '9.63 13.30 22.55 22.55',
+  'Parsnip': '6.36 6.36 27.28 27.28',
+  'Peas': '8.84 10.84 22.32 22.32',
+  'Pepper': '8.16 10.02 25.68 25.68',
+  'Petunia': '10.84 9.84 22.32 22.32',
+  'Pole Beans': '6.36 5.36 27.28 27.28',
+  'Potato': '9.92 11.97 21.47 21.47',
+  'Radish': '7.60 9.60 24.80 24.80',
+  'Raspberry': '11.32 13.32 17.36 17.36',
+  'Redcurrant': '8.65 9.80 22.69 22.69',
+  'Rhubarb': '3.88 2.88 32.24 32.24',
+  'Rocket': '6.17 1.74 33.67 33.67',
+  'Rosemary': '8.22 10.72 23.56 23.56',
+  'Runner Bean': '8.36 8.86 27.28 27.28',
+  'Sage': '8.78 9.74 22.43 22.43',
+  'Spinach': '5.12 3.12 29.76 29.76',
+  'Strawberry': '3.88 5.88 32.24 32.24',
+  'Sunflower': '2.02 3.02 35.96 35.96',
+  'Swede': '6.67 8.92 26.66 26.66',
+  'Sweet Pea': '11.08 13.08 17.83 17.83',
+  'Sweet William': '7.85 8.05 24.30 24.30',
+  'Swiss Chard': '5.74 6.24 28.52 28.52',
+  'Tarragon': '8.84 10.84 22.32 22.32',
+  'Thyme': '11.32 14.32 17.36 17.36',
+  'Tomato': '6.86 8.76 26.29 26.29',
+  'Turnip': '7.29 8.04 25.42 25.42',
+  'Pumpkin': '5.74 6.24 28.52 28.52',
+  'Butternut Squash': '4.69 7.34 30.63 30.63',
+  'Zinnia': '8.84 9.84 22.32 22.32',
+  'Courgette': '7.34 4.79 26.52 26.52',
+};
 function plantByName(n){ return STORE.plants.find(p => p.name === n) || null; }
 
 /* ---- crop rotation succession guidance ---- */
@@ -771,8 +971,8 @@ function defaultStore(){
     bg: [],
     plants: JSON.parse(JSON.stringify(BASE_PLANTS)),
     beds: [
-      {id:"b1", name:"Bed 1", x:0, y:0, w:160, h:100, color:null, locked:false, current:"Tomato", datePlanted:"2026-05-15", next:"Kale", seedDate:"", plantDate:"", harvestDate:"", plantCount:null, notes:""},
-      {id:"b2", name:"Bed 2", x:190, y:0, w:160, h:100, color:null, locked:false, current:"Lettuce", datePlanted:"2026-04-01", next:"Bush Beans", seedDate:"", plantDate:"2026-06-01", harvestDate:"", plantCount:null, notes:""}
+      {id:"b1", name:"Bed 1", x:0, y:0, w:160, h:100, plannedX:0, plannedY:0, plannedW:160, plannedH:100, futureOnly:false, color:null, locked:false, current:"Tomato", datePlanted:"2026-05-15", next:"Kale", seedDate:"", plantDate:"", harvestDate:"", plantCount:null, notes:""},
+      {id:"b2", name:"Bed 2", x:190, y:0, w:160, h:100, plannedX:190, plannedY:0, plannedW:160, plannedH:100, futureOnly:false, color:null, locked:false, current:"Lettuce", datePlanted:"2026-04-01", next:"Bush Beans", seedDate:"", plantDate:"2026-06-01", harvestDate:"", plantCount:null, notes:""}
     ]
   };
 }
@@ -827,6 +1027,11 @@ function migrateParsed(parsed){
     if(b.seedDate===undefined) b.seedDate = "";
     if(b.plantCount===undefined) b.plantCount = null;
     if(b.harvestDate===undefined) b.harvestDate = "";
+    if(b.plannedX===undefined) b.plannedX = b.x;
+    if(b.plannedY===undefined) b.plannedY = b.y;
+    if(b.plannedW===undefined) b.plannedW = b.w;
+    if(b.plannedH===undefined) b.plannedH = b.h;
+    if(b.futureOnly===undefined) b.futureOnly = false;
   });
   return parsed;
 }
@@ -840,6 +1045,30 @@ function load(){
   }catch(e){ return defaultStore(); }
 }
 function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(STORE)); }
+let undoSnapshot = null;
+let pendingUndoSnapshot = null;
+function snapshotForUndo(){
+  undoSnapshot = JSON.parse(JSON.stringify(STORE));
+  document.querySelectorAll(".undoBtnEl").forEach(b=> b.disabled = false);
+}
+function snapshotPendingUndo(){
+  pendingUndoSnapshot = JSON.parse(JSON.stringify(STORE));
+}
+function commitPendingUndo(){
+  if(!pendingUndoSnapshot) return;
+  undoSnapshot = pendingUndoSnapshot;
+  document.querySelectorAll(".undoBtnEl").forEach(b=> b.disabled = false);
+}
+function performUndo(){
+  if(!undoSnapshot) return;
+  STORE = undoSnapshot;
+  undoSnapshot = null;
+  pendingUndoSnapshot = null;
+  save();
+  document.querySelectorAll(".undoBtnEl").forEach(b=> b.disabled = true);
+  renderBeds(); renderBg();
+}
+document.querySelectorAll(".undoBtnEl").forEach(b=> b.addEventListener("click", performUndo));
 
 /* ============================= DATE HELPERS ============================= */
 function addDays(dateStr, days){
@@ -1050,6 +1279,7 @@ function updateZoomLabels(){
   const t = Math.round(zoom*100)+"%";
   document.getElementById("zoomLabel").textContent = t;
   document.getElementById("zoomLabel2").textContent = t;
+  document.getElementById("zoomLabel3").textContent = t;
 }
 function setZoom(newZoom){
   newZoom = clamp(newZoom, ZOOM_MIN, ZOOM_MAX);
@@ -1060,8 +1290,8 @@ function setZoom(newZoom){
   panX = cx - worldCx*zoom; panY = cy - worldCy*zoom;
   applyTransform(); saveView(); updateZoomLabels();
 }
-["zoomOut","zoomOut2"].forEach(id=>document.getElementById(id).addEventListener("click", ()=>setZoom(zoom-ZOOM_STEP)));
-["zoomIn","zoomIn2"].forEach(id=>document.getElementById(id).addEventListener("click", ()=>setZoom(zoom+ZOOM_STEP)));
+["zoomOut","zoomOut2","zoomOut3"].forEach(id=>document.getElementById(id).addEventListener("click", ()=>setZoom(zoom-ZOOM_STEP)));
+["zoomIn","zoomIn2","zoomIn3"].forEach(id=>document.getElementById(id).addEventListener("click", ()=>setZoom(zoom+ZOOM_STEP)));
 window.addEventListener("resize", applyTransform);
 
 function viewportCenterWorld(){
@@ -1070,7 +1300,7 @@ function viewportCenterWorld(){
 }
 function fitViewToContent(){
   const xs=[], ys=[];
-  STORE.beds.forEach(b=>{ xs.push(b.x, b.x+b.w); ys.push(b.y, b.y+b.h); });
+  STORE.beds.forEach(b=>{ if(b.futureOnly) return; xs.push(b.x, b.x+b.w); ys.push(b.y, b.y+b.h); });
   STORE.bg.forEach(s=>{ xs.push(s.x, s.x+s.w); ys.push(s.y, s.y+s.h); });
   if(xs.length===0) return;
   const minX=Math.min(...xs), maxX=Math.max(...xs), minY=Math.min(...ys), maxY=Math.max(...ys);
@@ -1118,6 +1348,36 @@ document.getElementById("bedsToggleBtn").addEventListener("click", ()=>{
 document.getElementById("bgModeBtn").addEventListener("click", ()=>setBackgroundMode(true));
 document.getElementById("bgDoneBtn").addEventListener("click", ()=>setBackgroundMode(false));
 
+/* ============================= FUTURE LAYOUT MODE TOGGLE ============================= */
+let editingFuture = false;
+function setFutureMode(on){
+  editingFuture = on;
+  viewport.classList.toggle("futureEditing", on);
+  document.body.classList.toggle("futureEditing", on);
+  if(on){
+    viewport.dataset.savedBg = viewport.style.backgroundColor;
+    viewport.style.backgroundColor = "#E3E6F3";
+  } else {
+    viewport.style.backgroundColor = STORE.mapSettings.bgColor;
+  }
+  document.getElementById("normalToolbar").style.display = on ? "none" : "flex";
+  document.getElementById("futureToolbar").style.display = on ? "flex" : "none";
+  document.getElementById("pageTitle").textContent = on ? "Future Layout" : pages.map.title;
+  renderBeds();
+}
+document.getElementById("futureModeBtn").addEventListener("click", ()=>setFutureMode(true));
+document.getElementById("futureDoneBtn").addEventListener("click", ()=>setFutureMode(false));
+document.getElementById("addFutureBedBtn").addEventListener("click", ()=>{
+  snapshotForUndo();
+  const n = STORE.beds.length;
+  const c = viewportCenterWorld();
+  const w=160, h=100;
+  const bed = {id:"b"+Date.now(), name:"Bed "+(n+1), x:c.x-w/2, y:c.y-h/2, w, h,
+    plannedX:c.x-w/2, plannedY:c.y-h/2, plannedW:w, plannedH:h, futureOnly:true,
+    color:null, locked:false, current:"", datePlanted:"", next:"", seedDate:"", plantDate:"", harvestDate:"", plantCount:null, notes:""};
+  STORE.beds.push(bed); save(); renderBeds();
+});
+
 /* ============================= RENDERING ============================= */
 function repositionHandles(role, id, x, y, w, hgt){
   world.querySelectorAll(`[data-role="${role}"][data-id="${id}"]`).forEach(handleEl=>{
@@ -1128,33 +1388,69 @@ function repositionHandles(role, id, x, y, w, hgt){
     handleEl.style.top = (y + fy*hgt) + "px";
   });
 }
+function getBedRect(bed){
+  return editingFuture
+    ? {x:bed.plannedX, y:bed.plannedY, w:bed.plannedW, h:bed.plannedH}
+    : {x:bed.x, y:bed.y, w:bed.w, h:bed.h};
+}
+function setBedRect(bed, x, y, w, h){
+  if(editingFuture){ bed.plannedX=x; bed.plannedY=y; bed.plannedW=w; bed.plannedH=h; }
+  else{ bed.x=x; bed.y=y; bed.w=w; bed.h=h; }
+}
 function renderBeds(){
   world.querySelectorAll(".bed").forEach(n=>n.remove());
   world.querySelectorAll('.handle[data-role="bedhandle"]').forEach(n=>n.remove());
   STORE.beds.forEach(bed=>{
+    if(bed.futureOnly && !editingFuture) return; // doesn't exist yet — only visible while planning
+    const r = getBedRect(bed);
     const info = computeBed(bed);
     const displayColor = bed.color || DEFAULT_COLOR;
     const div = document.createElement("div");
     div.className = "bed";
     div.dataset.id = bed.id;
-    div.style.left = bed.x + "px";
-    div.style.top = bed.y + "px";
-    div.style.width = bed.w + "px";
-    div.style.height = bed.h + "px";
+    div.style.left = r.x + "px";
+    div.style.top = r.y + "px";
+    div.style.width = r.w + "px";
+    div.style.height = r.h + "px";
     div.style.background = hexToRgba(displayColor, 0.40);
     div.style.borderColor = hexToRgba(displayColor, 0.8);
+    if(editingFuture){ div.style.borderStyle = "dashed"; div.style.borderColor = "#5B5FA8"; div.style.borderWidth = "2px"; }
 
-    let html = `<div class="bcrop">${bed.current ? escapeHtml(bed.current) : "— empty —"}</div>`;
-    html += `<div class="bharvest">${info.harvestDate ? "Harvest: "+fmtShort(info.harvestDate) : ""}</div>`;
-    if(bed.next){
-      html += `<div class="bnext">Next: ${escapeHtml(bed.next)}${info.nextAction ? ` — <span class="bnextdate">${info.nextAction.label} ${fmtShort(info.nextAction.date)}</span>` : ""}</div>`;
+    const showFutureCrop = editingFuture && bed.next;
+    const primaryCropName = showFutureCrop ? bed.next : bed.current;
+    const primaryCropInfo = showFutureCrop ? info.nxt : info.cur;
+
+    let cropIconHtml = "";
+    if(primaryCropInfo && PLANT_ICONS[primaryCropName]){
+      cropIconHtml = `<span class="cropIcon" title="${escapeHtml(primaryCropName)}"><svg viewBox="${PLANT_ICON_VIEWBOX[primaryCropName] || '3 3 34 34'}" width="13" height="13">${PLANT_ICONS[primaryCropName]}</svg></span>`;
+    } else if(primaryCropInfo && FAMILY_ICONS[primaryCropInfo.family]){
+      cropIconHtml = `<span class="cropIcon" style="color:${familyColor(primaryCropInfo.family)};" title="${escapeHtml(primaryCropInfo.family)}"><svg viewBox="0.5 0.5 15 15" width="12" height="12" fill="currentColor" stroke="currentColor">${FAMILY_ICONS[primaryCropInfo.family]}</svg></span>`;
+    }
+
+    let html;
+    if(showFutureCrop){
+      let currentIconHtml = "";
+      if(info.cur && PLANT_ICONS[bed.current]){
+        currentIconHtml = `<span class="cropIcon" title="${escapeHtml(bed.current)}"><svg viewBox="${PLANT_ICON_VIEWBOX[bed.current] || '3 3 34 34'}" width="11" height="11">${PLANT_ICONS[bed.current]}</svg></span>`;
+      } else if(info.cur && FAMILY_ICONS[info.cur.family]){
+        currentIconHtml = `<span class="cropIcon" style="color:${familyColor(info.cur.family)};" title="${escapeHtml(info.cur.family)}"><svg viewBox="0.5 0.5 15 15" width="10" height="10" fill="currentColor" stroke="currentColor">${FAMILY_ICONS[info.cur.family]}</svg></span>`;
+      }
+      html = `<div class="bcurrently">(Currently: ${bed.current ? escapeHtml(bed.current) + currentIconHtml : "empty"})</div>`;
+      html += `<div class="bcrop">${escapeHtml(primaryCropName)}${cropIconHtml}</div>`;
+      html += `<div class="bharvest">${info.nextAction ? `${info.nextAction.label}: ${fmtShort(info.nextAction.date)}` : ""}</div>`;
+    } else {
+      html = `<div class="bcrop">${bed.current ? escapeHtml(bed.current) + cropIconHtml : "— empty —"}</div>`;
+      html += `<div class="bharvest">${info.harvestDate ? "Harvest: "+fmtShort(info.harvestDate) : ""}</div>`;
+      if(bed.next){
+        html += `<div class="bnext">Next: ${escapeHtml(bed.next)}${info.nextAction ? ` — <span class="bnextdate">${info.nextAction.label} ${fmtShort(info.nextAction.date)}</span>` : ""}</div>`;
+      }
     }
     div.innerHTML = html;
 
-    const isPerennialBadgeShown = !editingBackground && info.cur && info.cur.perennial;
+    const isPerennialBadgeShown = !editingBackground && primaryCropInfo && primaryCropInfo.perennial;
     const areaEl = document.createElement("div");
     areaEl.className = "bedAreaLabel";
-    areaEl.textContent = "~" + bedAreaM2(bed).toFixed(1) + " m²";
+    areaEl.textContent = "~" + (unitsToMeters(r.w)*unitsToMeters(r.h)).toFixed(1) + " m²";
     if(isPerennialBadgeShown) areaEl.style.right = "26px";
     div.appendChild(areaEl);
 
@@ -1182,8 +1478,8 @@ function renderBeds(){
         h.className = "handle";
         h.dataset.role = "bedhandle";
         h.dataset.pos = pos; h.dataset.id = bed.id;
-        h.style.left = (bed.x + fx*bed.w) + "px";
-        h.style.top = (bed.y + fy*bed.h) + "px";
+        h.style.left = (r.x + fx*r.w) + "px";
+        h.style.top = (r.y + fy*r.h) + "px";
         world.appendChild(h);
       });
     }
@@ -1349,7 +1645,12 @@ function snapSingle(value, candidates, threshold){
 }
 function bedEdges(excludeId){
   const xs=[], ys=[];
-  STORE.beds.forEach(b=>{ if(b.id===excludeId) return; xs.push(b.x, b.x+b.w); ys.push(b.y, b.y+b.h); });
+  STORE.beds.forEach(b=>{
+    if(b.id===excludeId) return;
+    if(b.futureOnly && !editingFuture) return;
+    const r = getBedRect(b);
+    xs.push(r.x, r.x+r.w); ys.push(r.y, r.y+r.h);
+  });
   return {xs, ys};
 }
 function bgEdges(excludeId){
@@ -1407,6 +1708,7 @@ function startSinglePointer(e){
     if(bgDuplicateIcon){
       const src = STORE.bg.find(x=>x.id===bgDuplicateIcon.dataset.id);
       if(src){
+        snapshotForUndo();
         const copy = JSON.parse(JSON.stringify(src));
         copy.id = "g"+Date.now();
         copy.y = src.y + src.h + 20;
@@ -1419,11 +1721,11 @@ function startSinglePointer(e){
     const bgHandle = e.target.closest('[data-role="bghandle"]');
     const bgEl = e.target.closest('.bgshape');
     if(bgHandle){
-      mode = "bgresize"; activeId = bgHandle.dataset.id; resizePos = bgHandle.dataset.pos;
+      snapshotPendingUndo(); mode = "bgresize"; activeId = bgHandle.dataset.id; resizePos = bgHandle.dataset.pos;
       const s = STORE.bg.find(x=>x.id===activeId);
       startRect = {x:s.x, y:s.y, w:s.w, h:s.h};
     } else if(bgEl){
-      mode = "bgmove"; activeId = bgEl.dataset.id;
+      snapshotPendingUndo(); mode = "bgmove"; activeId = bgEl.dataset.id;
       const s = STORE.bg.find(x=>x.id===activeId);
       startRect = {x:s.x, y:s.y, w:s.w, h:s.h};
     } else {
@@ -1439,19 +1741,31 @@ function startSinglePointer(e){
     const bedHandle = e.target.closest('[data-role="bedhandle"]');
     const bedEl = e.target.closest('.bed');
     if(bedHandle){
-      mode = "resize"; activeId = bedHandle.dataset.id; resizePos = bedHandle.dataset.pos;
+      snapshotPendingUndo(); mode = "resize"; activeId = bedHandle.dataset.id; resizePos = bedHandle.dataset.pos;
       const b = STORE.beds.find(x=>x.id===activeId);
-      startRect = {x:b.x, y:b.y, w:b.w, h:b.h};
-    } else if(bedEl){
-      mode = "move"; activeId = bedEl.dataset.id;
+      startRect = getBedRect(b);
+    } else if(bedEl && !STORE.beds.find(x=>x.id===bedEl.dataset.id).locked){
+      snapshotPendingUndo(); mode = "move"; activeId = bedEl.dataset.id;
       const b = STORE.beds.find(x=>x.id===activeId);
-      startRect = {x:b.x, y:b.y, w:b.w, h:b.h};
+      startRect = getBedRect(b);
     } else {
       if(!tryStartZoomDrag(e)){ mode = "pan"; startPan = {x:panX, y:panY}; }
     }
   }
 }
 
+viewport.addEventListener("wheel", (e)=>{
+  e.preventDefault();
+  const rect = viewport.getBoundingClientRect();
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  const worldX = (mx - panX)/zoom, worldY = (my - panY)/zoom;
+  const delta = -e.deltaY;
+  const factor = Math.pow(1.0025, delta);
+  zoom = clamp(zoom * factor, ZOOM_MIN, ZOOM_MAX);
+  panX = mx - worldX*zoom;
+  panY = my - worldY*zoom;
+  applyTransform(); updateZoomLabels(); saveView();
+}, {passive:false});
 viewport.addEventListener("pointerdown", (e)=>{
   e.preventDefault();
   if(pointers.size > 2){ pointers.clear(); pinch = null; mode = null; activeId = null; resizePos = null; }
@@ -1527,14 +1841,14 @@ viewport.addEventListener("pointermove", (e)=>{
     const bed = STORE.beds.find(b=>b.id===activeId);
     let nx = startRect.x + wdx, ny = startRect.y + wdy;
     const {xs, ys} = bedEdges(activeId);
-    const snL = snapSingle(nx, xs, thresh), snR = snapSingle(nx+bed.w, xs, thresh) - bed.w;
+    const snL = snapSingle(nx, xs, thresh), snR = snapSingle(nx+startRect.w, xs, thresh) - startRect.w;
     nx = Math.abs(snR-nx) < Math.abs(snL-nx) ? snR : snL;
-    const snT = snapSingle(ny, ys, thresh), snB = snapSingle(ny+bed.h, ys, thresh) - bed.h;
+    const snT = snapSingle(ny, ys, thresh), snB = snapSingle(ny+startRect.h, ys, thresh) - startRect.h;
     ny = Math.abs(snB-ny) < Math.abs(snT-ny) ? snB : snT;
-    bed.x = nx; bed.y = ny;
+    setBedRect(bed, nx, ny, startRect.w, startRect.h);
     const el = world.querySelector(`.bed[data-id="${activeId}"]`);
     if(el){ el.style.left = nx+"px"; el.style.top = ny+"px"; }
-    repositionHandles("bedhandle", activeId, nx, ny, bed.w, bed.h);
+    repositionHandles("bedhandle", activeId, nx, ny, startRect.w, startRect.h);
   } else if(mode === "resize"){
     const bed = STORE.beds.find(b=>b.id===activeId);
     let {x,y,w,h} = startRect;
@@ -1544,12 +1858,12 @@ viewport.addEventListener("pointermove", (e)=>{
     if(resizePos.includes("s")){ let bottom = snapSingle(startRect.y+startRect.h+wdy, ys, thresh); h = Math.max(minSize, bottom-y); }
     if(resizePos.includes("w")){ let left = snapSingle(startRect.x+wdx, xs, thresh); let newW = Math.max(minSize, startRect.w+(startRect.x-left)); x = startRect.x+startRect.w-newW; w = newW; }
     if(resizePos.includes("n")){ let top = snapSingle(startRect.y+wdy, ys, thresh); let newH = Math.max(minSize, startRect.h+(startRect.y-top)); y = startRect.y+startRect.h-newH; h = newH; }
-    bed.x=x; bed.y=y; bed.w=w; bed.h=h;
+    setBedRect(bed, x, y, w, h);
     const el = world.querySelector(`.bed[data-id="${activeId}"]`);
     if(el){
       el.style.left=x+"px"; el.style.top=y+"px"; el.style.width=w+"px"; el.style.height=h+"px";
       const areaEl = el.querySelector(".bedAreaLabel");
-      if(areaEl) areaEl.textContent = "~" + bedAreaM2(bed).toFixed(1) + " m²";
+      if(areaEl) areaEl.textContent = "~" + (unitsToMeters(w)*unitsToMeters(h)).toFixed(1) + " m²";
     }
     repositionHandles("bedhandle", activeId, x, y, w, h);
   } else if(mode === "bgmove"){
@@ -1607,10 +1921,11 @@ function endSinglePointer(){
     }
   }
   else if(mode === "zoomdrag"){ saveView(); }
-  else if(mode === "move"){ if(moved) save(); }
-  else if(mode === "resize"){ save(); }
-  else if(mode === "bgmove"){ if(moved) save(); }
-  else if(mode === "bgresize"){ save(); }
+  else if(mode === "move"){ if(moved){ commitPendingUndo(); save(); } }
+  else if(mode === "resize"){ commitPendingUndo(); save(); }
+  else if(mode === "bgmove"){ if(moved){ commitPendingUndo(); save(); } }
+  else if(mode === "bgresize"){ commitPendingUndo(); save(); }
+  pendingUndoSnapshot = null;
   mode = null; activeId = null; resizePos = null;
 }
 
@@ -1632,10 +1947,12 @@ viewport.addEventListener("lostpointercapture", forceReleasePointer);
 viewport.addEventListener("touchmove", (e)=>{ e.preventDefault(); }, {passive:false});
 
 document.getElementById("addBedBtn").addEventListener("click", ()=>{
+  snapshotForUndo();
   const n = STORE.beds.length;
   const c = viewportCenterWorld();
   const w=160, h=100;
   const bed = {id:"b"+Date.now(), name:"Bed "+(n+1), x:c.x-w/2, y:c.y-h/2, w, h,
+    plannedX:c.x-w/2, plannedY:c.y-h/2, plannedW:w, plannedH:h, futureOnly:false,
     color:null, locked:false, current:"", datePlanted:"", next:"", seedDate:"", plantDate:"", harvestDate:"", plantCount:null, notes:""};
   STORE.beds.push(bed); save(); renderBeds(); openEditor(bed.id);
 });
@@ -1719,11 +2036,15 @@ function updateDensity(bed){
   const areaM2 = bedAreaM2(bed);
   edDensityReadout.textContent = bed.plantCount ? `🌱 ${(bed.plantCount/areaM2).toFixed(1)} plants per m²` : "";
 }
+function hasPendingPlan(bed){
+  return bed.futureOnly || bed.plannedX!==bed.x || bed.plannedY!==bed.y || bed.plannedW!==bed.w || bed.plannedH!==bed.h;
+}
 function openEditor(id){
   editingId = id;
   const bed = STORE.beds.find(b=>b.id===id);
   edName.value = bed.name || "";
   updateLockButton(bed);
+  document.getElementById("edApplyPlanField").style.display = hasPendingPlan(bed) ? "block" : "none";
   edPlantCount.value = bed.plantCount || "";
   updateDensity(bed);
   updateColorSwatchSelection(bed.color);
@@ -1739,6 +2060,16 @@ function openEditor(id){
 }
 function closeEditor(){ overlay.hidden = true; editingId = null; renderBeds(); }
 document.getElementById("edClose").addEventListener("click", closeEditor);
+document.getElementById("edApplyPlan").addEventListener("click", ()=>{
+  if(!editingId) return;
+  snapshotForUndo();
+  const bed = STORE.beds.find(b=>b.id===editingId);
+  bed.x = bed.plannedX; bed.y = bed.plannedY; bed.w = bed.plannedW; bed.h = bed.plannedH;
+  bed.futureOnly = false;
+  save();
+  document.getElementById("edApplyPlanField").style.display = "none";
+  renderBeds();
+});
 overlay.addEventListener("click", (e)=>{ if(e.target === overlay) closeEditor(); });
 edPlantCount.addEventListener("input", (e)=>{
   if(!editingId) return;
@@ -1863,6 +2194,7 @@ edNext.addEventListener("change", ()=>{
 document.getElementById("edDelete").addEventListener("click", ()=>{
   if(!editingId) return;
   if(confirm("Delete this bed? This can't be undone.")){
+    snapshotForUndo();
     STORE.beds = STORE.beds.filter(b=>b.id!==editingId);
     save(); closeEditor();
   }
@@ -2003,6 +2335,7 @@ document.getElementById("bgSendBack").addEventListener("click", ()=>{
 document.getElementById("bgDelete").addEventListener("click", ()=>{
   if(!editingBgId) return;
   if(confirm("Delete this shape? This can't be undone.")){
+    snapshotForUndo();
     STORE.bg = STORE.bg.filter(x=>x.id!==editingBgId);
     save(); closeBgEditor();
   }
