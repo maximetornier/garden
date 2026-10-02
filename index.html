@@ -364,6 +364,7 @@
   .dpbPop .dsSwatches{flex-wrap:wrap; max-width:232px;}
   .dpbPop .dsRangeRow{width:220px; max-width:100%;}
   .dpbRow{display:flex; flex-wrap:wrap; gap:6px; align-items:center;}
+  .dpbHint{font-size:11.5px; color:var(--muted); line-height:1.4; max-width:220px;}
   .dpbRow .dsRangeRow{width:180px;}
   .drawParamBar input[type=color]{width:22px; height:22px; border:1.5px solid #000; border-radius:2px; padding:0; background:#fff; flex:0 0 auto; cursor:pointer;}
   .drawParamBar select, .drawParamBar input[type=number], .drawParamBar textarea{padding:5px 8px; font-size:16px; border-radius:2px; border:1.5px solid #000; width:auto;}
@@ -570,6 +571,15 @@
               <div class="dsRangeRow"><input type="range" id="dsWidthSlider" min="0" max="100" value="2"><span class="dsVal" id="dsWidthVal">2</span></div>
               <span class="dsWidthDot" id="dsWidthDot" title="Actual on-screen size"><i></i></span>
             </div>
+          </div>
+        </div>
+
+        <div class="dsGroup" id="dsAxisLockGroup" hidden>
+          <button type="button" class="dpbBtn" id="dpbAxisLockBtn" aria-haspopup="dialog" aria-expanded="false" title="Straighten: Off"><svg class="dpbIco" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M4 20V4"/><path d="M8 16l9-9" stroke-dasharray="2 2.5"/></svg><span class="dpbTxt" id="dpbAxisLockTxt">Straighten Off</span><svg class="dpbChev" viewBox="0 0 10 10"><path d="M2 3.5l3 3 3-3"/></svg></button>
+          <div class="dpbPop" role="dialog" aria-label="Straighten" hidden>
+            <div class="dsLbl">Straighten</div>
+            <div class="dpbRow"><button class="dsMini" id="dsAxisLockToggleBtn" aria-pressed="false">Straighten: Off</button></div>
+            <div class="dpbHint">When on, lines (and dragged line ends) lock to perfectly horizontal or vertical, whichever is closer.</div>
           </div>
         </div>
 
@@ -1396,7 +1406,7 @@ function defaultStore(){
     frostDate: "2026-05-01",
     view: {panX:60, panY:60, zoom:1},
     mapSettings: {bgColor:"#E9E0CB", showGrid:false},
-    drawing: {shapes:[], highlightOpacity:0.35, snapEnabled:true},
+    drawing: {shapes:[], highlightOpacity:0.35, snapEnabled:true, lineAxisLock:false},
     scaleSettings: {showGrid:false, plotWidthM:null, plotLengthM:null, originX:0, originY:0},
     plants: JSON.parse(JSON.stringify(BASE_PLANTS)),
     beds: [
@@ -1416,6 +1426,7 @@ function migrateParsed(parsed){
   if(!parsed.drawing || !Array.isArray(parsed.drawing.shapes)) parsed.drawing = {shapes:[], highlightOpacity:0.35};
   if(parsed.drawing.highlightOpacity === undefined) parsed.drawing.highlightOpacity = 0.35;
   if(parsed.drawing.snapEnabled === undefined) parsed.drawing.snapEnabled = true;
+  if(parsed.drawing.lineAxisLock === undefined) parsed.drawing.lineAxisLock = false;
   if(Array.isArray(parsed.bg)){
     // retired div-based background shapes -> canvas drawing shapes (one-time)
     if(parsed.bg.length) parsed.drawing.shapes = legacyBgToDrawing(parsed.bg, parsed.scaleSettings).concat(parsed.drawing.shapes);
@@ -2874,7 +2885,7 @@ var DRAW = (function(){
   const SVGNS = "http://www.w3.org/2000/svg";
 
   function ds(){
-    if(!STORE.drawing || !Array.isArray(STORE.drawing.shapes)) STORE.drawing = {shapes:[], highlightOpacity:0.35, snapEnabled:true};
+    if(!STORE.drawing || !Array.isArray(STORE.drawing.shapes)) STORE.drawing = {shapes:[], highlightOpacity:0.35, snapEnabled:true, lineAxisLock:false};
     return STORE.drawing;
   }
   function scaleSettings(){
@@ -3909,6 +3920,40 @@ var DRAW = (function(){
     if(best) return {p:best, hit:true};
     return {p, hit:false};
   }
+  // ---- Line "Straighten" (axis lock; persists in STORE.drawing.lineAxisLock, default off) ----
+  // Forces a line's free end onto the horizontal or vertical through its fixed end, whichever is
+  // closer to the drag (|dx| >= |dy| -> horizontal). Snap (when on) may only slide the end ALONG
+  // that axis, so the result is always exactly horizontal / vertical.
+  function lineAxisLockOn(){ return ds().lineAxisLock === true; }
+  function axisConstrain(anchor, raw){
+    const horiz = Math.abs(raw.x - anchor.x) >= Math.abs(raw.y - anchor.y);
+    return {horiz, p: horiz ? {x:raw.x, y:anchor.y} : {x:anchor.x, y:raw.y}};
+  }
+  // Returns {p, hit, marker}: the constrained end, optionally slid along the axis onto a nearby
+  // shape point (aligned with it) or onto where the axis crosses a nearby shape edge.
+  function axisLockedEnd(anchor, raw, excludeId){
+    const c = axisConstrain(anchor, raw);
+    const p = c.p;
+    if(!snapEnabled()) return {p, hit:false, marker:null};
+    const thr = SNAP_PX/zoom;
+    const t = snapTargets(excludeId);
+    const onAxis = (q)=> c.horiz ? {x:q.x, y:anchor.y} : {x:anchor.x, y:q.y};
+    let best = null, bd = thr;
+    t.pts.forEach(q=>{ const d = Math.hypot(q.x-p.x, q.y-p.y); if(d <= bd){ bd = d; best = {p:onAxis(q), marker:{x:q.x, y:q.y}}; } });
+    if(!best){
+      t.segs.forEach(([a,b])=>{
+        // where the axis line crosses segment a-b (if it does)
+        const da = c.horiz ? a.y - anchor.y : a.x - anchor.x;
+        const db = c.horiz ? b.y - anchor.y : b.x - anchor.x;
+        if(da === db || (da > 0 && db > 0) || (da < 0 && db < 0)) return;
+        const k = da / (da - db);
+        const q = onAxis({x:a.x + (b.x-a.x)*k, y:a.y + (b.y-a.y)*k});
+        const d = Math.hypot(q.x-p.x, q.y-p.y);
+        if(d <= bd){ bd = d; best = {p:q, marker:q}; }
+      });
+    }
+    return best ? {p:best.p, hit:true, marker:best.marker} : {p, hit:false, marker:null};
+  }
   // Snap a shape being moved by (dx,dy): the closest of its own snap points to any target wins.
   function snapTranslation(ownPts, dx, dy, excludeId){
     const none = {dx:0, dy:0, marker:null};
@@ -4174,6 +4219,8 @@ var DRAW = (function(){
   const smoothGroup = $("dsSmoothGroup");
   const opacityGroup = $("dsOpacityGroup");
   const fillModeGroup = $("dsFillModeGroup");
+  const axisLockGroup = $("dsAxisLockGroup");
+  const axisLockToggleBtn = $("dsAxisLockToggleBtn");
   const textGroup = $("dsTextGroup");
   const fontGroup = $("dsFontGroup");
   const orderGroup = $("dsOrderGroup");
@@ -4369,7 +4416,7 @@ var DRAW = (function(){
   const widthDotEl = $("dsWidthDot").querySelector("i");
   let paramBarCollapsed = false;
   const paramGroups = [colorGroup, widthGroup, smoothGroup, opacityGroup, fillModeGroup, textGroup, fontGroup,
-                       fillGroup, plantShapeGroup, flowerShapeGroup, plantStyleGroup, plantShadingGroup, borderGroup, orderGroup];
+                       fillGroup, plantShapeGroup, flowerShapeGroup, plantStyleGroup, plantShadingGroup, borderGroup, orderGroup, axisLockGroup];
   function updateWidthDot(w, col){
     const px = Math.max(1, Math.min(26, w * zoom));
     widthDotEl.style.width = px + "px";
@@ -4469,6 +4516,13 @@ var DRAW = (function(){
     $("dpbFontTxt").textContent = (FONT_SHORT[famName] || famName) + " " + fontSizeSlider.value;
     $("dpbFontBtn").title = "Font: " + famName + ", " + fontSizeSlider.value + " px";
 
+    const axOn = lineAxisLockOn();
+    $("dpbAxisLockTxt").textContent = "Straighten " + (axOn ? "On" : "Off");
+    $("dpbAxisLockBtn").title = "Straighten: " + (axOn ? "On (lines lock horizontal / vertical)" : "Off (any angle)");
+    axisLockToggleBtn.textContent = "Straighten: " + (axOn ? "On" : "Off");
+    axisLockToggleBtn.classList.toggle("active", axOn);
+    axisLockToggleBtn.setAttribute("aria-pressed", axOn ? "true" : "false");
+
     const fillSw = $("dpbFillSw");
     fillSw.classList.toggle("none", !sumState.fillOn);
     fillSw.style.background = sumState.fillOn ? (sumState.fillColor || rectFillColor) : "";
@@ -4547,6 +4601,7 @@ var DRAW = (function(){
     smoothGroup.hidden = !(tool === "pen" || tool === "highlighter");
     opacityGroup.hidden = !(tool === "highlighter" || (hasSel && sel.type === "highlight"));
     fillModeGroup.hidden = tool !== "fill";
+    axisLockGroup.hidden = !((toolMode && tool === "line") || (hasSel && sel.type === "line"));
 
     orderGroup.hidden = !hasSel;
     if(hasSel){
@@ -4953,6 +5008,14 @@ var DRAW = (function(){
     syncSnapUI();
   });
 
+  // Straighten toggle (Line tool; persists in STORE.drawing.lineAxisLock). A tool setting only:
+  // it changes how lines are drawn / reshaped from now on, never an existing line's geometry.
+  axisLockToggleBtn.addEventListener("click", ()=>{
+    ds().lineAxisLock = !lineAxisLockOn();
+    persist();
+    syncParamSummaries();
+  });
+
   // collapse / expand the sidebar
   const pageMap = $("page-map");
   function setCollapsed(c){
@@ -5143,6 +5206,7 @@ var DRAW = (function(){
     const steps = Math.max(1, Math.round(d/step));
     const pts = [];
     for(let i=0;i<=steps;i++){ const t = i/steps; pts.push({x:p0.x+(p1.x-p0.x)*t, y:p0.y+(p1.y-p0.y)*t}); }
+    pts[steps] = {x:p1.x, y:p1.y}; // exact end (p0 + (p1-p0)*1 can drift by float rounding)
     return pts;
   }
   function rectInnerBounds(p0, p1, strokeWidth){
@@ -5441,9 +5505,15 @@ var DRAW = (function(){
   function moveLineEndpoint(p){
     const r = resizeDrag;
     let q = {x:r.moving.x + (p.x - r.start.x), y:r.moving.y + (p.y - r.start.y)};
-    const sp = snapPoint(q, r.id);
-    q = sp.p;
-    snapMarker = sp.hit ? sp.p : null;
+    if(lineAxisLockOn()){
+      const al = axisLockedEnd(r.fixed, q, r.id);
+      q = al.p;
+      snapMarker = al.hit ? al.marker : null;
+    } else {
+      const sp = snapPoint(q, r.id);
+      q = sp.p;
+      snapMarker = sp.hit ? sp.p : null;
+    }
     const pts = r.k === "p0" ? subdivide(q, r.fixed, 4) : subdivide(r.fixed, q, 4);
     const ow = (r.orig.widths && r.orig.widths.length) ? r.orig.widths : [width];
     const n = pts.length - 1;
@@ -5629,7 +5699,12 @@ var DRAW = (function(){
     };
   }
   function lineGeom(rawStart, rawEnd){
-    const a = snapPoint(rawStart), b = snapPoint(rawEnd);
+    const a = snapPoint(rawStart);
+    if(lineAxisLockOn()){
+      const b = axisLockedEnd(a.p, rawEnd);
+      return {p0:a.p, p1:b.p, marker: b.hit ? b.marker : (a.hit ? a.p : null)};
+    }
+    const b = snapPoint(rawEnd);
     return {p0:a.p, p1:b.p, marker: b.hit ? b.p : (a.hit ? a.p : null)};
   }
 
@@ -5945,7 +6020,7 @@ var DRAW = (function(){
           undo, resetHistory,
           // exposed for diagnostics / tests
           _state: ()=>({tool, selectedId, ext:Object.assign({}, ext), polyActive, textEditing:!!textEditing,
-                        historyLength:history.length, snapEnabled:snapEnabled(), paramBarCollapsed}),
+                        historyLength:history.length, snapEnabled:snapEnabled(), lineAxisLock:lineAxisLockOn(), paramBarCollapsed}),
           _setTool: setTool, _select: (id)=>{ selectedId = id; renderScene(); }};
 })();
 function renderDrawing(){ if(DRAW) DRAW.refresh(); }
