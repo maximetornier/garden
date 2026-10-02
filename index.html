@@ -47,8 +47,6 @@
   .btn-outline{background:#fff; color:var(--ink); border:1.5px solid #000; box-shadow:none;}
   .undoBtnEl:disabled{opacity:0.3; pointer-events:none;}
   .btn-danger{background:#FEE7E7; color:#C0362C; border:none;}
-  .btn-sun{background:var(--leaf); color:#fff; border:none; box-shadow:0 4px 14px rgba(22,163,74,0.28);}
-  .btn-plot{background:#4B6B8A; color:#fff; border:none; box-shadow:0 4px 14px rgba(75,107,138,0.28);}
   .btn-icon{padding:9px 12px; display:inline-flex; align-items:center; justify-content:center;}
   .zoomGroup{margin-left:auto; display:flex; align-items:center; gap:2px; background:#EFF1ED; border:none; border-radius:2px; overflow:hidden; box-shadow:none;}
   .zoomGroup button{border:none; background:transparent; width:34px; height:34px; font-size:16px; font-weight:700; color:var(--leaf-dark);}
@@ -61,8 +59,8 @@
       repeating-linear-gradient(90deg, rgba(92,70,50,0.07) 0 2px, transparent 2px 26px);
   }
   #world{position:absolute; top:0; left:0; transform-origin:0 0;}
-  .bed, .bgshape{position:absolute; overflow:hidden;}
-  .bed{border-radius:2px; border:1.5px solid rgba(0,0,0,0.16); padding:6px 8px; box-shadow:none; pointer-events:auto;}
+  .bed{position:absolute; overflow:hidden;}
+  .bed{border-radius:1px; border:1px solid #3A3A3A; padding:6px 8px; box-shadow:none; pointer-events:auto;}
   .bgEditing .bed{pointer-events:none; opacity:0.5;}
   .bgEditing.bedsHidden .bed{display:none;}
   .bed .bname{font-size:10px; font-weight:700; color:rgba(0,0,0,0.55); font-family:-apple-system,sans-serif;}
@@ -72,82 +70,31 @@
   .bed .bnext{font-size:10.5px; margin-top:3px; padding-top:3px; border-top:1px dashed rgba(0,0,0,0.15); color:rgba(0,0,0,0.68); font-family:-apple-system,sans-serif;}
   .bed .bnextdate{font-size:10.5px; font-weight:700; color:rgba(0,0,0,0.7); font-family:-apple-system,sans-serif;}
 
-  .lockIcon{position:absolute; top:4px; right:4px; width:20px; height:20px; border-radius:2px; background:rgba(255,255,255,0.9);
-    display:flex; align-items:center; justify-content:center; font-size:10.5px; box-shadow:none; pointer-events:auto; z-index:3;}
-  .openIcon{position:absolute; top:4px; right:4px; width:22px; height:22px; border-radius:2px; background:var(--leaf);
-    color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:none; pointer-events:auto; z-index:3;}
-  .openIcon:active{transform:scale(0.9);}
+  .bedOpenTriangle{
+    position:absolute; top:0; right:0; width:0; height:0;
+    border-style:solid; border-width:0 16px 16px 0;
+    border-color:transparent var(--leaf) transparent transparent;
+    pointer-events:auto; z-index:3;
+  }
+  .bedOpenTriangle:active{opacity:0.7;}
   .perennialBadge{position:absolute; bottom:4px; right:4px; width:18px; height:18px; border-radius:50%; background:var(--leaf-dark);
     color:#fff; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; box-shadow:none; z-index:3;}
   .bedAreaLabel{position:absolute; bottom:4px; right:4px; font-size:9.5px; font-weight:700; color:var(--muted); font-family:-apple-system,sans-serif; pointer-events:none;}
   .cropIcon{display:inline-flex; align-items:center; justify-content:center; vertical-align:-2.5px; margin-left:4px; pointer-events:none;}
-  .bgDeleteIcon{position:absolute; top:4px; left:4px; width:20px; height:20px; border-radius:2px; background:var(--danger);
-    color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:none; pointer-events:auto; z-index:3;}
-  .bgDuplicateIcon{position:absolute; width:20px; height:20px; border-radius:2px; background:#3B82F6;
-    color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:none; pointer-events:auto; z-index:3;}
-  .bgDuplicateIcon:active{transform:scale(0.9);}
-  .bgDimChip{position:absolute; transform:translate(-50%, -50%); background:rgba(0,0,0,0.6); color:#fff; font-size:9px; font-weight:700;
-    padding:2px 6px; border-radius:2px; font-family:-apple-system,sans-serif; pointer-events:none; white-space:nowrap; z-index:4;}
-  .bgDeleteIcon:active{transform:scale(0.9);}
 
-  .bgshape{border:1.5px solid rgba(0,0,0,0.14); pointer-events:none;}
-  .bgLabel{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; padding:6px;
-    font-size:12px; font-weight:700; color:#fff;
-    font-family:-apple-system,sans-serif; pointer-events:none; overflow-wrap:anywhere;}
-  .bgEditing .bgshape{pointer-events:auto;}
-  .bgshape.rect{border-radius:10px;}
-  .bgshape.circle{border-radius:50%;}
-  .bgshape.plot{border-radius:0;}
-  .bgshape.tree{
-    border-radius:58% 42% 61% 39% / 41% 55% 45% 59%;
-    box-shadow: inset 0 0 0 2px rgba(20,60,20,0.18);
-  }
-
-  .pattern-grass, .swPreview.pattern-grass{
-    background-color:#8FA05A;
-    background-image: repeating-linear-gradient(45deg, #7C8E49 0 2px, transparent 2px 8px);
-  }
-  .pattern-dirt, .swPreview.pattern-dirt{
-    background-color:#B36B45;
-    background-image: radial-gradient(circle, #8F5334 1.3px, transparent 1.3px);
-    background-size: 9px 9px;
-  }
-  .pattern-rocks, .swPreview.pattern-rocks{
-    background-color:#C9BFA8;
-    background-image: radial-gradient(circle, #A79A7C 1.3px, transparent 1.3px);
-    background-size: 10px 10px;
-  }
-  .patternRow{display:flex; gap:6px; flex-wrap:wrap; align-items:center;}
-  .patternSwatch{flex:1 1 26%; min-width:56px; border:1.5px solid var(--line); border-radius:14px; padding:8px 4px 6px; background:#fff;
-    display:flex; flex-direction:column; align-items:center; gap:5px; font-size:10.5px; font-weight:700; color:var(--ink); font-family:-apple-system,sans-serif;}
-  .patternSwatch.selected{border-color:var(--leaf); background:#EEFBF1;}
-  .swPreview{width:32px; height:32px; border-radius:10px; border:1px solid rgba(0,0,0,0.15);}
-  .swPreview.pv-none{background-image:linear-gradient(45deg,#ddd 25%,transparent 25%,transparent 75%,#ddd 75%),linear-gradient(45deg,#ddd 25%,transparent 25%,transparent 75%,#ddd 75%); background-size:8px 8px; background-position:0 0,4px 4px;}
-  .patternSwatchSm{display:flex; flex-direction:column; align-items:center; gap:3px; border:1.5px solid var(--line); border-radius:10px; padding:4px 3px; background:#fff; flex-shrink:0;}
-  .patternSwatchSm.selected{border-color:var(--leaf);}
-  .patternSwatchLabel{font-size:8px; font-weight:700; color:var(--muted); font-family:-apple-system,sans-serif;}
-  .patternSwatchSm.selected .patternSwatchLabel{color:var(--leaf-dark);}
   .colorSwatchRow{display:flex; gap:12px;}
   .colorSwatchBtn{width:36px; height:36px; border-radius:50%; border:2px solid var(--line); box-shadow:inset 0 0 0 2px #fff; flex-shrink:0;}
   .colorSwatchBtn.selected{border-color:var(--leaf-dark); border-width:3px;}
   .colorSwatchBtn:active{transform:scale(0.9);}
-  .swPreviewSm{width:26px; height:26px; border-radius:7px;}
-  .swPreviewSm.pv-none{background-image:linear-gradient(45deg,#ddd 25%,transparent 25%,transparent 75%,#ddd 75%),linear-gradient(45deg,#ddd 25%,transparent 25%,transparent 75%,#ddd 75%); background-size:6px 6px; background-position:0 0,3px 3px;}
   .bgAppearanceCard{background:#F3F1EA; border-radius:2px; padding:14px; margin-bottom:14px;}
   .bgAppearanceCard label{display:block; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--muted); margin-bottom:8px; font-family:-apple-system,sans-serif;}
-  .bgSizeChip{font-size:12px; font-weight:700; color:var(--muted); font-family:-apple-system,sans-serif; white-space:nowrap; flex-shrink:0;}
   .menuActionBtn{flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; padding:16px 10px; border-radius:2px; border:none;
     background:#fff; font-family:-apple-system,sans-serif; font-size:13px; font-weight:700; color:var(--ink); box-shadow:none;}
   .menuActionBtn:active{transform:scale(0.96);}
 
-  .treeStyleRow{display:flex; gap:6px;}
-  .treeStyleSwatch{flex:1; border:1.5px solid var(--line); border-radius:14px; padding:8px 4px 6px; background:#fff;
-    display:flex; flex-direction:column; align-items:center; gap:5px; font-size:10.5px; font-weight:700; color:var(--ink); font-family:-apple-system,sans-serif;}
-  .treeStyleSwatch.selected{border-color:var(--leaf); background:#EEFBF1;}
 
   .handle{position:absolute; width:20px; height:20px; margin-left:-10px; margin-top:-10px; border-radius:50%;
     background:#fff; border:2.5px solid var(--leaf-dark); box-shadow:0 2px 6px rgba(0,0,0,0.25); pointer-events:auto; z-index:2;}
-  .handle.bgh{border-color:var(--sun);}
 
   .sheetOverlay{position:fixed; inset:0; background:rgba(12,14,12,0.5); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px); z-index:100; display:flex; align-items:flex-end;}
   .sheetOverlay[hidden]{display:none;}
@@ -236,6 +183,85 @@
   .plantDetail{margin-top:8px; font-size:12.5px; color:#4B5563; line-height:1.6; font-family:-apple-system,sans-serif;}
   .plantDetail b{color:var(--ink);}
   .empty{text-align:center; color:var(--muted); padding:40px 20px; font-size:13.5px; font-family:-apple-system,sans-serif;}
+
+  /* ---- background drawing layers (children of #world, so they share its pan/zoom transform) ---- */
+  .drawLayer{position:absolute; left:0; top:0; pointer-events:none;}
+  .drawScaleOverlay{position:absolute; left:0; top:0; overflow:visible; pointer-events:none;}
+  .drawOverlay{position:absolute; left:0; top:0; width:0; height:0; overflow:visible; z-index:6; pointer-events:none;}
+  .drawCrosshair{position:absolute; box-sizing:border-box; border-radius:50%; border:1.5px solid rgba(20,24,27,0.55); background:rgba(20,24,27,0.06); transform:translate(-50%,-50%); display:none;}
+  .drawCloseRing{position:absolute; box-sizing:border-box; border-radius:50%; border:2px solid #2E6F9E; transform:translate(-50%,-50%); display:none;}
+  .drawDeleteFab{position:absolute; width:26px; height:26px; border-radius:2px; border:1.5px solid #000; background:var(--danger); color:#fff;
+    display:none; align-items:center; justify-content:center; padding:0; pointer-events:auto; cursor:pointer; z-index:2;}
+  .drawTextEditor{position:absolute; box-sizing:content-box; margin:0; padding:0; border:none; border-radius:0; outline:1.5px dashed #2E6F9E;
+    background:rgba(255,255,255,0.78); line-height:1.25; resize:none; overflow:hidden; white-space:pre; pointer-events:auto; min-height:0; min-width:12px;}
+  .drawTextEditor[hidden]{display:none;}
+
+  /* ---- background drawing sidebar ---- */
+  .drawSidebar{position:absolute; top:0; left:0; bottom:0; width:224px; z-index:12; background:var(--card); border-right:1.5px solid #000;
+    display:flex; flex-direction:column; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; touch-action:pan-y; font-family:-apple-system,sans-serif;}
+  .drawSidebar[hidden]{display:none;}
+  #page-map.drawEditing #canvasViewport{left:224px;}
+  #page-map.drawEditing.dsCollapsed #canvasViewport{left:56px;}
+  .drawSidebar.collapsed{width:56px;}
+  .dsHead{flex:0 0 auto; padding:12px 12px 10px; border-bottom:1px solid var(--line);}
+  .dsHeadRow{display:flex; align-items:center; gap:6px;}
+  .dsTitle{font-size:14px; font-weight:800; letter-spacing:-0.01em; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .dsSub{font-size:11.5px; color:var(--muted); margin-top:2px;}
+  .dsBtnRow{display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;}
+  .dsBtn{border:1.5px solid #000; border-radius:2px; background:#fff; color:var(--ink); font-size:12px; font-weight:700; padding:6px 9px;
+    display:inline-flex; align-items:center; justify-content:center; gap:5px; font-family:-apple-system,sans-serif; cursor:pointer;}
+  .dsBtn svg{width:14px; height:14px; display:block; flex:0 0 auto;}
+  .dsBtn:active{transform:scale(0.96);}
+  .dsBtn:disabled, .dsBtn.undoBtnEl:disabled{opacity:0.3; pointer-events:none;}
+  .dsBtn.active{background:var(--leaf); border-color:var(--leaf); color:#fff;}
+  .dsIconOnly{padding:6px 7px;}
+  .dsTools{flex:0 0 auto; padding:8px; display:flex; flex-direction:column; gap:2px; border-bottom:1px solid var(--line);}
+  .dsTool{display:flex; align-items:center; gap:10px; width:100%; padding:7px 9px; border:1.5px solid transparent; border-radius:2px; background:transparent;
+    font-size:13px; font-weight:600; color:var(--ink); text-align:left; font-family:-apple-system,sans-serif; cursor:pointer;}
+  .dsTool:hover{background:#F2F4F0;}
+  .dsTool.active{background:#EEFBF1; border-color:var(--leaf); color:var(--leaf-dark); font-weight:700;}
+  .dsTool svg{width:18px; height:18px; display:block; flex:0 0 auto;}
+  .dsDivider{height:1px; background:var(--line); margin:4px 2px;}
+  .dsPanel{flex:0 0 auto; padding:12px; display:flex; flex-direction:column; gap:12px; border-bottom:1px solid var(--line);}
+  .dsGroup{display:flex; flex-wrap:wrap; gap:6px; align-items:center;}
+  .dsGroup[hidden]{display:none;}
+  .dsLbl{flex:0 0 100%; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--muted);}
+  .dsSwatches{display:flex; flex-wrap:wrap; gap:6px; align-items:center;}
+  .dsSw{width:22px; height:22px; border-radius:2px; border:1.5px solid rgba(0,0,0,0.2); padding:0; cursor:pointer; flex:0 0 auto;}
+  .dsSw.active{border:2px solid #000; box-shadow:inset 0 0 0 2px #fff;}
+  .drawSidebar input[type=color]{width:22px; height:22px; border:1.5px solid #000; border-radius:2px; padding:0; background:#fff; flex:0 0 auto; cursor:pointer;}
+  .dsRangeRow{display:flex; align-items:center; gap:8px; width:100%;}
+  .dsRangeRow input[type=range]{flex:1 1 auto; min-width:0; accent-color:var(--leaf);}
+  .dsVal{width:30px; text-align:right; font-size:12px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums; flex:0 0 auto;}
+  .dsMini{border:1.5px solid #000; border-radius:2px; background:#fff; color:var(--ink); font-size:11.5px; font-weight:700; padding:5px 7px;
+    display:inline-flex; align-items:center; justify-content:center; gap:4px; font-family:-apple-system,sans-serif; cursor:pointer; flex:0 0 auto;}
+  .dsMini svg{width:14px; height:14px; display:block;}
+  .dsMini.active{background:var(--leaf); border-color:var(--leaf); color:#fff;}
+  .dsMini:disabled{opacity:0.3; cursor:default;}
+  .dsMini.danger{background:#FDEBEA; border-color:#B23A2A; color:#B23A2A;}
+  .dsPlantPreview{width:22px; height:22px; display:block;}
+  .drawSidebar select, .drawSidebar input[type=number], .drawSidebar textarea{padding:6px 8px; font-size:16px; border-radius:2px; border:1.5px solid #000;}
+  .drawSidebar textarea{min-height:52px;}
+  .dsNote{flex:0 0 auto; font-size:11.5px; color:var(--muted); line-height:1.45; padding:10px 12px; border-bottom:1px solid var(--line);}
+  .dsSection{flex:0 0 auto; padding:12px; display:flex; flex-direction:column; gap:8px; border-bottom:1px solid var(--line);}
+  .dsSectionTitle{font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--muted);}
+  .dsTwoCol{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .dsTwoCol label{display:block; font-size:10.5px; font-weight:700; color:var(--muted); margin-bottom:3px;}
+  .dsReadout{font-size:11.5px; color:var(--leaf-dark); background:#EEFBF1; border-radius:2px; padding:7px 9px; line-height:1.4;}
+  .dsFooter{margin-top:auto; flex:0 0 auto; padding:10px 12px calc(10px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; gap:8px; border-top:1px solid var(--line);}
+  .dsFooterRow{display:flex; gap:6px; align-items:center;}
+  .dsFooter .zoomGroup{margin-left:0; flex:1; justify-content:space-between;}
+  .dsDone{width:100%;}
+  .drawSidebar.collapsed .dsLabel, .drawSidebar.collapsed .dsTitle, .drawSidebar.collapsed .dsSub,
+  .drawSidebar.collapsed .dsPanel, .drawSidebar.collapsed .dsNote, .drawSidebar.collapsed .dsSection,
+  .drawSidebar.collapsed .dsHideCollapsed{display:none !important;}
+  .drawSidebar.collapsed .dsHead{padding:8px;}
+  .drawSidebar.collapsed .dsHeadRow, .drawSidebar.collapsed .dsBtnRow{flex-direction:column; margin-top:6px;}
+  .drawSidebar.collapsed .dsTools{padding:6px;}
+  .drawSidebar.collapsed .dsTool{justify-content:center; padding:7px 0;}
+  .drawSidebar.collapsed .dsFooter{padding:8px 6px;}
+  .drawSidebar.collapsed .dsDone{padding:9px 0;}
+  .drawSidebar.collapsed #dsCollapseBtn svg{transform:rotate(180deg);}
 </style>
 </head>
 <body>
@@ -271,9 +297,10 @@
     </div>
     <div class="mapToolbar" id="futureToolbar" style="display:none;">
       <button class="btn btn-leaf" id="addFutureBedBtn">+ Add Bed</button>
+      <button class="btn btn-outline" id="futureDoneBtn"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:4px;"><path d="M4 12.5l5 5L20 6"/></svg>Done</button>
       <div style="margin-left:auto; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <button class="btn btn-outline btn-icon" id="resetAllFutureBtn" aria-label="Reset All Future Plans" title="Reset All Future Plans"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
         <button class="btn btn-outline btn-icon undoBtnEl" aria-label="Undo" disabled><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8H4V4"/><path d="M4 8c2.4-2.4 5-4 8-4a9 9 0 110 18"/></svg></button>
-        <button class="btn btn-outline" id="futureDoneBtn"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:4px;"><path d="M4 12.5l5 5L20 6"/></svg>Done</button>
         <div class="zoomGroup">
           <button id="zoomOut3">−</button>
           <div class="zlabel" id="zoomLabel3">100%</div>
@@ -281,22 +308,171 @@
         </div>
       </div>
     </div>
-    <div class="mapToolbar" id="bgToolbar" style="display:none;">
-      <button class="btn btn-plot" id="addPlotBtn">📐 Plot</button>
-      <button class="btn btn-sun" id="addRectBtn">+ Rectangle</button>
-      <button class="btn btn-sun" id="addCircleBtn">+ Circle</button>
-      <button class="btn btn-sun" id="addTreeBtn">+ Tree</button>
-      <button class="btn btn-outline" id="bedsToggleBtn">Show beds</button>
-      <button class="btn btn-outline btn-icon undoBtnEl" aria-label="Undo" disabled><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8H4V4"/><path d="M4 8c2.4-2.4 5-4 8-4a9 9 0 110 18"/></svg></button>
-      <button class="btn btn-outline btn-icon" id="settingsBtn" aria-label="Map Settings"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2.2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2.2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2.2" fill="currentColor" stroke="none"/></svg></button>
-      <button class="btn btn-outline" id="bgDoneBtn"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:4px;"><path d="M4 12.5l5 5L20 6"/></svg>Done</button>
-      <div class="zoomGroup">
-        <button id="zoomOut2">−</button>
-        <div class="zlabel" id="zoomLabel2">100%</div>
-        <button id="zoomIn2">+</button>
+  </div>
+  <aside class="drawSidebar" id="drawSidebar" hidden>
+    <div class="dsHead">
+      <div class="dsHeadRow">
+        <div class="dsTitle">Background</div>
+        <button class="dsBtn dsIconOnly" id="dsCollapseBtn" title="Collapse sidebar" aria-label="Collapse sidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      </div>
+      <div class="dsSub" id="dsModeLabel">Pen · freehand drawing</div>
+      <div class="dsBtnRow">
+        <button class="dsBtn undoBtnEl" aria-label="Undo" title="Undo" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8H4V4"/><path d="M4 8c2.4-2.4 5-4 8-4a9 9 0 110 18"/></svg><span class="dsLabel">Undo</span></button>
+        <button class="dsBtn dsHideCollapsed" id="dsClearBtn" title="Clear all background drawing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/></svg><span class="dsLabel">Clear</span></button>
       </div>
     </div>
-  </div>
+
+    <div class="dsTools" id="dsToolList">
+      <button class="dsTool" data-tool="select" title="Select / move / delete">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5 18.5 10l-5.6 1.9L10 18.5z"/></svg><span class="dsLabel">Select</span>
+      </button>
+      <div class="dsDivider"></div>
+      <button class="dsTool active" data-tool="pen" title="Pen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 6.5 17.5 11.5 7 22H3v-4Z"/><path d="M16 5l3 3"/></svg><span class="dsLabel">Pen</span>
+      </button>
+      <button class="dsTool" data-tool="highlighter" title="Highlighter">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m8.5 15.5-4 4.5 4.5-1 9-9-3.5-3.5Z"/><path d="M13.5 6.5 17.5 10.5"/><path d="M4.5 20h5"/></svg><span class="dsLabel">Highlight</span>
+      </button>
+      <button class="dsTool" data-tool="fill" title="Fill (bucket)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3 4 10a2 2 0 0 0 0 2.8l5.2 5.2a2 2 0 0 0 2.8 0l7-7Z"/><path d="M4.5 11h11.5"/><circle cx="19" cy="18" r="2.2"/></svg><span class="dsLabel">Fill</span>
+      </button>
+      <button class="dsTool" data-tool="eraser" title="Eraser">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 4.5 20 8l-9.5 9.5H7L3.5 14Z"/><path d="M10.5 18H20"/></svg><span class="dsLabel">Erase</span>
+      </button>
+      <div class="dsDivider"></div>
+      <button class="dsTool" data-tool="rect" title="Rectangle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="4.5" y="6.5" width="15" height="11" rx="1"/></svg><span class="dsLabel">Rectangle</span>
+      </button>
+      <button class="dsTool" data-tool="line" title="Straight line">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M5 19 19 5"/><circle cx="5" cy="19" r="1.4" fill="currentColor" stroke="none"/><circle cx="19" cy="5" r="1.4" fill="currentColor" stroke="none"/></svg><span class="dsLabel">Line</span>
+      </button>
+      <button class="dsTool" data-tool="polygon" title="Polygon (click corners, close the loop)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"><path d="M12 3.5 20 9l-3 11H7L4 9Z"/></svg><span class="dsLabel">Polygon</span>
+      </button>
+      <button class="dsTool" data-tool="plant" title="Tree/bush stamp">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round"><path d="M12 21v-5.5"/><path d="M12 15.5a6 6 0 0 0 6-6 6 6 0 0 0-6-4 6 6 0 0 0-6 4 6 6 0 0 0 6 6Z"/></svg><span class="dsLabel">Tree/Bush</span>
+      </button>
+      <button class="dsTool" data-tool="text" title="Text">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7V4.5h14V7"/><path d="M12 4.5v15"/><path d="M9 19.5h6"/></svg><span class="dsLabel">Text</span>
+      </button>
+    </div>
+
+    <div class="dsPanel" id="dsParamPanel">
+      <div class="dsGroup" id="dsColorGroup">
+        <div class="dsLbl">Colour</div>
+        <div class="dsSwatches" id="dsColorSwatches">
+          <button class="dsSw active" style="background:#14181B" data-color="#14181B" title="Ink"></button>
+          <button class="dsSw" style="background:#3F6B3F" data-color="#3F6B3F" title="Leaf"></button>
+          <button class="dsSw" style="background:#A0522D" data-color="#A0522D" title="Earth"></button>
+          <button class="dsSw" style="background:#C0392B" data-color="#C0392B" title="Red"></button>
+          <button class="dsSw" style="background:#2E6F9E" data-color="#2E6F9E" title="Blue"></button>
+          <button class="dsSw" style="background:#D6B13A" data-color="#D6B13A" title="Yellow"></button>
+          <input type="color" id="dsCustomColor" value="#14181B" title="Custom colour">
+        </div>
+      </div>
+
+      <div class="dsGroup" id="dsWidthGroup">
+        <div class="dsLbl">Width</div>
+        <div class="dsRangeRow"><input type="range" id="dsWidthSlider" min="2" max="100" value="2"><span class="dsVal" id="dsWidthVal">2</span></div>
+      </div>
+
+      <div class="dsGroup" id="dsSmoothGroup">
+        <div class="dsLbl">Smoothing</div>
+        <div class="dsRangeRow"><input type="range" id="dsSmoothSlider" min="0" max="100" value="55"><span class="dsVal" id="dsSmoothVal">55</span></div>
+      </div>
+
+      <div class="dsGroup" id="dsOpacityGroup" hidden>
+        <div class="dsLbl">Highlighter opacity</div>
+        <div class="dsRangeRow"><input type="range" id="dsOpacitySlider" min="10" max="80" value="35"><span class="dsVal" id="dsOpacityVal">35</span></div>
+      </div>
+
+      <div class="dsGroup" id="dsFillModeGroup" hidden>
+        <div class="dsLbl">Mode</div>
+        <select id="dsFillModeSelect">
+          <option value="closed">Fill closed shape</option>
+          <option value="wash">Colour wash (background)</option>
+        </select>
+      </div>
+
+      <div class="dsGroup" id="dsTextGroup" hidden>
+        <div class="dsLbl">Text</div>
+        <textarea id="dsTextContent" rows="2" placeholder="Type anything…" style="width:100%;"></textarea>
+      </div>
+
+      <div class="dsGroup" id="dsFontGroup" hidden>
+        <div class="dsLbl">Font size</div>
+        <div class="dsRangeRow"><input type="range" id="dsFontSizeSlider" min="8" max="200" value="28"><span class="dsVal" id="dsFontSizeVal">28</span></div>
+        <select id="dsFontFamily" style="width:100%;">
+          <option value="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif">Sans-serif</option>
+          <option value="Georgia, 'Times New Roman', serif">Serif</option>
+          <option value="'Courier New', monospace">Monospace</option>
+          <option value="'Bradley Hand', 'Segoe Print', cursive">Handwritten</option>
+        </select>
+      </div>
+
+      <div class="dsGroup" id="dsFillGroup" hidden>
+        <div class="dsLbl">Fill</div>
+        <button class="dsMini" id="dsFillToggleBtn">Fill: Off</button>
+        <div class="dsSwatches" id="dsFillSwatches">
+          <button class="dsSw" style="background:#3F6B3F" data-fillcolor="#3F6B3F" title="Leaf"></button>
+          <button class="dsSw" style="background:#A0522D" data-fillcolor="#A0522D" title="Earth"></button>
+          <button class="dsSw" style="background:#C0392B" data-fillcolor="#C0392B" title="Red"></button>
+          <button class="dsSw" style="background:#2E6F9E" data-fillcolor="#2E6F9E" title="Blue"></button>
+          <button class="dsSw" style="background:#D6B13A" data-fillcolor="#D6B13A" title="Yellow"></button>
+          <input type="color" id="dsFillCustomColor" value="#3F6B3F" title="Custom fill colour">
+        </div>
+      </div>
+
+      <div class="dsGroup" id="dsPlantShapeGroup" hidden>
+        <div class="dsLbl">Shape</div>
+        <button class="dsMini active" data-shapekind="round" title="Round"><canvas class="dsPlantPreview"></canvas>A</button>
+        <button class="dsMini" data-shapekind="oak" title="Oak"><canvas class="dsPlantPreview"></canvas>B</button>
+        <button class="dsMini" data-shapekind="apple" title="Apple"><canvas class="dsPlantPreview"></canvas>C</button>
+        <button class="dsMini" data-shapekind="pine" title="Pine"><canvas class="dsPlantPreview"></canvas>D</button>
+      </div>
+
+      <div class="dsGroup" id="dsPlantStyleGroup" hidden>
+        <div class="dsLbl">Style</div>
+        <button class="dsMini active" data-plantstyle="filled">Filled</button>
+        <button class="dsMini" data-plantstyle="outline">Outline</button>
+      </div>
+
+      <div class="dsGroup" id="dsOrderGroup" hidden>
+        <div class="dsLbl">Arrange</div>
+        <button class="dsMini" id="dsSendToBackBtn" title="Send to back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg></button>
+        <button class="dsMini" id="dsSendBackBtn" title="Send backward"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M7 14l5 5 5-5"/></svg></button>
+        <button class="dsMini" id="dsBringFwdBtn" title="Bring forward"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M7 10l5-5 5 5"/></svg></button>
+        <button class="dsMini" id="dsBringToFrontBtn" title="Bring to front"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V8"/><path d="M7 13l5-5 5 5"/><path d="M5 4h14"/></svg></button>
+        <button class="dsMini danger" id="dsDeleteBtn" title="Delete selected shape"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/><path d="M6 7l1 13a1 1 0 001 1h8a1 1 0 001-1l1-13"/></svg></button>
+      </div>
+    </div>
+    <div class="dsNote" id="dsModeNote">Draw with your finger or mouse.</div>
+
+    <div class="dsSection" id="dsScaleSection">
+      <div class="dsSectionTitle">Scale</div>
+      <button class="dsMini" id="dsGridToggleBtn" style="width:100%;">1 m grid: Off</button>
+      <div class="dsTwoCol">
+        <div><label for="dsPlotWidth">Plot width (m)</label><input type="number" id="dsPlotWidth" min="0" step="0.1" placeholder="—"></div>
+        <div><label for="dsPlotLength">Plot length (m)</label><input type="number" id="dsPlotLength" min="0" step="0.1" placeholder="—"></div>
+      </div>
+      <div class="dsReadout" id="dsScaleReadout">1 map unit = 1 cm. Grid squares are 1 m × 1 m.</div>
+    </div>
+
+    <div class="dsFooter">
+      <div class="dsFooterRow dsHideCollapsed">
+        <button class="dsBtn" id="bedsToggleBtn" style="flex:1;">Show beds</button>
+        <button class="dsBtn dsIconOnly" id="settingsBtn" aria-label="Map Settings" title="Map Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2.2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2.2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2.2" fill="currentColor" stroke="none"/></svg></button>
+      </div>
+      <div class="dsFooterRow dsHideCollapsed">
+        <div class="zoomGroup">
+          <button id="zoomOut2">−</button>
+          <div class="zlabel" id="zoomLabel2">100%</div>
+          <button id="zoomIn2">+</button>
+        </div>
+      </div>
+      <button class="btn btn-leaf dsDone" id="bgDoneBtn" title="Done"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;"><path d="M4 12.5l5 5L20 6"/></svg><span class="dsLabel" style="margin-left:4px;">Done</span></button>
+    </div>
+  </aside>
   <div id="canvasViewport"><div id="world"></div></div>
 </div>
 
@@ -389,90 +565,37 @@
         <button class="colorSwatchBtn" data-color="#BA7517" style="background:#BA7517;" title="Amber"></button>
         <button class="colorSwatchBtn" data-color="#639922" style="background:#639922;" title="Green"></button>
         <button class="colorSwatchBtn" data-color="#378ADD" style="background:#378ADD;" title="Blue"></button>
+        <input type="color" id="edCustomColor" style="width:36px; height:36px; border-radius:50%; border:2px solid var(--line); padding:0; flex-shrink:0;" title="Custom color">
+      </div>
+      <div style="margin-top:12px;">
+        <label>Background Opacity <span style="font-weight:400; text-transform:none; color:var(--muted);" id="edOpacityValue">90%</span></label>
+        <input type="range" id="edOpacity" min="10" max="100" step="5" style="width:100%;">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Border Color <span style="font-weight:400; text-transform:none; color:var(--muted);">(1px, fixed)</span></label>
+      <div class="colorSwatchRow" id="edBorderColorSwatches">
+        <button class="colorSwatchBtn" data-bordercolor="#000000" style="background:#000000;" title="Black"></button>
+        <button class="colorSwatchBtn" data-bordercolor="#FFFFFF" style="background:#FFFFFF;" title="White"></button>
+        <button class="colorSwatchBtn" data-bordercolor="#E24B4A" style="background:#E24B4A;" title="Red"></button>
+        <button class="colorSwatchBtn" data-bordercolor="#BA7517" style="background:#BA7517;" title="Amber"></button>
+        <button class="colorSwatchBtn" data-bordercolor="#639922" style="background:#639922;" title="Green"></button>
+        <button class="colorSwatchBtn" data-bordercolor="#378ADD" style="background:#378ADD;" title="Blue"></button>
+        <input type="color" id="edCustomBorderColor" style="width:36px; height:36px; border-radius:50%; border:2px solid var(--line); padding:0; flex-shrink:0;" title="Custom color">
       </div>
     </div>
 
     <div class="field" id="edApplyPlanField" style="display:none;">
       <div style="background:#FCF1DC; border-radius:2px; padding:12px;">
         <div style="font-size:12.5px; color:#8A5A16; margin-bottom:8px; display:flex; align-items:center; gap:6px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#8A5A16" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg><span>This bed has a planned layout that isn't applied yet.</span></div>
-        <button class="btn btn-leaf" id="edApplyPlan" style="width:100%;">✓ Apply Planned Layout Now</button>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-outline" id="edResetPlan" style="flex:1;">↺ Reset to Current</button>
+          <button class="btn btn-leaf" id="edApplyPlan" style="flex:1;">✓ Apply Planned Layout</button>
+        </div>
       </div>
     </div>
 
-    </div>
-  </div>
-</div>
-
-<!-- BACKGROUND SHAPE EDITOR -->
-<div class="sheetOverlay" id="bgEditorOverlay" hidden>
-  <div class="sheet stickyHead">
-    <div class="sheetFixedTop">
-      <div class="sheetHandle"></div>
-      <div class="sheetHead">
-        <div class="stitle" id="bgShapeLabel">Shape</div>
-        <div class="bgSizeChip" id="bgSizeReadout"></div>
-        <button class="deleteToggleSmall" id="bgDelete" title="Delete shape"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/><path d="M6 7l1 13a1 1 0 001 1h8a1 1 0 001-1l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
-        <button class="lockToggleSmall" id="bgLockToggle" title="Tap to lock/unlock">🔓</button>
-        <button class="btn btn-outline doneBtn" id="bgClose"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:4px;"><path d="M4 12.5l5 5L20 6"/></svg>Done</button>
-      </div>
-    </div>
-    <div class="sheetScrollBody">
-    <div class="field" id="bgPlotField">
-      <label>Real-World Dimensions <span style="font-weight:400; text-transform:none; color:var(--muted);">(sets your garden's scale)</span></label>
-      <label style="font-size:10.5px; text-transform:none; color:var(--muted); margin-bottom:4px;">Width (m)</label>
-      <div class="stepperRow" style="margin-bottom:8px;">
-        <button type="button" class="stepperBtn" id="bgPlotWidthMinus">−</button>
-        <input type="number" id="bgPlotWidth" min="0.1" step="0.1">
-        <button type="button" class="stepperBtn" id="bgPlotWidthPlus">+</button>
-      </div>
-      <label style="font-size:10.5px; text-transform:none; color:var(--muted); margin-bottom:4px;">Length (m)</label>
-      <div class="stepperRow" style="margin-bottom:8px;">
-        <button type="button" class="stepperBtn" id="bgPlotLengthMinus">−</button>
-        <input type="number" id="bgPlotLength" min="0.1" step="0.1">
-        <button type="button" class="stepperBtn" id="bgPlotLengthPlus">+</button>
-      </div>
-      <div class="readout" id="bgPlotScaleReadout"></div>
-    </div>
-    <div class="field" id="bgTreeStyleField">
-      <label>Tree Shape</label>
-      <div class="treeStyleRow">
-        <button class="treeStyleSwatch" data-treestyle="round">Round</button>
-        <button class="treeStyleSwatch" data-treestyle="star">Star</button>
-      </div>
-    </div>
-
-    <div class="bgAppearanceCard">
-      <label>Fill & color</label>
-      <div class="patternRow">
-        <button class="patternSwatchSm" data-pattern="none" title="Plain"><div class="swPreviewSm pv-none"></div><span class="patternSwatchLabel">Plain</span></button>
-        <input type="color" id="bgColor">
-        <button class="patternSwatchSm textureSwatch" data-pattern="grass" title="Grass"><div class="swPreviewSm pattern-grass"></div><span class="patternSwatchLabel">Grass</span></button>
-        <button class="patternSwatchSm textureSwatch" data-pattern="dirt" title="Earth"><div class="swPreviewSm pattern-dirt"></div><span class="patternSwatchLabel">Earth</span></button>
-        <button class="patternSwatchSm textureSwatch" data-pattern="rocks" title="Rocks"><div class="swPreviewSm pattern-rocks"></div><span class="patternSwatchLabel">Rocks</span></button>
-      </div>
-      <div class="field" id="bgCornerField" style="margin:12px 0 0;">
-        <label>Corner Roundness <span style="font-weight:400; text-transform:none; color:var(--muted);" id="bgCornerValue">10px</span></label>
-        <input type="range" id="bgCornerRadius" min="0" max="60" step="1" style="width:100%;">
-      </div>
-    </div>
-
-    <div class="bgAppearanceCard">
-      <label>Border</label>
-      <div class="colorRow" style="gap:8px;">
-        <input type="color" id="bgBorderColor">
-        <button type="button" class="stepperBtn" id="bgBorderWidthMinus">−</button>
-        <input type="number" id="bgBorderWidth" min="0" max="12" style="width:56px;" placeholder="px">
-        <button type="button" class="stepperBtn" id="bgBorderWidthPlus">+</button>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Label Text <span style="font-weight:400; text-transform:none; color:var(--muted);">(optional, shown on the shape)</span></label>
-      <input type="text" id="bgLabelText" placeholder="e.g. Lawn, Path to shed…">
-    </div>
-    <div class="field" id="bgSendBackField">
-      <button class="btn btn-outline" id="bgSendBack" style="width:100%;">⬇ Send to Back</button>
-    </div>
     </div>
   </div>
 </div>
@@ -498,7 +621,9 @@
     </div>
     <div class="divider"></div>
     <div class="field">
-      <div class="readout">📐 Real-world sizing uses a fixed scale: 1 map unit = 1 cm. Every bed and shape shows its estimated real size automatically — draw or resize your Plot boundary to match your garden's actual dimensions to make everything else line up.</div>
+      <label>Danger Zone</label>
+      <button class="btn btn-outline" id="resetShapesBtn" style="width:100%; color:#B23A2A; border-color:#EFC9C4;">↺ Clear All Background Drawing</button>
+      <div class="readout" style="margin-top:8px;">Removes every pen stroke, shape, tree, fill and label from the background drawing — your beds, crops, and layout stay untouched. You can undo this once.</div>
     </div>
   </div>
 </div>
@@ -545,8 +670,8 @@
         <span class="helpIconPreview" style="background:#fff; border:1.5px solid var(--line); color:var(--ink);"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5a8.5 8.5 0 100 17c1.3 0 1.9-.9 1.9-1.8 0-.5-.2-.9-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1 .8-1.6 1.7-1.6h1.9a3 3 0 003-3c0-4.4-3.8-8-7.5-8z"/><circle cx="7.2" cy="10.3" r="1" fill="currentColor" stroke="none"/><circle cx="9.3" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="14.5" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="16.6" cy="10.3" r="1" fill="currentColor" stroke="none"/></svg></span>
         <span>Tap this icon (top-left of the map) to enter Background mode.</span>
       </div>
-      <div class="readout" style="margin-bottom:8px;">Start with 📐 Plot — draw a rectangle over your whole garden, then enter its real width and length in meters. This sets the scale that every bed and shape's size is measured against, so it's worth doing first.</div>
-      <div class="readout">Then add Rectangle, Circle, or Tree shapes for lawn, beds, trees, and paths. Choose a plain color or a Grass/Earth/Rocks texture. Drag a shape's middle to move it, a corner to resize. Tap "Done" when you're happy with the layout.</div>
+      <div class="readout" style="margin-bottom:8px;">A sidebar of drawing tools opens on the left: Pen, Highlight, Fill, Erase, Rectangle, Line, Polygon, Tree/Bush stamps and Text. Sketch lawns, paths, trees and labels freely; use Select to move, recolour, change line width, restack or delete anything you've drawn.</div>
+      <div class="readout">Under Scale, switch on the 1 m grid and enter your plot's real width and length to see a dashed outline of its true size while you draw (1 map unit = 1 cm) — these guides only show in Background mode. Two fingers or the mouse wheel pan and zoom. Tap "Done" when you're happy with the layout.</div>
     </div>
 
     <div class="divider"></div>
@@ -583,23 +708,15 @@
       </div>
       <div class="readout" style="margin-bottom:8px; display:flex; align-items:center; gap:10px;">
         <span class="helpIconPreview" style="background:#EFF1ED; font-size:13px;">🔓</span>
-        <span>Lock or unlock — small icon inside a bed's or shape's popup header</span>
+        <span>Lock or unlock — small icon inside a bed's popup header</span>
       </div>
       <div class="readout" style="margin-bottom:8px; display:flex; align-items:center; gap:10px;">
         <span class="helpIconPreview" style="background:#FDEBEA; color:#B23A2A;"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/><path d="M6 7l1 13a1 1 0 001 1h8a1 1 0 001-1l1-13"/><path d="M10 11v6M14 11v6"/></svg></span>
         <span>Delete — top of a popup, always asks to confirm first</span>
       </div>
       <div class="readout" style="margin-bottom:8px; display:flex; align-items:center; gap:10px;">
-        <span class="helpIconPreview" style="background:#3B82F6; color:#fff;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="12" height="12" rx="2.5"/><path d="M9 9V5.5A2.5 2.5 0 0111.5 3H18a3 3 0 013 3v6.5a2.5 2.5 0 01-2.5 2.5H15"/></svg></span>
-        <span>Duplicate a background shape</span>
-      </div>
-      <div class="readout" style="margin-bottom:8px; display:flex; align-items:center; gap:10px;">
         <span class="helpIconPreview" style="background:#fff; border:1.5px solid var(--line); color:var(--ink);"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V5a1 1 0 011-1h4"/><path d="M20 9V5a1 1 0 00-1-1h-4"/><path d="M4 15v4a1 1 0 001 1h4"/><path d="M20 15v4a1 1 0 01-1 1h-4"/></svg></span>
         <span>Fit your whole garden on screen</span>
-      </div>
-      <div class="readout" style="margin-bottom:8px; display:flex; align-items:center; gap:10px;">
-        <span class="helpIconPreview" style="background:#4B6B8A; color:#fff; font-size:13px;">📐</span>
-        <span>The Plot — your garden's real-world boundary and scale reference</span>
       </div>
       <div class="readout" style="margin-bottom:8px; display:flex; align-items:center; gap:10px;">
         <span class="helpIconPreview" style="background:#fff; border:1.5px solid var(--line); color:var(--ink);"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.6"/><path d="M5 9v8.5a2 2 0 002 2h10a2 2 0 002-2V9"/><path d="M10 13.2h4"/></svg></span>
@@ -846,7 +963,7 @@ const PLANT_ICONS = {
   'Thyme': '<path d="M20 30V16" stroke="#7A9C6E" stroke-width="1.1"/><g fill="#6E9C5E"><ellipse cx="17" cy="18" rx="1.2" ry="1.7"/><ellipse cx="23" cy="18" rx="1.2" ry="1.7"/><ellipse cx="17" cy="22" rx="1.2" ry="1.7"/><ellipse cx="23" cy="22" rx="1.2" ry="1.7"/><ellipse cx="17" cy="26" rx="1.2" ry="1.7"/><ellipse cx="23" cy="26" rx="1.2" ry="1.7"/></g>',
   'Tomato': '<ellipse cx="20" cy="23" rx="10" ry="9.5" fill="#D6392C"/> <path d="M20 13.5c.8-1.6 1.9-2.1 3-1.9-.3 1.4-1.3 2.1-3 1.9z" fill="#4A6B32"/> <path d="M20 13.5c-.8-1.6-1.9-2.1-3-1.9.3 1.4 1.3 2.1 3 1.9z" fill="#4A6B32"/> <path d="M20 13.5c1.7-.6 3-.1 3.7 1-1.4.8-2.8.4-3.7-1z" fill="#4A6B32"/> <path d="M20 13.5c-1.7-.6-3-.1-3.7 1 1.4.8 2.8.4 3.7-1z" fill="#4A6B32"/> <path d="M20 13.5v-2.2" stroke="#4A6B32" stroke-width="1.3" stroke-linecap="round"/> <ellipse cx="16" cy="20" rx="2.2" ry="1.4" fill="#F0A89E" opacity="0.6"/>',
   'Turnip': '<ellipse cx="20" cy="23" rx="7.5" ry="8" fill="#E8D9A8"/><path d="M18 15c0-2 .8-3.5 2-4.5.5 2-.3 3.7-2 4.5zM22 15c0-2-.8-3.5-2-4.5-.5 2 .3 3.7 2 4.5z" fill="#5C9E5C"/>',
-  'Pumpkin': '<path d="M20 13c6 0 9 5 9 10.5S26 32 20 32s-9-4-9-8.5S14 13 20 13z" fill="#D9862F"/><path d="M20 13v19M15 15c2-1.3 3.4-1.6 5-1.6M25 15c-2-1.3-3.4-1.6-5-1.6" stroke="#B8691F" stroke-width="0.8" fill="none" opacity="0.6"/><path d="M20 13c0-2 1-3.5 2-4" stroke="#5C7A3E" stroke-width="1.3" fill="none" stroke-linecap="round"/>',
+  'Pumpkin': '<ellipse cx="14" cy="23" rx="5.2" ry="7.5" fill="#D9862F"/><ellipse cx="26" cy="23" rx="5.2" ry="7.5" fill="#D9862F"/><ellipse cx="17.3" cy="23" rx="4.5" ry="7.9" fill="#E8823A"/><ellipse cx="22.7" cy="23" rx="4.5" ry="7.9" fill="#E8823A"/><ellipse cx="20" cy="23" rx="3.6" ry="8.2" fill="#F0954A"/><path d="M20 15.2c1.5-2 1.5-4.5 0-6.5" stroke="#1F4A1F" stroke-width="2.3" fill="none" stroke-linecap="round"/>',
   'Butternut Squash': '<path d="M20 14c1.5 0 2.3 1.2 2 2.8-.2 1-.7 1.8-.7 2.7 0 .8.4 1.3 1 1.8 2.8 1.8 4.2 5 3.8 8.2-.4 3.5-3.2 5.5-6.1 5.5s-5.7-2-6.1-5.5c-.4-3.2 1-6.4 3.8-8.2.6-.5 1-1 1-1.8 0-.9-.5-1.7-.7-2.7-.3-1.6.5-2.8 2-2.8z" fill="#E4C994"/><path d="M20 14v3.5" stroke="#C9A968" stroke-width="1" opacity="0.5"/><path d="M16.5 26c1 2 2 3.3 3.5 3.8M23.5 26c-1 2-2 3.3-3.5 3.8" stroke="#C9A968" stroke-width="0.7" fill="none" opacity="0.5"/><path d="M20 14c0-1.7.8-3 2-3.7" stroke="#5C7A3E" stroke-width="1.2" fill="none" stroke-linecap="round"/>',
   'Zinnia': '<g fill="#D6486E"><path d="M20 21l0-9 2 9z"/><path d="M20 21l6.4-6.4-4.4 8.4z"/><path d="M20 21l9-2-7 4z"/><path d="M20 21l6.4 6.4-8.4-4.4z"/><path d="M20 21l0 9-2-9z"/><path d="M20 21l-6.4 6.4 4.4-8.4z"/><path d="M20 21l-9 2 7-4z"/><path d="M20 21l-6.4-6.4 8.4 4.4z"/></g><circle cx="20" cy="21" r="3" fill="#8A5222"/>',
   'Courgette': '<path d="M10.2 26.5c-1.2-4.3 1.3-9.5 6-13.2 5-4 11.2-4.7 14.8-2 1.2 4.3-1.3 9.5-6 13.2-5 4-11.2 4.7-14.8 2z" fill="#5C9457"/> <path d="M12.3 24.3c3-6.3 8.2-11.5 14.3-14" stroke="#8FC285" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.75"/> <ellipse cx="14.3" cy="22.3" rx="1.9" ry="1.2" fill="#B7DDA8" opacity="0.65" transform="rotate(-32 14.3 22.3)"/> <path d="M27.8 11.7c1-1.4 1-2.8.2-3.7-1.3.4-2 1.7-1.7 3.2z" fill="#BCE0A2"/>',
@@ -925,7 +1042,7 @@ const PLANT_ICON_VIEWBOX = {
   'Thyme': '11.32 14.32 17.36 17.36',
   'Tomato': '6.86 8.76 26.29 26.29',
   'Turnip': '7.29 8.04 25.42 25.42',
-  'Pumpkin': '5.74 6.24 28.52 28.52',
+  'Pumpkin': '6.05 6.00 27.90 27.90',
   'Butternut Squash': '4.69 7.34 30.63 30.63',
   'Zinnia': '8.84 9.84 22.32 22.32',
   'Courgette': '7.34 4.79 26.52 26.52',
@@ -968,7 +1085,8 @@ function defaultStore(){
     frostDate: "2026-05-01",
     view: {panX:60, panY:60, zoom:1},
     mapSettings: {bgColor:"#E9E0CB", showGrid:false},
-    bg: [],
+    drawing: {shapes:[], highlightOpacity:0.35},
+    scaleSettings: {showGrid:false, plotWidthM:null, plotLengthM:null, originX:0, originY:0},
     plants: JSON.parse(JSON.stringify(BASE_PLANTS)),
     beds: [
       {id:"b1", name:"Bed 1", x:0, y:0, w:160, h:100, plannedX:0, plannedY:0, plannedW:160, plannedH:100, futureOnly:false, color:null, locked:false, current:"Tomato", datePlanted:"2026-05-15", next:"Kale", seedDate:"", plantDate:"", harvestDate:"", plantCount:null, notes:""},
@@ -981,25 +1099,14 @@ function migrateParsed(parsed){
   if(!parsed.beds) return null;
   if(!parsed.view) parsed.view = {panX:60, panY:60, zoom:1};
   if(!parsed.mapSettings) parsed.mapSettings = {bgColor:"#E9E0CB", showGrid:false};
-  if(!parsed.bg) parsed.bg = [];
-  parsed.bg.forEach(s=>{
-    if(s.type==="path") s.type="rect"; // path shape type removed — keep former paths as plain rectangles
-    if(s.pattern===undefined) s.pattern = "none";
-    if(s.pattern==="foliage") s.pattern = "none";
-    if(s.borderColor===undefined) s.borderColor = null;
-    if(s.borderWidth===undefined) s.borderWidth = 1.5;
-    if(s.label===undefined) s.label = "";
-    if(s.cornerRadius===undefined) s.cornerRadius = 10;
-    if(s.treeStyle===undefined) s.treeStyle = "round";
-    if(s.treeStyle==="blob") s.treeStyle = "round";
-    if(s.treeStyle==="cluster") s.treeStyle = "star";
-    if(s.treeStyle==="scallop") s.treeStyle = "star";
-    if(s.locked===undefined) s.locked = false;
-    if(s.type==="plot"){
-      if(s.realWidthM===undefined) s.realWidthM = null;
-      if(s.realLengthM===undefined) s.realLengthM = null;
-    }
-  });
+  if(!parsed.scaleSettings) parsed.scaleSettings = {showGrid:false, plotWidthM:null, plotLengthM:null, originX:0, originY:0};
+  if(!parsed.drawing || !Array.isArray(parsed.drawing.shapes)) parsed.drawing = {shapes:[], highlightOpacity:0.35};
+  if(parsed.drawing.highlightOpacity === undefined) parsed.drawing.highlightOpacity = 0.35;
+  if(Array.isArray(parsed.bg)){
+    // retired div-based background shapes -> canvas drawing shapes (one-time)
+    if(parsed.bg.length) parsed.drawing.shapes = legacyBgToDrawing(parsed.bg, parsed.scaleSettings).concat(parsed.drawing.shapes);
+    delete parsed.bg;
+  }
   if(!parsed.plants) parsed.plants = JSON.parse(JSON.stringify(BASE_PLANTS));
   else{
     const baseByName = {};
@@ -1032,8 +1139,76 @@ function migrateParsed(parsed){
     if(b.plannedW===undefined) b.plannedW = b.w;
     if(b.plannedH===undefined) b.plannedH = b.h;
     if(b.futureOnly===undefined) b.futureOnly = false;
+    if(b.opacity===undefined) b.opacity = 90;
+    if(b.borderColor===undefined) b.borderColor = "#000000";
   });
   return parsed;
+}
+// One-time conversion of the retired div-based background shapes (STORE.bg) into the new
+// canvas drawing shapes (STORE.drawing.shapes), so existing gardens keep their background.
+// The old "plot" shape becomes the Scale settings' plot outline instead of a drawn shape.
+function legacyBgToDrawing(bg, scale){
+  const out = [];
+  let n = 0;
+  const stamp = Date.now().toString(36);
+  const nid = ()=> "dl" + stamp + (n++).toString(36);
+  const sub = (p0, p1, step)=>{
+    const d = Math.hypot(p1.x-p0.x, p1.y-p0.y);
+    const steps = Math.max(1, Math.round(d/step));
+    const pts = [];
+    for(let i=0;i<=steps;i++){ const t = i/steps; pts.push({x:p0.x+(p1.x-p0.x)*t, y:p0.y+(p1.y-p0.y)*t}); }
+    return pts;
+  };
+  const loop = (verts)=>{
+    const closed = verts.concat([verts[0]]);
+    let pts = [];
+    for(let i=1;i<closed.length;i++){ const seg = sub(closed[i-1], closed[i], 4); pts = pts.concat(i===1 ? seg : seg.slice(1)); }
+    return pts;
+  };
+  const labelShape = (s)=>{
+    if(!s.label) return;
+    out.push({id:nid(), type:"text", layer:"ink", x:s.x+6, y:s.y+6, text:String(s.label), fontSize:12,
+      fontFamily:"-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif", color:"#FFFFFF"});
+  };
+  (bg || []).forEach(s=>{
+    if(!s || typeof s.x !== "number" || typeof s.y !== "number") return;
+    const w = Number(s.w) || 0, h = Number(s.h) || 0;
+    if(s.type === "plot"){
+      if(scale){
+        scale.plotWidthM = s.realWidthM || +(w/100).toFixed(2);
+        scale.plotLengthM = s.realLengthM || +(h/100).toFixed(2);
+        scale.originX = s.x; scale.originY = s.y;
+      }
+      return;
+    }
+    if(s.type === "rect" || s.type === "path"){
+      const bw = Math.max(1, Number(s.borderWidth) || 1);
+      const b = {x:s.x+bw/2, y:s.y+bw/2, w:Math.max(w-bw,1), h:Math.max(h-bw,1)};
+      const pts = loop([{x:b.x,y:b.y},{x:b.x+b.w,y:b.y},{x:b.x+b.w,y:b.y+b.h},{x:b.x,y:b.y+b.h}]);
+      const stroke = (Number(s.borderWidth) === 0) ? (s.color || "#000000") : (s.borderColor || "#000000");
+      out.push({id:nid(), type:"rect", layer:"ink", points:pts, widths:pts.slice(1).map(()=>bw), color:stroke,
+        fillColor:s.color || null, fillBounds:b});
+      labelShape(s);
+    } else if(s.type === "circle"){
+      const bw = Math.max(1, Number(s.borderWidth) || 1);
+      const cx = s.x + w/2, cy = s.y + h/2, rx = Math.max(1, w/2 - bw/2), ry = Math.max(1, h/2 - bw/2);
+      const verts = [];
+      for(let i=0;i<48;i++){ const a = i/48*Math.PI*2; verts.push({x:cx+Math.cos(a)*rx, y:cy+Math.sin(a)*ry}); }
+      const pts = loop(verts);
+      const stroke = (Number(s.borderWidth) === 0) ? (s.color || "#000000") : (s.borderColor || "#000000");
+      out.push({id:nid(), type:"polygon", layer:"ink", points:pts, widths:pts.slice(1).map(()=>bw), color:stroke,
+        fillColor:s.color || null, fillVertices:verts});
+      labelShape(s);
+    } else if(s.type === "tree" || s.type === "bush"){
+      out.push({id:nid(), type:"plant", layer:"ink", center:{x:s.x+w/2, y:s.y+h/2}, size:Math.max(20, Math.min(w, h)),
+        shapeKind: s.type === "tree" ? "oak" : "round", style:"filled", color:"#5C8544"});
+    } else if(s.type === "text"){
+      const fs = Number(s.fontSize) || 20;
+      out.push({id:nid(), type:"text", layer:"ink", x:s.x+2, y:s.y + Math.max(0, (h - fs*1.25)/2), text:String(s.text || "Text"),
+        fontSize:fs, fontFamily:s.fontFamily || "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif", color:s.textColor || "#14181B"});
+    }
+  });
+  return out;
 }
 function load(){
   try{
@@ -1066,7 +1241,7 @@ function performUndo(){
   pendingUndoSnapshot = null;
   save();
   document.querySelectorAll(".undoBtnEl").forEach(b=> b.disabled = true);
-  renderBeds(); renderBg();
+  renderBeds(); renderDrawing();
 }
 document.querySelectorAll(".undoBtnEl").forEach(b=> b.addEventListener("click", performUndo));
 
@@ -1179,6 +1354,7 @@ function applyTransform(){
   world.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
   viewport.style.backgroundPosition = `${panX}px ${panY}px, ${panX}px ${panY}px`;
   viewport.style.backgroundSize = `${GRID*zoom}px ${GRID*zoom}px, ${GRID*zoom}px ${GRID*zoom}px`;
+  if(typeof DRAW !== "undefined" && DRAW) DRAW.onTransform(); // keeps the drawing canvases' resolution/extent in step
 }
 function saveView(){ STORE.view = {panX,panY,zoom}; save(); }
 const GRID_IMAGE = "repeating-linear-gradient(0deg, rgba(92,70,50,0.09) 0 2px, transparent 2px 26px), repeating-linear-gradient(90deg, rgba(92,70,50,0.07) 0 2px, transparent 2px 26px)";
@@ -1264,7 +1440,7 @@ document.getElementById("importBackupInput").addEventListener("change", (e)=>{
       if(!migrated) throw new Error("could not read backup");
       STORE = migrated;
       save();
-      applyTransform(); applyMapSettings(); updateZoomLabels(); renderBg(); renderBeds(); fitViewToContent();
+      applyTransform(); applyMapSettings(); updateZoomLabels(); renderDrawing(); renderBeds(); fitViewToContent();
       document.getElementById("mainMenuOverlay").hidden = true;
       alert("Backup imported successfully.");
     }catch(err){
@@ -1301,7 +1477,8 @@ function viewportCenterWorld(){
 function fitViewToContent(){
   const xs=[], ys=[];
   STORE.beds.forEach(b=>{ if(b.futureOnly) return; xs.push(b.x, b.x+b.w); ys.push(b.y, b.y+b.h); });
-  STORE.bg.forEach(s=>{ xs.push(s.x, s.x+s.w); ys.push(s.y, s.y+s.h); });
+  const drawBounds = (typeof DRAW !== "undefined" && DRAW) ? DRAW.contentBounds() : null;
+  if(drawBounds){ xs.push(drawBounds.x, drawBounds.x+drawBounds.w); ys.push(drawBounds.y, drawBounds.y+drawBounds.h); }
   if(xs.length===0) return;
   const minX=Math.min(...xs), maxX=Math.max(...xs), minY=Math.min(...ys), maxY=Math.max(...ys);
   const rect = viewport.getBoundingClientRect();
@@ -1331,10 +1508,11 @@ function setBackgroundMode(on){
   viewport.classList.toggle("bgEditing", on);
   viewport.classList.toggle("bedsHidden", on && bedsHiddenInBgMode);
   document.getElementById("normalToolbar").style.display = on ? "none" : "flex";
-  document.getElementById("bgToolbar").style.display = on ? "flex" : "none";
+  document.getElementById("drawSidebar").hidden = !on;
+  document.getElementById("page-map").classList.toggle("drawEditing", on);
   document.getElementById("pageTitle").textContent = on ? "🖌 Edit Background" : pages.map.title;
   updateBedsToggleBtn();
-  renderBeds(); renderBg();
+  renderBeds(); DRAW.setEditing(on);
 }
 function updateBedsToggleBtn(){
   const btn = document.getElementById("bedsToggleBtn");
@@ -1374,7 +1552,7 @@ document.getElementById("addFutureBedBtn").addEventListener("click", ()=>{
   const w=160, h=100;
   const bed = {id:"b"+Date.now(), name:"Bed "+(n+1), x:c.x-w/2, y:c.y-h/2, w, h,
     plannedX:c.x-w/2, plannedY:c.y-h/2, plannedW:w, plannedH:h, futureOnly:true,
-    color:null, locked:false, current:"", datePlanted:"", next:"", seedDate:"", plantDate:"", harvestDate:"", plantCount:null, notes:""};
+    color:null, opacity:90, borderColor:"#000000", locked:false, current:"", datePlanted:"", next:"", seedDate:"", plantDate:"", harvestDate:"", plantCount:null, notes:""};
   STORE.beds.push(bed); save(); renderBeds();
 });
 
@@ -1405,6 +1583,7 @@ function renderBeds(){
     const r = getBedRect(bed);
     const info = computeBed(bed);
     const displayColor = bed.color || DEFAULT_COLOR;
+    const bedOpacity = bed.opacity != null ? bed.opacity : 90;
     const div = document.createElement("div");
     div.className = "bed";
     div.dataset.id = bed.id;
@@ -1412,8 +1591,9 @@ function renderBeds(){
     div.style.top = r.y + "px";
     div.style.width = r.w + "px";
     div.style.height = r.h + "px";
-    div.style.background = hexToRgba(displayColor, 0.40);
-    div.style.borderColor = hexToRgba(displayColor, 0.8);
+    div.style.background = hexToRgba(displayColor, bedOpacity/100);
+    div.style.borderColor = bed.borderColor || "#000000";
+    div.style.borderWidth = "1px";
     if(editingFuture){ div.style.borderStyle = "dashed"; div.style.borderColor = "#5B5FA8"; div.style.borderWidth = "2px"; }
 
     const showFutureCrop = editingFuture && bed.next;
@@ -1456,10 +1636,9 @@ function renderBeds(){
 
     if(!editingBackground){
       const openBtn = document.createElement("div");
-      openBtn.className = "openIcon";
+      openBtn.className = "bedOpenTriangle";
       openBtn.dataset.role = "openicon";
       openBtn.dataset.id = bed.id;
-      openBtn.innerHTML = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16L16 8"/><path d="M10 8h6v6"/></svg>';
       div.appendChild(openBtn);
       if(isPerennialBadgeShown){
         const p = document.createElement("div");
@@ -1486,145 +1665,10 @@ function renderBeds(){
   });
 }
 
-function scallopClipPath(w, h){
-  const cx = w/2, cy = h/2;
-  const lobes = 9, depth = 0.15, samples = 72;
-  const a = (w/2) / (1+depth), b = (h/2) / (1+depth);
-  const pts = [];
-  for(let i=0;i<samples;i++){
-    const theta = (i/samples)*Math.PI*2;
-    const rNorm = 1 + depth*Math.cos(lobes*theta);
-    pts.push([cx + a*rNorm*Math.cos(theta), cy + b*rNorm*Math.sin(theta)]);
-  }
-  const mx = (pts[0][0]+pts[pts.length-1][0])/2, my = (pts[0][1]+pts[pts.length-1][1])/2;
-  let d = `M ${mx.toFixed(1)} ${my.toFixed(1)} `;
-  for(let i=0;i<pts.length;i++){
-    const p = pts[i], next = pts[(i+1)%pts.length];
-    d += `Q ${p[0].toFixed(1)} ${p[1].toFixed(1)} ${((p[0]+next[0])/2).toFixed(1)} ${((p[1]+next[1])/2).toFixed(1)} `;
-  }
-  return d + "Z";
-}
-function renderBg(){
-  world.querySelectorAll(".bgshape").forEach(n=>n.remove());
-  world.querySelectorAll('.handle[data-role="bghandle"]').forEach(n=>n.remove());
-  world.querySelectorAll('[data-role="bglockicon"]').forEach(n=>n.remove());
-  world.querySelectorAll('[data-role="bgdeleteicon"]').forEach(n=>n.remove());
-  world.querySelectorAll('[data-role="bgopenicon"]').forEach(n=>n.remove());
-  world.querySelectorAll('[data-role="bgduplicateicon"]').forEach(n=>n.remove());
-  world.querySelectorAll('[data-role="bgdimchip"]').forEach(n=>n.remove());
-  const firstBed = world.querySelector(".bed");
-  // plots always paint at the very back, trees always paint above everything else,
-  // while stable-sorting keeps each group's own relative order intact
-  const rank = (s)=> s.type==="plot" ? 0 : (s.type==="tree" ? 2 : 1);
-  const ordered = [...STORE.bg].sort((a,b)=> rank(a)-rank(b));
-  ordered.forEach(shape=>{
-    const hasPattern = shape.pattern && shape.pattern !== "none";
-    const isStar = shape.type === "tree" && shape.treeStyle === "star";
-    const isPlot = shape.type === "plot";
-    const div = document.createElement("div");
-    let cls = "bgshape " + shape.type + (hasPattern ? " pattern-"+shape.pattern : "");
-    div.className = cls;
-    div.dataset.id = shape.id;
-    div.style.left = shape.x + "px";
-    div.style.top = shape.y + "px";
-    div.style.width = shape.w + "px";
-    div.style.height = shape.h + "px";
-    if(shape.type === "rect" || isPlot){
-      div.style.borderRadius = (shape.cornerRadius != null ? shape.cornerRadius : 10) + "px";
-    }
-
-    if(isPlot){
-      div.style.background = shape.color || "transparent";
-      div.style.borderWidth = (shape.borderWidth != null ? shape.borderWidth : 3) + "px";
-      div.style.borderStyle = "solid";
-      div.style.borderColor = shape.borderColor || "#E1D199";
-    } else {
-      div.style.background = hasPattern ? "" : shape.color;
-      if(isStar){
-        div.style.clipPath = `path("${scallopClipPath(shape.w, shape.h)}")`;
-        div.style.border = "none";
-      } else {
-        div.style.borderWidth = (shape.borderWidth != null ? shape.borderWidth : 1.5) + "px";
-        div.style.borderStyle = "solid";
-        div.style.borderColor = shape.borderColor || "rgba(0,0,0,0.14)";
-      }
-    }
-    div.dataset.role = "bgshape";
-    world.insertBefore(div, firstBed || null);
-
-    if(shape.label){
-      const lbl = document.createElement("div");
-      lbl.className = "bgLabel";
-      lbl.textContent = shape.label;
-      div.appendChild(lbl);
-    }
-
-    if(editingBackground){
-      const dimChip = document.createElement("div");
-      dimChip.className = "bgDimChip";
-      dimChip.dataset.role = "bgdimchip";
-      dimChip.dataset.id = shape.id;
-      dimChip.textContent = realSizeText(shape.w, shape.h);
-      dimChip.style.left = (shape.x + shape.w/2) + "px";
-      dimChip.style.top = (shape.y + shape.h - 8) + "px";
-      world.appendChild(dimChip);
-
-      const lock = document.createElement("div");
-      lock.className = "lockIcon";
-      lock.dataset.role = "bglockicon";
-      lock.dataset.id = shape.id;
-      lock.textContent = shape.locked ? "🔒" : "🔓";
-      lock.style.left = (shape.x + shape.w - 24) + "px";
-      lock.style.top = (shape.y + 4) + "px";
-      world.appendChild(lock);
-
-      const openBtn = document.createElement("div");
-      openBtn.className = "openIcon";
-      openBtn.dataset.role = "bgopenicon";
-      openBtn.dataset.id = shape.id;
-      openBtn.innerHTML = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16L16 8"/><path d="M10 8h6v6"/></svg>';
-      openBtn.style.left = shape.x + "px";
-      openBtn.style.top = (shape.y + shape.h - 26) + "px";
-      world.appendChild(openBtn);
-
-      if(!shape.locked){
-        const del = document.createElement("div");
-        del.className = "bgDeleteIcon";
-        del.dataset.role = "bgdeleteicon";
-        del.dataset.id = shape.id;
-        del.innerHTML = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
-        del.style.left = (shape.x + 4) + "px";
-        del.style.top = (shape.y + 4) + "px";
-        world.appendChild(del);
-
-        if(shape.type !== "plot"){
-          const dup = document.createElement("div");
-          dup.className = "bgDuplicateIcon";
-          dup.dataset.role = "bgduplicateicon";
-          dup.dataset.id = shape.id;
-          dup.innerHTML = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="12" height="12" rx="2.5"/><path d="M9 9V5.5A2.5 2.5 0 0111.5 3H18a3 3 0 013 3v6.5a2.5 2.5 0 01-2.5 2.5H15"/></svg>';
-          dup.style.left = (shape.x + shape.w - 24) + "px";
-          dup.style.top = (shape.y + shape.h - 26) + "px";
-          world.appendChild(dup);
-        }
-
-        [["nw",0,0],["ne",1,0],["sw",0,1],["se",1,1]].forEach(([pos,fx,fy])=>{
-          const h = document.createElement("div");
-          h.className = "handle bgh";
-          h.dataset.role = "bghandle";
-          h.dataset.pos = pos; h.dataset.id = shape.id;
-          h.style.left = (shape.x + fx*shape.w) + "px";
-          h.style.top = (shape.y + fy*shape.h) + "px";
-          world.appendChild(h);
-        });
-      }
-    }
-  });
-}
 function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 
 /* ============================= POINTER INTERACTION (with pinch-zoom) ============================= */
-let mode = null; // 'pan' | 'move' | 'resize' | 'bgmove' | 'bgresize'
+let mode = null; // 'pan' | 'move' | 'resize' | 'zoomdrag' | 'draw' (background drawing tools)
 let activeId = null;
 let startClient = {x:0,y:0};
 let startRect = {x:0,y:0,w:0,h:0};
@@ -1635,6 +1679,7 @@ let resizePos = null;
 let pointers = new Map();
 let pinch = null;
 let lastTapTime = 0, lastTapX = 0, lastTapY = 0;
+let lastBedTapTime = 0, lastBedTapId = null;
 let zoomDrag = null;
 
 function snapThreshold(){ return 9/zoom; }
@@ -1651,12 +1696,6 @@ function bedEdges(excludeId){
     const r = getBedRect(b);
     xs.push(r.x, r.x+r.w); ys.push(r.y, r.y+r.h);
   });
-  return {xs, ys};
-}
-function bgEdges(excludeId){
-  const xs=[], ys=[];
-  STORE.bg.forEach(s=>{ if(s.id===excludeId) return; xs.push(s.x, s.x+s.w); ys.push(s.y, s.y+s.h); });
-  STORE.beds.forEach(b=>{ xs.push(b.x, b.x+b.w); ys.push(b.y, b.y+b.h); });
   return {xs, ys};
 }
 function dist(p1,p2){ return Math.hypot(p1.x-p2.x, p1.y-p2.y); }
@@ -1683,54 +1722,10 @@ function startSinglePointer(e){
   moved = false;
 
   if(editingBackground){
-    const bgLockIcon = e.target.closest('[data-role="bglockicon"]');
-    if(bgLockIcon){
-      const s = STORE.bg.find(x=>x.id===bgLockIcon.dataset.id);
-      s.locked = !s.locked; save(); renderBg();
-      mode = null;
-      return;
-    }
-    const bgDeleteIcon = e.target.closest('[data-role="bgdeleteicon"]');
-    if(bgDeleteIcon){
-      STORE.bg = STORE.bg.filter(x=>x.id!==bgDeleteIcon.dataset.id);
-      if(editingBgId === bgDeleteIcon.dataset.id){ editingBgId = null; bgOverlay.hidden = true; }
-      save(); renderBg();
-      mode = null;
-      return;
-    }
-    const bgOpenIcon = e.target.closest('[data-role="bgopenicon"]');
-    if(bgOpenIcon){
-      openBgEditor(bgOpenIcon.dataset.id);
-      mode = null;
-      return;
-    }
-    const bgDuplicateIcon = e.target.closest('[data-role="bgduplicateicon"]');
-    if(bgDuplicateIcon){
-      const src = STORE.bg.find(x=>x.id===bgDuplicateIcon.dataset.id);
-      if(src){
-        snapshotForUndo();
-        const copy = JSON.parse(JSON.stringify(src));
-        copy.id = "g"+Date.now();
-        copy.y = src.y + src.h + 20;
-        STORE.bg.push(copy);
-        save(); renderBg();
-      }
-      mode = null;
-      return;
-    }
-    const bgHandle = e.target.closest('[data-role="bghandle"]');
-    const bgEl = e.target.closest('.bgshape');
-    if(bgHandle){
-      snapshotPendingUndo(); mode = "bgresize"; activeId = bgHandle.dataset.id; resizePos = bgHandle.dataset.pos;
-      const s = STORE.bg.find(x=>x.id===activeId);
-      startRect = {x:s.x, y:s.y, w:s.w, h:s.h};
-    } else if(bgEl){
-      snapshotPendingUndo(); mode = "bgmove"; activeId = bgEl.dataset.id;
-      const s = STORE.bg.find(x=>x.id===activeId);
-      startRect = {x:s.x, y:s.y, w:s.w, h:s.h};
-    } else {
-      if(!tryStartZoomDrag(e)){ mode = "pan"; startPan = {x:panX, y:panY}; }
-    }
+    // the drawing tools claim the pointer; anything they don't take (Select on empty ground,
+    // middle/right mouse) pans the map exactly like before
+    if(DRAW.pointerDown(e)){ mode = "draw"; return; }
+    if(!tryStartZoomDrag(e)){ mode = "pan"; startPan = {x:panX, y:panY}; }
   } else {
     const openIcon = e.target.closest('[data-role="openicon"]');
     if(openIcon){
@@ -1773,6 +1768,7 @@ viewport.addEventListener("pointerdown", (e)=>{
   try{ viewport.setPointerCapture(e.pointerId); }catch(err){}
 
   if(pointers.size === 2){
+    if(mode === "draw") DRAW.cancel(); // second finger: abandon a half-drawn stroke, pinch instead
     mode = null; activeId = null; resizePos = null;
     const pts = [...pointers.values()];
     const rect = viewport.getBoundingClientRect();
@@ -1815,6 +1811,10 @@ viewport.addEventListener("pointermove", (e)=>{
     applyTransform(); updateZoomLabels();
     return;
   }
+  if(mode === "draw"){
+    if(pointers.size === 1 && pointers.has(e.pointerId)) DRAW.pointerMove(e);
+    return;
+  }
   if(!mode || pointers.size !== 1) return;
 
   const rawDx = e.clientX - startClient.x, rawDy = e.clientY - startClient.y;
@@ -1827,10 +1827,6 @@ viewport.addEventListener("pointermove", (e)=>{
   if(mode === "move"){
     const bed = STORE.beds.find(b=>b.id===activeId);
     if(bed.locked) return;
-  }
-  if(mode === "bgmove"){
-    const s = STORE.bg.find(x=>x.id===activeId);
-    if(s.locked) return;
   }
   if(Math.abs(rawDx) > 2 || Math.abs(rawDy) > 2) moved = true;
 
@@ -1866,52 +1862,10 @@ viewport.addEventListener("pointermove", (e)=>{
       if(areaEl) areaEl.textContent = "~" + (unitsToMeters(w)*unitsToMeters(h)).toFixed(1) + " m²";
     }
     repositionHandles("bedhandle", activeId, x, y, w, h);
-  } else if(mode === "bgmove"){
-    const s = STORE.bg.find(x=>x.id===activeId);
-    let nx = startRect.x + wdx, ny = startRect.y + wdy;
-    const {xs, ys} = bgEdges(activeId);
-    const snL = snapSingle(nx, xs, thresh), snR = snapSingle(nx+s.w, xs, thresh) - s.w;
-    nx = Math.abs(snR-nx) < Math.abs(snL-nx) ? snR : snL;
-    const snT = snapSingle(ny, ys, thresh), snB = snapSingle(ny+s.h, ys, thresh) - s.h;
-    ny = Math.abs(snB-ny) < Math.abs(snT-ny) ? snB : snT;
-    s.x = nx; s.y = ny;
-    const el = world.querySelector(`.bgshape[data-id="${activeId}"]`);
-    if(el){ el.style.left = nx+"px"; el.style.top = ny+"px"; }
-    repositionHandles("bghandle", activeId, nx, ny, s.w, s.h);
-    repositionBgIcons(activeId, nx, ny, s.w, s.h);
-  } else if(mode === "bgresize"){
-    const s = STORE.bg.find(x=>x.id===activeId);
-    let {x,y,w,h} = startRect;
-    const minSize = 30;
-    const {xs, ys} = bgEdges(activeId);
-    if(resizePos.includes("e")){ let right = snapSingle(startRect.x+startRect.w+wdx, xs, thresh); w = Math.max(minSize, right-x); }
-    if(resizePos.includes("s")){ let bottom = snapSingle(startRect.y+startRect.h+wdy, ys, thresh); h = Math.max(minSize, bottom-y); }
-    if(resizePos.includes("w")){ let left = snapSingle(startRect.x+wdx, xs, thresh); let newW = Math.max(minSize, startRect.w+(startRect.x-left)); x = startRect.x+startRect.w-newW; w = newW; }
-    if(resizePos.includes("n")){ let top = snapSingle(startRect.y+wdy, ys, thresh); let newH = Math.max(minSize, startRect.h+(startRect.y-top)); y = startRect.y+startRect.h-newH; h = newH; }
-    s.x=x; s.y=y; s.w=w; s.h=h;
-    const el = world.querySelector(`.bgshape[data-id="${activeId}"]`);
-    if(el){
-      el.style.left=x+"px"; el.style.top=y+"px"; el.style.width=w+"px"; el.style.height=h+"px";
-      if(s.type === "tree" && s.treeStyle === "star") el.style.clipPath = `path("${scallopClipPath(w, h)}")`;
-    }
-    repositionHandles("bghandle", activeId, x, y, w, h);
-    repositionBgIcons(activeId, x, y, w, h);
   }
 });
-function repositionBgIcons(id, x, y, w, h){
-  const lockEl = world.querySelector(`[data-role="bglockicon"][data-id="${id}"]`);
-  if(lockEl){ lockEl.style.left = (x+w-24)+"px"; lockEl.style.top = (y+4)+"px"; }
-  const delEl = world.querySelector(`[data-role="bgdeleteicon"][data-id="${id}"]`);
-  if(delEl){ delEl.style.left = (x+4)+"px"; delEl.style.top = (y+4)+"px"; }
-  const openEl = world.querySelector(`[data-role="bgopenicon"][data-id="${id}"]`);
-  if(openEl){ openEl.style.left = x+"px"; openEl.style.top = (y+h-26)+"px"; }
-  const dupEl = world.querySelector(`[data-role="bgduplicateicon"][data-id="${id}"]`);
-  if(dupEl){ dupEl.style.left = (x+w-24)+"px"; dupEl.style.top = (y+h-26)+"px"; }
-  const dimEl = world.querySelector(`[data-role="bgdimchip"][data-id="${id}"]`);
-  if(dimEl){ dimEl.style.left = (x+w/2)+"px"; dimEl.style.top = (y+h-8)+"px"; dimEl.textContent = realSizeText(w, h); }
-}
 
-function endSinglePointer(){
+function endSinglePointer(e){
   if(mode === "pan"){
     saveView();
     if(!moved){
@@ -1921,10 +1875,22 @@ function endSinglePointer(){
     }
   }
   else if(mode === "zoomdrag"){ saveView(); }
-  else if(mode === "move"){ if(moved){ commitPendingUndo(); save(); } }
+  else if(mode === "move"){
+    if(moved){
+      commitPendingUndo(); save();
+      lastBedTapTime = 0; lastBedTapId = null;
+    } else {
+      const isDoubleBed = (activeId === lastBedTapId) && (Date.now() - lastBedTapTime < 350);
+      if(isDoubleBed){
+        lastBedTapTime = 0; lastBedTapId = null;
+        openEditor(activeId);
+      } else {
+        lastBedTapTime = Date.now(); lastBedTapId = activeId;
+      }
+    }
+  }
   else if(mode === "resize"){ commitPendingUndo(); save(); }
-  else if(mode === "bgmove"){ if(moved){ commitPendingUndo(); save(); } }
-  else if(mode === "bgresize"){ commitPendingUndo(); save(); }
+  else if(mode === "draw"){ DRAW.pointerUp(e); }
   pendingUndoSnapshot = null;
   mode = null; activeId = null; resizePos = null;
 }
@@ -1935,11 +1901,12 @@ viewport.addEventListener("pointerup", (e)=>{
     if(pointers.size < 2){ pinch = null; saveView(); }
     return;
   }
-  endSinglePointer();
+  endSinglePointer(e);
 });
 function forceReleasePointer(e){
   pointers.delete(e.pointerId);
   if(pointers.size < 2) pinch = null;
+  if(mode === "draw") DRAW.pointerUp(e); // e.g. pointercancel mid-stroke: keep what was drawn
   mode = null; activeId = null; resizePos = null;
 }
 viewport.addEventListener("pointercancel", forceReleasePointer);
@@ -1953,39 +1920,8 @@ document.getElementById("addBedBtn").addEventListener("click", ()=>{
   const w=160, h=100;
   const bed = {id:"b"+Date.now(), name:"Bed "+(n+1), x:c.x-w/2, y:c.y-h/2, w, h,
     plannedX:c.x-w/2, plannedY:c.y-h/2, plannedW:w, plannedH:h, futureOnly:false,
-    color:null, locked:false, current:"", datePlanted:"", next:"", seedDate:"", plantDate:"", harvestDate:"", plantCount:null, notes:""};
+    color:null, opacity:90, borderColor:"#000000", locked:false, current:"", datePlanted:"", next:"", seedDate:"", plantDate:"", harvestDate:"", plantCount:null, notes:""};
   STORE.beds.push(bed); save(); renderBeds(); openEditor(bed.id);
-});
-document.getElementById("addPlotBtn").addEventListener("click", ()=>{
-  const existing = STORE.bg.find(s=>s.type==="plot");
-  if(existing){
-    alert("You already have a Plot boundary — opening it now. Delete it first if you want to start a new one.");
-    openBgEditor(existing.id);
-    return;
-  }
-  const c = viewportCenterWorld();
-  const w=420, h=300;
-  const shape = {id:"g"+Date.now(), type:"plot", x:c.x-w/2, y:c.y-h/2, w, h, color:"#F9F9DC", pattern:"none",
-    borderColor:"#E1D199", borderWidth:3, label:"", cornerRadius:10, locked:false, realWidthM:null, realLengthM:null};
-  STORE.bg.push(shape); save(); renderBg(); openBgEditor(shape.id);
-});
-document.getElementById("addRectBtn").addEventListener("click", ()=>{
-  const c = viewportCenterWorld();
-  const w=140, h=90;
-  const shape = {id:"g"+Date.now(), type:"rect", x:c.x-w/2, y:c.y-h/2, w, h, color:"#C9BFA8", pattern:"none", borderColor:null, borderWidth:1.5, label:"", cornerRadius:10, locked:false};
-  STORE.bg.push(shape); save(); renderBg(); openBgEditor(shape.id);
-});
-document.getElementById("addCircleBtn").addEventListener("click", ()=>{
-  const c = viewportCenterWorld();
-  const w=90, h=90;
-  const shape = {id:"g"+Date.now(), type:"circle", x:c.x-w/2, y:c.y-h/2, w, h, color:"#C9BFA8", pattern:"none", borderColor:null, borderWidth:1.5, label:"", locked:false};
-  STORE.bg.push(shape); save(); renderBg(); openBgEditor(shape.id);
-});
-document.getElementById("addTreeBtn").addEventListener("click", ()=>{
-  const c = viewportCenterWorld();
-  const w=90, h=90;
-  const shape = {id:"g"+Date.now(), type:"tree", x:c.x-w/2, y:c.y-h/2, w, h, color:"#5C8A52", pattern:"none", borderColor:null, borderWidth:1.5, label:"", treeStyle:"round", locked:false};
-  STORE.bg.push(shape); save(); renderBg(); openBgEditor(shape.id);
 });
 document.getElementById("fitAllBtn").addEventListener("click", fitViewToContent);
 document.getElementById("menuBtn").addEventListener("click", ()=>{
@@ -2039,6 +1975,20 @@ function updateDensity(bed){
 function hasPendingPlan(bed){
   return bed.futureOnly || bed.plannedX!==bed.x || bed.plannedY!==bed.y || bed.plannedW!==bed.w || bed.plannedH!==bed.h;
 }
+document.getElementById("resetAllFutureBtn").addEventListener("click", ()=>{
+  const pending = STORE.beds.filter(b => hasPendingPlan(b));
+  if(pending.length === 0){
+    alert("No future changes to reset — every bed already matches its current layout.");
+    return;
+  }
+  if(!confirm(`Reset all future bed layouts? This discards planned moves/resizes and deletes any beds that don't exist yet (${pending.length} bed${pending.length===1?"":"s"} affected). This can't be undone.`)) return;
+  snapshotForUndo();
+  STORE.beds = STORE.beds.filter(b => !b.futureOnly);
+  STORE.beds.forEach(b=>{
+    b.plannedX = b.x; b.plannedY = b.y; b.plannedW = b.w; b.plannedH = b.h;
+  });
+  save(); renderBeds();
+});
 function openEditor(id){
   editingId = id;
   const bed = STORE.beds.find(b=>b.id===id);
@@ -2048,6 +1998,10 @@ function openEditor(id){
   edPlantCount.value = bed.plantCount || "";
   updateDensity(bed);
   updateColorSwatchSelection(bed.color);
+  updateBorderColorSwatchSelection(bed.borderColor);
+  const bedOp = bed.opacity != null ? bed.opacity : 90;
+  edOpacity.value = bedOp;
+  edOpacityValue.textContent = bedOp + "%";
   edCurrent.innerHTML = plantOptions(bed.current);
   edDatePlanted.value = bed.datePlanted || "";
   edNext.innerHTML = plantOptions(bed.next);
@@ -2066,6 +2020,23 @@ document.getElementById("edApplyPlan").addEventListener("click", ()=>{
   const bed = STORE.beds.find(b=>b.id===editingId);
   bed.x = bed.plannedX; bed.y = bed.plannedY; bed.w = bed.plannedW; bed.h = bed.plannedH;
   bed.futureOnly = false;
+  save();
+  document.getElementById("edApplyPlanField").style.display = "none";
+  renderBeds();
+});
+document.getElementById("edResetPlan").addEventListener("click", ()=>{
+  if(!editingId) return;
+  const bed = STORE.beds.find(b=>b.id===editingId);
+  if(bed.futureOnly){
+    if(!confirm("This bed doesn't exist yet — reset will delete it. Continue?")) return;
+    snapshotForUndo();
+    STORE.beds = STORE.beds.filter(b=>b.id!==editingId);
+    save();
+    closeEditor();
+    return;
+  }
+  snapshotForUndo();
+  bed.plannedX = bed.x; bed.plannedY = bed.y; bed.plannedW = bed.w; bed.plannedH = bed.h;
   save();
   document.getElementById("edApplyPlanField").style.display = "none";
   renderBeds();
@@ -2097,17 +2068,54 @@ edLockToggle.addEventListener("click", ()=>{
 });
 function updateColorSwatchSelection(color){
   const c = (color || DEFAULT_COLOR).toUpperCase();
-  document.querySelectorAll(".colorSwatchBtn").forEach(b=>{
+  document.querySelectorAll("#edColorSwatches .colorSwatchBtn").forEach(b=>{
     b.classList.toggle("selected", b.dataset.color.toUpperCase() === c);
   });
+  document.getElementById("edCustomColor").value = c;
 }
-document.querySelectorAll(".colorSwatchBtn").forEach(btn=>{
+document.querySelectorAll("#edColorSwatches .colorSwatchBtn").forEach(btn=>{
   btn.addEventListener("click", ()=>{
     if(!editingId) return;
     const bed = STORE.beds.find(b=>b.id===editingId);
     bed.color = btn.dataset.color;
     save(); renderBeds(); updateColorSwatchSelection(bed.color);
   });
+});
+document.getElementById("edCustomColor").addEventListener("input", (e)=>{
+  if(!editingId) return;
+  const bed = STORE.beds.find(b=>b.id===editingId);
+  bed.color = e.target.value;
+  save(); renderBeds(); updateColorSwatchSelection(bed.color);
+});
+function updateBorderColorSwatchSelection(color){
+  const c = (color || "#000000").toUpperCase();
+  document.querySelectorAll("#edBorderColorSwatches .colorSwatchBtn").forEach(b=>{
+    b.classList.toggle("selected", b.dataset.bordercolor.toUpperCase() === c);
+  });
+  document.getElementById("edCustomBorderColor").value = c;
+}
+document.querySelectorAll("#edBorderColorSwatches .colorSwatchBtn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    if(!editingId) return;
+    const bed = STORE.beds.find(b=>b.id===editingId);
+    bed.borderColor = btn.dataset.bordercolor;
+    save(); renderBeds(); updateBorderColorSwatchSelection(bed.borderColor);
+  });
+});
+document.getElementById("edCustomBorderColor").addEventListener("input", (e)=>{
+  if(!editingId) return;
+  const bed = STORE.beds.find(b=>b.id===editingId);
+  bed.borderColor = e.target.value;
+  save(); renderBeds(); updateBorderColorSwatchSelection(bed.borderColor);
+});
+const edOpacity = document.getElementById("edOpacity");
+const edOpacityValue = document.getElementById("edOpacityValue");
+edOpacity.addEventListener("input", ()=>{
+  if(!editingId) return;
+  const bed = STORE.beds.find(b=>b.id===editingId);
+  bed.opacity = Number(edOpacity.value);
+  edOpacityValue.textContent = bed.opacity + "%";
+  save(); renderBeds();
 });
 
 function updateSeedDateAvailability(nxt){
@@ -2200,145 +2208,1653 @@ document.getElementById("edDelete").addEventListener("click", ()=>{
   }
 });
 
-/* ============================= BACKGROUND SHAPE EDITOR ============================= */
-const bgOverlay = document.getElementById("bgEditorOverlay");
-const bgColorInput = document.getElementById("bgColor");
-const bgShapeLabel = document.getElementById("bgShapeLabel");
-const bgTextureSwatches = document.querySelectorAll(".textureSwatch");
-const bgCornerField = document.getElementById("bgCornerField");
-const bgCornerRadius = document.getElementById("bgCornerRadius");
-const bgCornerValue = document.getElementById("bgCornerValue");
-const bgTreeStyleField = document.getElementById("bgTreeStyleField");
-const bgLockToggle = document.getElementById("bgLockToggle");
-const patternButtons = document.querySelectorAll(".patternSwatchSm");
-const treeStyleButtons = document.querySelectorAll(".treeStyleSwatch");
-let editingBgId = null;
+/* ============================= BACKGROUND DRAWING (canvas-based, background edit mode) ============================= */
+// Everything drawn in background edit mode — pen strokes, highlighter marks, eraser swipes,
+// rectangles, lines, polygons, tree/bush stamps, flood-fill patches and text — is stored as a
+// plain JSON object in STORE.drawing.shapes (in paint order, back to front). Two stacked
+// <canvas> layers live inside #world (highlighter layer below, ink layer above), positioned
+// and sized in map units, so they inherit #world's pan/zoom transform exactly like the beds do.
+// The canvases are pure render targets: renderScene() clears them and replays every shape.
+//
+// Shape objects (map-unit coordinates; 1 unit = 1 cm):
+//   {id, type:'stroke',    layer:'ink',       points, widths, color, closed, fillColor, fillVertices}
+//   {id, type:'highlight', layer:'highlight', points, width,  color}
+//   {id, type:'erase',     layer:'both',      points, width}
+//   {id, type:'line',      layer:'ink',       points, widths, color}
+//   {id, type:'rect',      layer:'ink',       points, widths, color, fillColor, fillBounds}
+//   {id, type:'polygon',   layer:'ink',       points, widths, color, fillColor, fillVertices}
+//   {id, type:'plant',     layer:'ink',       center, size, shapeKind:'round'|'oak'|'apple'|'pine', style:'filled'|'outline', color}
+//   {id, type:'fill',      layer:'ink',       x, y, w, h, src}        (src = PNG data URL of the filled patch)
+//   {id, type:'text',      layer:'ink',       x, y, text, fontSize, fontFamily, color}
+//
+// Undo: every committed edit takes the app-wide single-level snapshot (snapshotForUndo /
+// snapshotPendingUndo + commitPendingUndo) before mutating, so the shared .undoBtnEl buttons
+// revert drawing edits exactly like bed edits.
+var DRAW = (function(){
+  "use strict";
+  const SVGNS = "http://www.w3.org/2000/svg";
 
-function updatePatternSelection(pattern){
-  const p = pattern || "none";
-  patternButtons.forEach(b=> b.classList.toggle("selected", b.dataset.pattern === p));
-  bgColorInput.style.display = (p === "none") ? "inline-block" : "none";
-}
-patternButtons.forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    if(!editingBgId) return;
-    const s = STORE.bg.find(x=>x.id===editingBgId);
-    s.pattern = btn.dataset.pattern;
-    save(); renderBg(); updatePatternSelection(s.pattern);
-  });
-});
-function updateTreeStyleSelection(style){
-  treeStyleButtons.forEach(b=> b.classList.toggle("selected", b.dataset.treestyle === (style||"round")));
-}
-treeStyleButtons.forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    if(!editingBgId) return;
-    const s = STORE.bg.find(x=>x.id===editingBgId);
-    s.treeStyle = btn.dataset.treestyle;
-    save(); renderBg(); updateTreeStyleSelection(s.treeStyle);
-  });
-});
-function updateBgLockButton(s){
-  bgLockToggle.textContent = s.locked ? "🔒" : "🔓";
-  bgLockToggle.title = s.locked ? "Locked — tap to unlock" : "Unlocked — tap to lock in place";
-}
+  function ds(){
+    if(!STORE.drawing || !Array.isArray(STORE.drawing.shapes)) STORE.drawing = {shapes:[], highlightOpacity:0.35};
+    return STORE.drawing;
+  }
+  function scaleSettings(){
+    if(!STORE.scaleSettings) STORE.scaleSettings = {showGrid:false, plotWidthM:null, plotLengthM:null, originX:0, originY:0};
+    return STORE.scaleSettings;
+  }
+  function getShapes(){ return ds().shapes; }
+  function setShapes(arr){ ds().shapes = arr; }
+  let idCounter = 0;
+  function newId(){ return "d" + Date.now().toString(36) + (idCounter++).toString(36); }
+  let selectedId = null;
 
-function updatePlotScaleReadout(s){
-  const el = document.getElementById("bgPlotScaleReadout");
-  el.textContent = `This plot is currently ${realSizeText(s.w, s.h)} on the map (1 map unit = 1 cm). Enter its real width and length below to resize it to match exactly.`;
-}
-function openBgEditor(id){
-  editingBgId = id;
-  const s = STORE.bg.find(x=>x.id===id);
-  const labelMap = {tree:"Tree", circle:"Circle", rect:"Rectangle", plot:"Plot"};
-  bgShapeLabel.textContent = labelMap[s.type] || "Shape";
-  const isPlot = s.type === "plot";
-  bgColorInput.value = s.color === "transparent" ? "#ffffff" : s.color;
-  bgTextureSwatches.forEach(b=> b.style.display = isPlot ? "none" : "flex");
-  updatePatternSelection(s.pattern);
-  updateBgLockButton(s);
-  document.getElementById("bgSizeReadout").textContent = realSizeText(s.w, s.h);
-  document.getElementById("bgPlotField").style.display = isPlot ? "block" : "none";
-  if(isPlot){
-    document.getElementById("bgPlotWidth").value = s.realWidthM || unitsToMeters(s.w).toFixed(2);
-    document.getElementById("bgPlotLength").value = s.realLengthM || unitsToMeters(s.h).toFixed(2);
-    updatePlotScaleReadout(s);
+  let saveWarned = false;
+  function persist(){
+    try{ save(); }
+    catch(err){
+      if(!saveWarned){ saveWarned = true; alert("Couldn't save the drawing — your browser's storage is full. Try removing some fill patches, or export a backup."); }
+    }
   }
-  bgTreeStyleField.style.display = s.type === "tree" ? "block" : "none";
-  if(s.type === "tree") updateTreeStyleSelection(s.treeStyle);
-  bgCornerField.style.display = (s.type === "rect" || isPlot) ? "block" : "none";
-  if(s.type === "rect" || isPlot){
-    const cr = s.cornerRadius != null ? s.cornerRadius : 10;
-    bgCornerRadius.value = Math.min(cr, 60);
-    bgCornerValue.textContent = cr + "px";
+  // turn a snapshot taken before an interaction into the app-wide undo snapshot
+  function commitUndoFrom(snap){
+    if(!snap) return;
+    pendingUndoSnapshot = snap;
+    commitPendingUndo();
+    pendingUndoSnapshot = null;
   }
-  document.getElementById("bgSendBackField").style.display = isPlot ? "none" : "block";
-  document.getElementById("bgBorderColor").value = s.borderColor || (isPlot ? "#E1D199" : "#000000");
-  document.getElementById("bgBorderWidth").value = s.borderWidth != null ? s.borderWidth : (isPlot ? 3 : 1.5);
-  document.getElementById("bgLabelText").value = s.label || "";
-  bgOverlay.hidden = false;
-}
-function closeBgEditor(){ bgOverlay.hidden = true; editingBgId = null; renderBg(); }
-document.getElementById("bgClose").addEventListener("click", closeBgEditor);
-bgOverlay.addEventListener("click", (e)=>{ if(e.target === bgOverlay) closeBgEditor(); });
-document.getElementById("bgPlotWidth").addEventListener("input", (e)=>{
-  if(!editingBgId) return;
-  const s = STORE.bg.find(x=>x.id===editingBgId);
-  const m = Number(e.target.value);
-  if(m > 0){ s.realWidthM = m; s.w = metersToUnits(m); save(); renderBg(); updatePlotScaleReadout(s); document.getElementById("bgSizeReadout").textContent = realSizeText(s.w, s.h); }
-});
-document.getElementById("bgPlotLength").addEventListener("input", (e)=>{
-  if(!editingBgId) return;
-  const s = STORE.bg.find(x=>x.id===editingBgId);
-  const m = Number(e.target.value);
-  if(m > 0){ s.realLengthM = m; s.h = metersToUnits(m); save(); renderBg(); updatePlotScaleReadout(s); document.getElementById("bgSizeReadout").textContent = realSizeText(s.w, s.h); }
-});
-bgLockToggle.addEventListener("click", ()=>{
-  if(!editingBgId) return;
-  const s = STORE.bg.find(x=>x.id===editingBgId);
-  s.locked = !s.locked; save(); updateBgLockButton(s);
-});
-bgCornerRadius.addEventListener("input", (e)=>{
-  if(!editingBgId) return;
-  const s = STORE.bg.find(x=>x.id===editingBgId);
-  s.cornerRadius = Number(e.target.value);
-  bgCornerValue.textContent = s.cornerRadius + "px";
-  save(); renderBg();
-});
-bgColorInput.addEventListener("input", ()=>{
-  if(!editingBgId) return;
-  const s = STORE.bg.find(x=>x.id===editingBgId);
-  s.color = bgColorInput.value; save(); renderBg();
-});
-document.getElementById("bgBorderColor").addEventListener("input", (e)=>{
-  if(!editingBgId) return;
-  const s = STORE.bg.find(x=>x.id===editingBgId);
-  s.borderColor = e.target.value; save(); renderBg();
-});
-document.getElementById("bgBorderWidth").addEventListener("input", (e)=>{
-  if(!editingBgId) return;
-  const s = STORE.bg.find(x=>x.id===editingBgId);
-  const v = e.target.value === "" ? 0 : Number(e.target.value);
-  s.borderWidth = Math.max(0, Math.min(12, v)); save(); renderBg();
-});
-document.getElementById("bgLabelText").addEventListener("input", (e)=>{
-  if(!editingBgId) return;
-  const s = STORE.bg.find(x=>x.id===editingBgId);
-  s.label = e.target.value; save(); renderBg();
-});
-document.getElementById("bgSendBack").addEventListener("click", ()=>{
-  if(!editingBgId) return;
-  const s = STORE.bg.find(x=>x.id===editingBgId);
-  STORE.bg = [s, ...STORE.bg.filter(x=>x.id!==editingBgId)];
-  save(); renderBg();
-});
-document.getElementById("bgDelete").addEventListener("click", ()=>{
-  if(!editingBgId) return;
-  if(confirm("Delete this shape? This can't be undone.")){
+  function cloneStore(){ return JSON.parse(JSON.stringify(STORE)); }
+
+  // ---------- layers (children of #world) ----------
+  const hlCanvas = document.createElement("canvas");   // highlighter layer (opaque paint + CSS opacity)
+  hlCanvas.className = "drawLayer"; hlCanvas.id = "drawHighlightLayer";
+  const inkCanvas = document.createElement("canvas");  // ink layer: pen, eraser, shapes, fill, text
+  inkCanvas.className = "drawLayer"; inkCanvas.id = "drawInkLayer";
+  const bgCtx = hlCanvas.getContext("2d");
+  const ctx = inkCanvas.getContext("2d");
+  hlCanvas.style.mixBlendMode = "multiply";
+  const scaleSvg = document.createElementNS(SVGNS, "svg");
+  scaleSvg.setAttribute("class", "drawScaleOverlay");
+  scaleSvg.id = "drawScaleOverlay";
+  scaleSvg.style.display = "none";
+  const overlay = document.createElement("div");
+  overlay.className = "drawOverlay";
+  overlay.innerHTML =
+    '<div class="drawCrosshair" id="drawCrosshair"></div>' +
+    '<div class="drawCloseRing" id="drawCloseRing"></div>' +
+    '<button type="button" class="drawDeleteFab" id="drawDeleteFab" title="Delete selected shape"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
+    '<textarea class="drawTextEditor" id="drawTextEditor" rows="1" spellcheck="false" hidden></textarea>';
+  world.prepend(hlCanvas, inkCanvas, scaleSvg, overlay);
+  const crosshair = overlay.querySelector("#drawCrosshair");
+  const closeRing = overlay.querySelector("#drawCloseRing");
+  const deleteBtn = overlay.querySelector("#drawDeleteFab");
+  const textEditor = overlay.querySelector("#drawTextEditor");
+
+  // ---------- canvas extent / resolution ----------
+  // The canvases cover a world-space rectangle (the visible map plus padding, plus all drawn
+  // content) at `s` device pixels per map unit. s follows devicePixelRatio × zoom for crisp
+  // lines, but is capped by a pixel budget so huge gardens never exceed mobile canvas limits.
+  const MAX_CANVAS_PX = 12e6, MAX_CANVAS_SIDE = 8192;
+  let ext = {x:0, y:0, w:0, h:0, s:1};
+  function baseDpr(){ return Math.min(window.devicePixelRatio || 1, 2); }
+  function visibleWorldRect(){
+    const r = viewport.getBoundingClientRect();
+    return {x:-panX/zoom, y:-panY/zoom, w:Math.max(1, r.width)/zoom, h:Math.max(1, r.height)/zoom};
+  }
+  function desiredExtent(){
+    const v = visibleWorldRect();
+    let x0 = v.x - v.w*0.5, y0 = v.y - v.h*0.5, x1 = v.x + v.w*1.5, y1 = v.y + v.h*1.5;
+    const cb = contentBounds();
+    if(cb){ x0 = Math.min(x0, cb.x-20); y0 = Math.min(y0, cb.y-20); x1 = Math.max(x1, cb.x+cb.w+20); y1 = Math.max(y1, cb.y+cb.h+20); }
+    x0 = Math.floor(x0/100)*100; y0 = Math.floor(y0/100)*100;
+    x1 = Math.ceil(x1/100)*100;  y1 = Math.ceil(y1/100)*100;
+    const w = Math.max(100, x1-x0), h = Math.max(100, y1-y0);
+    let s = Math.min(baseDpr() * Math.max(zoom, 0.25), 4);
+    s = Math.min(s, Math.sqrt(MAX_CANVAS_PX/(w*h)), MAX_CANVAS_SIDE/w, MAX_CANVAS_SIDE/h);
+    return {x:x0, y:y0, w, h, s};
+  }
+  function containsRect(outer, r){
+    return r.x >= outer.x && r.y >= outer.y && r.x + r.w <= outer.x + outer.w && r.y + r.h <= outer.y + outer.h;
+  }
+  function applyCtxTransform(c){
+    const cx = c.getContext("2d");
+    cx.setTransform(ext.s, 0, 0, ext.s, -ext.x*ext.s, -ext.y*ext.s);
+    cx.lineCap = "round"; // resizing a canvas resets its 2D context state
+    cx.lineJoin = "round";
+  }
+  // Returns true if the canvases were reallocated (caller must repaint).
+  function ensureExtent(force){
+    const d = desiredExtent();
+    if(!force && ext.w > 0){
+      const v = visibleWorldRect();
+      const cb = contentBounds();
+      const ratio = d.s / ext.s;
+      if(containsRect(ext, v) && (!cb || containsRect(ext, cb)) && ratio < 1.3 && ratio > 0.7) return false;
+    }
+    ext = d;
+    [hlCanvas, inkCanvas].forEach(c=>{
+      c.width = Math.max(1, Math.ceil(ext.w * ext.s));
+      c.height = Math.max(1, Math.ceil(ext.h * ext.s));
+      c.style.left = ext.x + "px";
+      c.style.top = ext.y + "px";
+      c.style.width = ext.w + "px";
+      c.style.height = ext.h + "px";
+      applyCtxTransform(c);
+    });
+    return true;
+  }
+
+  // ---------- state ----------
+  let tool = "pen";
+  let color = "#14181B";
+  let width = 2;
+  let smoothing = 0.55; // 0..1
+  let fillMode = "closed";
+  let textFontSize = 28;
+  let textFontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif";
+  // How much a stroke's width wobbles, smoothly and slightly, to read as hand-drawn.
+  const WIDTH_JITTER_AMOUNT = 0.16;
+  const TEXT_LINE_HEIGHT = 1.25;
+
+  function applyHighlightOpacity(){
+    const op = ds().highlightOpacity != null ? ds().highlightOpacity : 0.35;
+    hlCanvas.style.opacity = String(op);
+  }
+
+  // ======================================================================
+  // RENDERING — every shape is redrawn from its stored data every time.
+  // ======================================================================
+  function clearCanvas(c, cctx){
+    cctx.save();
+    cctx.setTransform(1,0,0,1,0,0);
+    cctx.clearRect(0,0,c.width,c.height);
+    cctx.restore();
+  }
+
+  function renderFixedWidthPolyline(targetCtx, points, lineWidth, col, compositeOp){
+    if(points.length === 0) return;
+    targetCtx.save();
+    targetCtx.globalCompositeOperation = compositeOp || "source-over";
+    targetCtx.globalAlpha = 1;
+    targetCtx.strokeStyle = col;
+    targetCtx.fillStyle = col;
+    targetCtx.lineWidth = lineWidth;
+    if(points.length === 1){
+      targetCtx.beginPath();
+      targetCtx.arc(points[0].x, points[0].y, lineWidth/2, 0, Math.PI*2);
+      targetCtx.fill();
+    } else {
+      targetCtx.beginPath();
+      targetCtx.moveTo(points[0].x, points[0].y);
+      for(let i=1;i<points.length-1;i++){
+        const mx = (points[i].x+points[i+1].x)/2, my = (points[i].y+points[i+1].y)/2;
+        targetCtx.quadraticCurveTo(points[i].x, points[i].y, mx, my);
+      }
+      targetCtx.lineTo(points[points.length-1].x, points[points.length-1].y);
+      targetCtx.stroke();
+      targetCtx.beginPath();
+      targetCtx.arc(points[0].x, points[0].y, lineWidth/2, 0, Math.PI*2);
+      targetCtx.fill();
+    }
+    targetCtx.restore();
+  }
+
+  function renderVariableWidthPolyline(targetCtx, points, widths, col){
+    if(points.length < 2){
+      if(points.length === 1){
+        targetCtx.save();
+        targetCtx.fillStyle = col;
+        targetCtx.beginPath();
+        targetCtx.arc(points[0].x, points[0].y, (widths[0]||2)/2, 0, Math.PI*2);
+        targetCtx.fill();
+        targetCtx.restore();
+      }
+      return;
+    }
+    targetCtx.save();
+    targetCtx.globalCompositeOperation = "source-over";
+    targetCtx.globalAlpha = 1;
+    targetCtx.strokeStyle = col;
+    for(let i=1;i<points.length;i++){
+      targetCtx.lineWidth = widths[i-1] || widths[widths.length-1] || 2;
+      targetCtx.beginPath();
+      targetCtx.moveTo(points[i-1].x, points[i-1].y);
+      targetCtx.lineTo(points[i].x, points[i].y);
+      targetCtx.stroke();
+    }
+    targetCtx.restore();
+  }
+
+  function hexToRgb(hex){
+    const v = String(hex || "#000000").replace("#","");
+    return {r:parseInt(v.substring(0,2),16)||0, g:parseInt(v.substring(2,4),16)||0, b:parseInt(v.substring(4,6),16)||0};
+  }
+  // Lighten (positive percent) or darken (negative percent) a hex colour — used for a plant's rim.
+  function shadeHex(hex, percent){
+    const {r,g,b} = hexToRgb(hex);
+    const amt = Math.round(2.55 * percent);
+    const cl = v => Math.max(0, Math.min(255, v));
+    return "#" + [cl(r+amt), cl(g+amt), cl(b+amt)].map(v=>v.toString(16).padStart(2,"0")).join("");
+  }
+  function triWave(x){
+    const f = x - Math.floor(x);
+    return 1 - Math.abs(f*2 - 1);
+  }
+  // Deterministic top-down canopy silhouette (same kind + size = same outline every repaint).
+  function topCanopyPoints(shapeKind, R){
+    const N = 48, pts = [];
+    for(let i=0;i<N;i++){
+      const a = (i/N) * Math.PI * 2;
+      let r;
+      if(shapeKind === "oak") r = R * (1 + 0.16*Math.sin(a*6) + 0.07*Math.sin(a*12 + 1.1));
+      else if(shapeKind === "apple") r = R * 1.08 * (1 + 0.06*Math.sin(a*5 + 0.6) + 0.03*Math.sin(a*11));
+      else if(shapeKind === "pine"){ const t = triWave((a/(Math.PI*2)) * 9); r = R * (0.64 + 0.5*t); }
+      else r = R;
+      pts.push({x:Math.cos(a)*r, y:Math.sin(a)*r});
+    }
+    return pts;
+  }
+  // Bird's-eye tree/bush: a flat drop shadow, then the canopy, filled (with a darker rim) or
+  // outline-only. In outline mode the shadow is punched out under the canopy's own silhouette
+  // (destination-out, clipped to the shadow+canopy region on an isolated offscreen pass), so
+  // only the crescent outside the outline shows and nothing already drawn underneath is erased.
+  const plantScratch = document.createElement("canvas");
+  function drawTopPlant(center, size, shapeKind, style, col, targetCtx, minSize){
+    const tctx = targetCtx || ctx;
+    const R = Math.max(size, minSize != null ? minSize : 18) * 0.5;
+    const pts = topCanopyPoints(shapeKind, R);
+    const tracePath = (c) => {
+      c.beginPath();
+      pts.forEach((p,i)=> i===0 ? c.moveTo(p.x,p.y) : c.lineTo(p.x,p.y));
+      c.closePath();
+    };
+    const drawShadow = (c) => {
+      c.save();
+      c.globalAlpha = 0.18;
+      c.fillStyle = "#2A2A1F";
+      c.translate(R*0.14, R*0.2);
+      c.scale(1, 0.82);
+      tracePath(c);
+      c.fill();
+      c.restore();
+    };
+    tctx.save();
+    tctx.globalCompositeOperation = "source-over";
+    tctx.globalAlpha = 1;
+    tctx.translate(center.x, center.y);
+    if(style === "outline"){
+      // Isolated pass: shadow minus canopy on a scratch canvas, then composited normally.
+      const m = tctx.getTransform();
+      const pxScale = Math.max(0.01, Math.hypot(m.a, m.b));
+      const extentR = R * 1.4 + 4;
+      const side = Math.max(2, Math.ceil(extentR * 2 * pxScale));
+      plantScratch.width = side; plantScratch.height = side;
+      const sc = plantScratch.getContext("2d");
+      sc.setTransform(pxScale, 0, 0, pxScale, side/2, side/2);
+      drawShadow(sc);
+      sc.save();
+      sc.globalCompositeOperation = "destination-out";
+      sc.globalAlpha = 1;
+      tracePath(sc);
+      sc.fill();
+      sc.restore();
+      tctx.drawImage(plantScratch, -side/2/pxScale, -side/2/pxScale, side/pxScale, side/pxScale);
+      tracePath(tctx);
+      tctx.lineWidth = 2;
+      tctx.strokeStyle = col;
+      tctx.stroke();
+    } else {
+      drawShadow(tctx);
+      tracePath(tctx);
+      tctx.fillStyle = col;
+      tctx.fill();
+      tctx.lineWidth = 1.5;
+      tctx.strokeStyle = shadeHex(col, -22);
+      tctx.stroke();
+    }
+    tctx.restore();
+  }
+
+  // ---- text ----
+  const measureCtx = document.createElement("canvas").getContext("2d");
+  function textFont(s){ return `600 ${s.fontSize || 28}px ${s.fontFamily || textFontFamily}`; }
+  function textLines(s){ return String(s.text || "").split("\n"); }
+  function textSize(s){
+    measureCtx.font = textFont(s);
+    const lines = textLines(s);
+    let w = 0;
+    lines.forEach(l=>{ w = Math.max(w, measureCtx.measureText(l).width); });
+    const fs = s.fontSize || 28;
+    return {w:Math.max(w, fs*0.3), h:lines.length * fs * TEXT_LINE_HEIGHT};
+  }
+  function renderText(s){
+    const fs = s.fontSize || 28;
+    ctx.save();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+    ctx.font = textFont(s);
+    ctx.fillStyle = s.color || "#14181B";
+    ctx.textBaseline = "middle";
+    textLines(s).forEach((l,i)=>{ ctx.fillText(l, s.x, s.y + (i + 0.5) * fs * TEXT_LINE_HEIGHT); });
+    ctx.restore();
+  }
+
+  // ---- fill patches (persisted as PNG data URLs, decoded once and cached) ----
+  const fillCache = new Map(); // id -> {src, drawable, ready, imgData}
+  function fillEntry(s){
+    let e = fillCache.get(s.id);
+    if(!e || e.src !== s.src){
+      const img = new Image();
+      e = {src:s.src, drawable:img, ready:false, imgData:null};
+      img.onload = ()=>{ e.ready = true; scheduleRender(); };
+      img.src = s.src;
+      fillCache.set(s.id, e);
+    }
+    return e;
+  }
+
+  let editingTextId = null; // a text shape being edited inline is hidden from the canvas
+  function renderShape(s){
+    if(s.type === "stroke" || s.type === "line" || s.type === "rect" || s.type === "polygon"){
+      if(s.type === "rect" && s.fillColor && s.fillBounds){
+        ctx.save();
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = s.fillColor;
+        ctx.fillRect(s.fillBounds.x, s.fillBounds.y, s.fillBounds.w, s.fillBounds.h);
+        ctx.restore();
+      }
+      if((s.type === "polygon" || (s.type === "stroke" && s.closed)) && s.fillColor && s.fillVertices){
+        ctx.save();
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = s.fillColor;
+        ctx.beginPath();
+        s.fillVertices.forEach((v,i)=> i===0 ? ctx.moveTo(v.x,v.y) : ctx.lineTo(v.x,v.y));
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+      renderVariableWidthPolyline(ctx, s.points, s.widths, s.color);
+    } else if(s.type === "highlight"){
+      renderFixedWidthPolyline(bgCtx, s.points, s.width, s.color);
+    } else if(s.type === "erase"){
+      renderFixedWidthPolyline(ctx, s.points, s.width, "#000", "destination-out");
+      renderFixedWidthPolyline(bgCtx, s.points, s.width, "#000", "destination-out");
+    } else if(s.type === "plant"){
+      drawTopPlant(s.center, s.size, s.shapeKind, s.style, s.color);
+    } else if(s.type === "fill"){
+      const e = fillEntry(s);
+      if(e.ready){
+        ctx.save();
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 1;
+        ctx.drawImage(e.drawable, s.x, s.y, s.w, s.h);
+        ctx.restore();
+      }
+    } else if(s.type === "text"){
+      if(s.id !== editingTextId) renderText(s);
+    }
+  }
+
+  function renderScene(){
+    ensureExtent(false);
+    clearCanvas(inkCanvas, ctx);
+    clearCanvas(hlCanvas, bgCtx);
+    // force a clean compositing baseline (the eraser's live preview can leave
+    // "destination-out" set on the context)
+    ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1;
+    bgCtx.globalCompositeOperation = "source-over"; bgCtx.globalAlpha = 1;
+    applyHighlightOpacity();
+    if(selectedId != null && !getShapes().some(s=>s.id === selectedId)) selectedId = null;
+    for(const s of getShapes()) renderShape(s);
+    drawSelectionOverlay();
+    refreshParamPanel();
+    renderScaleOverlay();
+  }
+  let renderQueued = false;
+  function scheduleRender(){
+    if(renderQueued) return;
+    renderQueued = true;
+    requestAnimationFrame(()=>{ renderQueued = false; if(!drawing) renderScene(); });
+  }
+
+  // ---------- selection overlay ----------
+  function shapeBBox(s){
+    if(s.type === "fill") return {x:s.x, y:s.y, w:s.w, h:s.h};
+    if(s.type === "plant"){
+      const r = s.size*0.62;
+      return {x:s.center.x-r, y:s.center.y-r, w:r*2, h:r*2};
+    }
+    if(s.type === "text"){
+      const sz = textSize(s);
+      return {x:s.x-3, y:s.y-3, w:sz.w+6, h:sz.h+6};
+    }
+    const halfW = (s.widths && s.widths.length ? Math.max.apply(null, s.widths) : (s.width || 2))/2 + 3;
+    let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+    for(const p of s.points){
+      minX=Math.min(minX,p.x); minY=Math.min(minY,p.y);
+      maxX=Math.max(maxX,p.x); maxY=Math.max(maxY,p.y);
+    }
+    return {x:minX-halfW, y:minY-halfW, w:(maxX-minX)+halfW*2, h:(maxY-minY)+halfW*2};
+  }
+  function contentBounds(){
+    const arr = getShapes();
+    if(!arr.length) return null;
+    let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+    arr.forEach(s=>{
+      if(s.type === "erase") return;
+      const b = shapeBBox(s);
+      if(!isFinite(b.x) || !isFinite(b.y)) return;
+      x0=Math.min(x0,b.x); y0=Math.min(y0,b.y); x1=Math.max(x1,b.x+b.w); y1=Math.max(y1,b.y+b.h);
+    });
+    if(!isFinite(x0)) return null;
+    return {x:x0, y:y0, w:x1-x0, h:y1-y0};
+  }
+
+  function updateDeleteButton(){
+    const s = selectedShape();
+    if(!s || !editingBackground || tool !== "select"){
+      deleteBtn.style.display = "none";
+      return;
+    }
+    const b = shapeBBox(s);
+    deleteBtn.style.left = (b.x + b.w) + "px";
+    deleteBtn.style.top = b.y + "px";
+    deleteBtn.style.transform = `translate(-50%,-50%) scale(${1/zoom})`;
+    deleteBtn.style.display = "flex";
+  }
+  function drawSelectionOverlay(){
+    updateDeleteButton();
+    const s = selectedShape();
+    if(!s || !editingBackground) return;
+    const b = shapeBBox(s);
+    ctx.save();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+    ctx.setLineDash([5/zoom, 4/zoom]);
+    ctx.lineWidth = 1.5/zoom;
+    ctx.strokeStyle = "#2E6F9E";
+    ctx.strokeRect(b.x, b.y, b.w, b.h);
+    ctx.restore();
+  }
+
+  function deleteSelected(){
+    if(selectedId == null) return;
     snapshotForUndo();
-    STORE.bg = STORE.bg.filter(x=>x.id!==editingBgId);
-    save(); closeBgEditor();
+    setShapes(getShapes().filter(s=>s.id !== selectedId));
+    selectedId = null;
+    persist();
+    renderScene();
   }
+  deleteBtn.addEventListener("pointerdown", (e)=>{ e.stopPropagation(); });
+  deleteBtn.addEventListener("click", (e)=>{ e.stopPropagation(); deleteSelected(); });
+
+  window.addEventListener("keydown", (e)=>{
+    if(!editingBackground) return;
+    const activeTag = document.activeElement && document.activeElement.tagName;
+    if(activeTag === "INPUT" || activeTag === "SELECT" || activeTag === "TEXTAREA") return;
+    if((e.key === "Delete" || e.key === "Backspace") && selectedId != null){
+      e.preventDefault();
+      deleteSelected();
+    }
+    if(e.key === "Escape"){
+      if(tool === "polygon" && polyActive){ polyActive = false; polyPoints = []; renderScene(); }
+      else if(selectedId != null){ selectedId = null; renderScene(); }
+    }
+  });
+
+  // ---------- hit testing (select tool) ----------
+  function distToSegment(px,py, ax,ay, bx,by){
+    const dx=bx-ax, dy=by-ay;
+    const lenSq = dx*dx+dy*dy;
+    let t = lenSq>0 ? ((px-ax)*dx+(py-ay)*dy)/lenSq : 0;
+    t = Math.max(0, Math.min(1, t));
+    return Math.hypot(px-(ax+t*dx), py-(ay+t*dy));
+  }
+  function minDistToPolyline(points, x, y){
+    if(points.length === 1) return Math.hypot(x-points[0].x, y-points[0].y);
+    let min = Infinity;
+    for(let i=1;i<points.length;i++){
+      min = Math.min(min, distToSegment(x,y, points[i-1].x,points[i-1].y, points[i].x,points[i].y));
+    }
+    return min;
+  }
+  function fillShapeAlphaAt(s, x, y){
+    const e = fillEntry(s);
+    if(!e.ready) return 0;
+    const dw = e.drawable.width, dh = e.drawable.height;
+    if(!e.imgData){
+      const c = document.createElement("canvas");
+      c.width = dw; c.height = dh;
+      const cc = c.getContext("2d", {willReadFrequently:true});
+      cc.drawImage(e.drawable, 0, 0);
+      e.imgData = cc.getImageData(0, 0, dw, dh);
+    }
+    const relX = Math.floor((x - s.x) * dw / s.w), relY = Math.floor((y - s.y) * dh / s.h);
+    if(relX<0||relY<0||relX>=dw||relY>=dh) return 0;
+    return e.imgData.data[(relY*dw+relX)*4+3];
+  }
+  function pointInPolygon(x, y, verts){
+    let inside = false;
+    for(let i=0, j=verts.length-1; i<verts.length; j=i++){
+      const xi=verts[i].x, yi=verts[i].y, xj=verts[j].x, yj=verts[j].y;
+      const intersect = ((yi>y) !== (yj>y)) && (x < (xj-xi)*(y-yi)/(yj-yi)+xi);
+      if(intersect) inside = !inside;
+    }
+    return inside;
+  }
+  function hitTestShapes(x, y){
+    const arr = getShapes();
+    const tol = 6/zoom;
+    for(let i=arr.length-1;i>=0;i--){
+      const s = arr[i];
+      if(s.type === "plant"){
+        if(Math.hypot(x-s.center.x, y-s.center.y) <= s.size*0.62) return s.id;
+      } else if(s.type === "fill"){
+        if(x>=s.x && x<=s.x+s.w && y>=s.y && y<=s.y+s.h && fillShapeAlphaAt(s,x,y) > 10) return s.id;
+      } else if(s.type === "text"){
+        const b = shapeBBox(s);
+        if(x>=b.x && x<=b.x+b.w && y>=b.y && y<=b.y+b.h) return s.id;
+      } else if(s.type === "rect" && s.fillColor && s.fillBounds &&
+                x>=s.fillBounds.x && x<=s.fillBounds.x+s.fillBounds.w &&
+                y>=s.fillBounds.y && y<=s.fillBounds.y+s.fillBounds.h){
+        return s.id;
+      } else if((s.type === "polygon" || (s.type === "stroke" && s.closed)) && s.fillColor && s.fillVertices && pointInPolygon(x, y, s.fillVertices)){
+        return s.id;
+      } else if(s.points){
+        const maxW = s.widths && s.widths.length ? Math.max.apply(null, s.widths) : (s.width || 2);
+        if(minDistToPolyline(s.points, x, y) <= maxW/2 + tol) return s.id;
+      }
+    }
+    return null;
+  }
+  function translateShape(s, dx, dy){
+    if(s.type === "plant") return Object.assign({}, s, {center:{x:s.center.x+dx, y:s.center.y+dy}});
+    if(s.type === "fill" || s.type === "text") return Object.assign({}, s, {x:s.x+dx, y:s.y+dy});
+    const moved = Object.assign({}, s, {points: s.points.map(p=>({x:p.x+dx, y:p.y+dy}))});
+    if(s.type === "rect" && s.fillBounds){
+      moved.fillBounds = Object.assign({}, s.fillBounds, {x:s.fillBounds.x+dx, y:s.fillBounds.y+dy});
+    }
+    if(s.fillVertices) moved.fillVertices = s.fillVertices.map(v=>({x:v.x+dx, y:v.y+dy}));
+    return moved;
+  }
+
+  // ---------- select-tool editing: reorder / recolor / width ----------
+  function selectedShape(){ return getShapes().find(s=>s.id === selectedId) || null; }
+  function shapeSupportsColor(s){ return !!s && s.type !== "erase" && s.type !== "fill"; }
+  function shapeSupportsStyle(s){ return !!s && s.type === "plant"; }
+  function shapeSupportsWidth(s){
+    if(!s) return false;
+    return s.type === "stroke" || s.type === "line" || s.type === "rect" ||
+           s.type === "polygon" || s.type === "highlight" || s.type === "erase";
+  }
+  function currentShapeWidth(s){
+    if(s.widths && s.widths.length) return s.widths.reduce((a,b)=>a+b, 0) / s.widths.length;
+    return s.width != null ? s.width : width;
+  }
+  // scales the whole (already jittered) widths array, so the hand-drawn wobble is preserved
+  function withShapeWidth(s, val){
+    if(s.widths && s.widths.length){
+      const avg = s.widths.reduce((a,b)=>a+b, 0) / s.widths.length;
+      const ratio = avg > 0 ? val / avg : 1;
+      return Object.assign({}, s, {widths: s.widths.map(w=>Math.max(1, w*ratio))});
+    }
+    return Object.assign({}, s, {width: val});
+  }
+  function isFillableShape(s){
+    return !!s && (s.type === "rect" || s.type === "polygon" || (s.type === "stroke" && s.closed));
+  }
+  // Discrete edit: one undo snapshot per call.
+  function replaceSelectedShape(patch){
+    const arr = getShapes();
+    const idx = arr.findIndex(s=>s.id === selectedId);
+    if(idx === -1) return;
+    snapshotForUndo();
+    arr[idx] = Object.assign({}, arr[idx], patch);
+    persist();
+    renderScene();
+  }
+  // Continuous edit (colour picker drags, sliders, typing): one undo snapshot per interaction.
+  let liveSnap = null;
+  function liveReplaceSelected(patch){
+    const arr = getShapes();
+    const idx = arr.findIndex(s=>s.id === selectedId);
+    if(idx === -1) return;
+    if(!liveSnap) liveSnap = cloneStore();
+    arr[idx] = Object.assign({}, arr[idx], patch);
+    renderScene();
+  }
+  function liveEnd(){
+    if(!liveSnap) return;
+    commitUndoFrom(liveSnap);
+    liveSnap = null;
+    persist();
+  }
+  function reorderSelected(dir){
+    const arr = getShapes();
+    const idx = arr.findIndex(s=>s.id === selectedId);
+    if(idx === -1) return;
+    const newIdx = idx + dir;
+    if(newIdx < 0 || newIdx >= arr.length) return;
+    snapshotForUndo();
+    const tmp = arr[idx]; arr[idx] = arr[newIdx]; arr[newIdx] = tmp;
+    persist();
+    renderScene();
+  }
+  function reorderSelectedToEnd(dir){
+    const arr = getShapes();
+    const idx = arr.findIndex(s=>s.id === selectedId);
+    if(idx === -1) return;
+    if(dir > 0 && idx === arr.length-1) return;
+    if(dir < 0 && idx === 0) return;
+    snapshotForUndo();
+    const [s] = arr.splice(idx, 1);
+    if(dir > 0) arr.push(s); else arr.unshift(s);
+    persist();
+    renderScene();
+  }
+
+  // ======================================================================
+  // SIDEBAR UI WIRING
+  // ======================================================================
+  const $ = (id)=> document.getElementById(id);
+  const sidebar = $("drawSidebar");
+  const toolEls = Array.from(sidebar.querySelectorAll(".dsTool"));
+  const modeLabel = $("dsModeLabel");
+  const modeNote = $("dsModeNote");
+  const colorGroup = $("dsColorGroup");
+  const widthGroup = $("dsWidthGroup");
+  const smoothGroup = $("dsSmoothGroup");
+  const opacityGroup = $("dsOpacityGroup");
+  const fillModeGroup = $("dsFillModeGroup");
+  const textGroup = $("dsTextGroup");
+  const fontGroup = $("dsFontGroup");
+  const orderGroup = $("dsOrderGroup");
+  const sendToBackBtn = $("dsSendToBackBtn");
+  const sendBackBtn = $("dsSendBackBtn");
+  const bringFwdBtn = $("dsBringFwdBtn");
+  const bringToFrontBtn = $("dsBringToFrontBtn");
+  const fillGroup = $("dsFillGroup");
+  const fillToggleBtn = $("dsFillToggleBtn");
+  const fillSwatchesEl = $("dsFillSwatches");
+  const fillSwatchEls = Array.from(fillSwatchesEl.querySelectorAll(".dsSw"));
+  const fillCustomColor = $("dsFillCustomColor");
+  const plantShapeGroup = $("dsPlantShapeGroup");
+  const plantShapeBtns = Array.from(plantShapeGroup.querySelectorAll(".dsMini"));
+  const plantStyleGroup = $("dsPlantStyleGroup");
+  const plantStyleBtns = Array.from(plantStyleGroup.querySelectorAll(".dsMini"));
+  const swatches = Array.from($("dsColorSwatches").querySelectorAll(".dsSw"));
+  const customColorInput = $("dsCustomColor");
+  const widthSlider = $("dsWidthSlider"), widthVal = $("dsWidthVal");
+  const smoothSlider = $("dsSmoothSlider"), smoothVal = $("dsSmoothVal");
+  const opacitySlider = $("dsOpacitySlider"), opacityVal = $("dsOpacityVal");
+  const textContentEl = $("dsTextContent");
+  const fontSizeSlider = $("dsFontSizeSlider"), fontSizeVal = $("dsFontSizeVal");
+  const fontFamilySel = $("dsFontFamily");
+
+  // each plant-shape button carries a tiny canvas drawn by the real renderer (drawTopPlant)
+  const PREVIEW_CSS = 22;
+  const plantPreviewCanvases = plantShapeBtns.map(btn=>{
+    const canvas = btn.querySelector(".dsPlantPreview");
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = PREVIEW_CSS * dpr;
+    canvas.height = PREVIEW_CSS * dpr;
+    const pctx = canvas.getContext("2d");
+    pctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return {kind: btn.dataset.shapekind, canvas, pctx};
+  });
+  function renderPlantPreviews(){
+    plantPreviewCanvases.forEach(({kind, canvas, pctx})=>{
+      pctx.save(); pctx.setTransform(1,0,0,1,0,0); pctx.clearRect(0, 0, canvas.width, canvas.height); pctx.restore();
+      drawTopPlant({x:PREVIEW_CSS/2 - 1, y:PREVIEW_CSS/2 - 1}, PREVIEW_CSS*0.72, kind, plantStyle, color, pctx, 0);
+    });
+  }
+
+  let plantShapeKind = "round";
+  let plantStyle = "filled";
+  let rectFillEnabled = false;
+  let rectFillColor = "#3F6B3F";
+
+  // click-to-place polygon state
+  let polyPoints = [];
+  let polyActive = false;
+  const POLY_CLOSE_DIST = 14; // screen px (divided by zoom for world units)
+  function closeDist(){ return POLY_CLOSE_DIST / zoom; }
+
+  const TOOL_META = {
+    select:     {label:"Select · move or delete", note:"Tap a shape to select it. Drag to move it, use Arrange to change its layer, or hit the red ✕ (or Delete) to remove it. Double-tap text to edit it. Drag empty ground to pan."},
+    pen:        {label:"Pen · freehand drawing", note:"Draw with your finger or mouse. Loop back near where you started to close it into a fillable shape, just like the polygon tool."},
+    highlighter:{label:"Highlighter · translucent", note:"An even translucent band — crossing or overlapping your own marks never makes them darker."},
+    fill:       {label:"Fill · bucket", note:"Tap inside a closed outline to flood-fill it. Switch Mode to Colour wash to fill open ground too."},
+    eraser:     {label:"Eraser", note:"Rubs out strokes underneath your finger."},
+    rect:       {label:"Shape · rectangle", note:"Drag to place a rectangle. Release to drop it."},
+    line:       {label:"Shape · straight line", note:"Drag to draw a perfectly straight line between two points."},
+    polygon:    {label:"Shape · polygon", note:"Click to place each corner. Click back near the first corner to close the shape. Esc cancels."},
+    plant:      {label:"Stamp · tree/bush", note:"Tap to drop a tree or bush, or drag to size it. Pick a shape (A–D) below."},
+    text:       {label:"Text", note:"Tap to place text and start typing. Enter finishes (Shift+Enter for a new line). Tap existing text to edit it."}
+  };
+
+  function refreshParamPanel(){
+    const isSelect = tool === "select";
+    const sel = isSelect ? selectedShape() : null;
+    const selColorable = isSelect && shapeSupportsColor(sel);
+    const selWidthable = isSelect && shapeSupportsWidth(sel);
+    const selIsFillable = isSelect && isFillableShape(sel);
+    const selIsText = isSelect && !!sel && sel.type === "text";
+    const isFillableTool = tool === "rect" || tool === "polygon" || tool === "pen";
+    const isPlantTool = tool === "plant";
+    const isTextTool = tool === "text";
+
+    colorGroup.hidden = !(!isSelect || selColorable);
+    widthGroup.hidden = !((!isSelect && !isTextTool) || selWidthable);
+    if(selWidthable){
+      const w = Math.round(Math.min(100, Math.max(2, currentShapeWidth(sel))));
+      if(parseInt(widthSlider.value, 10) !== w && !liveSnap){ widthSlider.value = w; widthVal.textContent = w; }
+    } else if(!isSelect && parseInt(widthSlider.value, 10) !== width){
+      widthSlider.value = width; widthVal.textContent = width;
+    }
+    smoothGroup.hidden = !(tool === "pen" || tool === "highlighter");
+    opacityGroup.hidden = !(tool === "highlighter" || (isSelect && sel && sel.type === "highlight"));
+    fillModeGroup.hidden = tool !== "fill";
+
+    orderGroup.hidden = !(isSelect && sel);
+    if(isSelect && sel){
+      const arr = getShapes();
+      const idx = arr.findIndex(s=>s.id === sel.id);
+      const atBack = idx <= 0, atFront = idx >= arr.length - 1;
+      sendToBackBtn.disabled = atBack;
+      sendBackBtn.disabled = atBack;
+      bringFwdBtn.disabled = atFront;
+      bringToFrontBtn.disabled = atFront;
+    }
+
+    fillGroup.hidden = !(isFillableTool || selIsFillable);
+    if(isFillableTool || selIsFillable){
+      const enabled = selIsFillable ? !!sel.fillColor : rectFillEnabled;
+      const fc = selIsFillable ? (sel.fillColor || rectFillColor) : rectFillColor;
+      fillToggleBtn.textContent = "Fill: " + (enabled ? "On" : "Off");
+      fillToggleBtn.classList.toggle("active", enabled);
+      fillSwatchesEl.style.display = enabled ? "flex" : "none";
+      fillSwatchEls.forEach(s=> s.classList.toggle("active", s.dataset.fillcolor.toUpperCase() === String(fc).toUpperCase()));
+    }
+
+    plantShapeGroup.hidden = !isPlantTool;
+    if(isPlantTool){
+      plantShapeBtns.forEach(b=> b.classList.toggle("active", b.dataset.shapekind === plantShapeKind));
+      renderPlantPreviews();
+    }
+    const selStylable = isSelect && shapeSupportsStyle(sel);
+    plantStyleGroup.hidden = !(isPlantTool || selStylable);
+    if(isPlantTool || selStylable){
+      const activeStyle = selStylable ? sel.style : plantStyle;
+      plantStyleBtns.forEach(b=> b.classList.toggle("active", b.dataset.plantstyle === activeStyle));
+    }
+
+    textGroup.hidden = !selIsText;
+    fontGroup.hidden = !(isTextTool || selIsText);
+    if(selIsText){
+      if(document.activeElement !== textContentEl) textContentEl.value = sel.text || "";
+      if(document.activeElement !== fontSizeSlider){ fontSizeSlider.value = sel.fontSize || 28; fontSizeVal.textContent = sel.fontSize || 28; }
+      fontFamilySel.value = sel.fontFamily || textFontFamily;
+      if(fontFamilySel.selectedIndex === -1) fontFamilySel.selectedIndex = 0;
+    } else if(isTextTool){
+      fontSizeSlider.value = textFontSize; fontSizeVal.textContent = textFontSize;
+      fontFamilySel.value = textFontFamily;
+    }
+
+    const activeColor = selColorable ? sel.color : (isSelect ? null : color);
+    swatches.forEach(s=> s.classList.toggle("active", !!activeColor && s.dataset.color.toUpperCase() === String(activeColor).toUpperCase()));
+    if(activeColor && /^#[0-9a-f]{6}$/i.test(activeColor) && document.activeElement !== customColorInput) customColorInput.value = activeColor;
+  }
+
+  function setTool(t){
+    if(textEditing) commitTextEdit();
+    if(tool === "polygon" && polyActive && t !== "polygon"){ polyActive = false; polyPoints = []; }
+    tool = t;
+    toolEls.forEach(el=> el.classList.toggle("active", el.dataset.tool === t));
+    modeLabel.textContent = TOOL_META[t].label;
+    modeNote.textContent = TOOL_META[t].note;
+    if(t !== "select") selectedId = null;
+    viewport.style.cursor = editingBackground ? (t === "select" ? "default" : (t === "text" ? "text" : "crosshair")) : "";
+    renderScene();
+    refreshCrosshair();
+  }
+  toolEls.forEach(el=> el.addEventListener("click", ()=> setTool(el.dataset.tool)));
+
+  function setColor(c, sourceEl, continuous){
+    if(tool === "select"){
+      const sel = selectedShape();
+      if(shapeSupportsColor(sel)){
+        if(continuous) liveReplaceSelected({color:c}); else replaceSelectedShape({color:c});
+      }
+      return;
+    }
+    color = c;
+    swatches.forEach(s=> s.classList.toggle("active", s === sourceEl));
+    if(tool === "plant") renderPlantPreviews();
+  }
+  swatches.forEach(s=> s.addEventListener("click", ()=> setColor(s.dataset.color, s, false)));
+  customColorInput.addEventListener("input", (e)=> setColor(e.target.value, null, true));
+  customColorInput.addEventListener("change", liveEnd);
+
+  sendToBackBtn.addEventListener("click", ()=> reorderSelectedToEnd(-1));
+  sendBackBtn.addEventListener("click", ()=> reorderSelected(-1));
+  bringFwdBtn.addEventListener("click", ()=> reorderSelected(1));
+  bringToFrontBtn.addEventListener("click", ()=> reorderSelectedToEnd(1));
+  $("dsDeleteBtn").addEventListener("click", deleteSelected);
+
+  fillToggleBtn.addEventListener("click", ()=>{
+    if(tool === "select"){
+      const sel = selectedShape();
+      if(isFillableShape(sel)) replaceSelectedShape({fillColor: sel.fillColor ? null : rectFillColor});
+      return;
+    }
+    rectFillEnabled = !rectFillEnabled;
+    refreshParamPanel();
+  });
+  fillSwatchEls.forEach(s=>{
+    s.addEventListener("click", ()=>{
+      rectFillColor = s.dataset.fillcolor;
+      if(tool === "select"){
+        const sel = selectedShape();
+        if(isFillableShape(sel) && sel.fillColor) replaceSelectedShape({fillColor: rectFillColor});
+      } else refreshParamPanel();
+    });
+  });
+  fillCustomColor.addEventListener("input", (e)=>{
+    rectFillColor = e.target.value;
+    if(tool === "select"){
+      const sel = selectedShape();
+      if(isFillableShape(sel) && sel.fillColor) liveReplaceSelected({fillColor: rectFillColor});
+    } else refreshParamPanel();
+  });
+  fillCustomColor.addEventListener("change", liveEnd);
+
+  plantShapeBtns.forEach(b=>{
+    b.addEventListener("click", ()=>{
+      plantShapeKind = b.dataset.shapekind;
+      plantShapeBtns.forEach(x=> x.classList.toggle("active", x === b));
+    });
+  });
+  plantStyleBtns.forEach(b=>{
+    b.addEventListener("click", ()=>{
+      if(tool === "select"){
+        const sel = selectedShape();
+        if(shapeSupportsStyle(sel) && sel.style !== b.dataset.plantstyle) replaceSelectedShape({style: b.dataset.plantstyle});
+        return;
+      }
+      plantStyle = b.dataset.plantstyle;
+      plantStyleBtns.forEach(x=> x.classList.toggle("active", x === b));
+      renderPlantPreviews();
+    });
+  });
+
+  widthSlider.addEventListener("input", ()=>{
+    const val = parseInt(widthSlider.value, 10);
+    widthVal.textContent = val;
+    if(tool === "select"){
+      const sel = selectedShape();
+      if(!shapeSupportsWidth(sel)) return;
+      if(!liveSnap) liveSnap = cloneStore();
+      const arr = getShapes();
+      const idx = arr.findIndex(s=>s.id === selectedId);
+      if(idx !== -1){ arr[idx] = withShapeWidth(arr[idx], val); renderScene(); }
+      return;
+    }
+    width = val;
+    refreshCrosshair();
+  });
+  widthSlider.addEventListener("change", liveEnd);
+
+  smoothSlider.addEventListener("input", ()=>{
+    smoothing = parseInt(smoothSlider.value,10) / 100;
+    smoothVal.textContent = smoothSlider.value;
+  });
+  opacitySlider.addEventListener("input", ()=>{
+    ds().highlightOpacity = parseInt(opacitySlider.value,10) / 100;
+    opacityVal.textContent = opacitySlider.value;
+    applyHighlightOpacity();
+  });
+  opacitySlider.addEventListener("change", persist);
+  $("dsFillModeSelect").addEventListener("change", (e)=>{ fillMode = e.target.value; });
+
+  // text panel (font size / family apply to the text tool, or to the selected text)
+  textContentEl.addEventListener("input", ()=>{
+    if(tool !== "select") return;
+    const sel = selectedShape();
+    if(!sel || sel.type !== "text") return;
+    liveReplaceSelected({text: textContentEl.value});
+  });
+  textContentEl.addEventListener("change", ()=>{
+    const sel = selectedShape();
+    if(sel && sel.type === "text" && !String(sel.text).trim()){
+      // emptied out: drop the shape (the pre-edit state is what undo restores)
+      if(liveSnap){ setShapes(getShapes().filter(s=>s.id !== sel.id)); selectedId = null; renderScene(); }
+    }
+    liveEnd();
+  });
+  fontSizeSlider.addEventListener("input", ()=>{
+    const v = parseInt(fontSizeSlider.value, 10);
+    fontSizeVal.textContent = v;
+    if(tool === "select"){
+      const sel = selectedShape();
+      if(sel && sel.type === "text") liveReplaceSelected({fontSize: v});
+      return;
+    }
+    textFontSize = v;
+    if(textEditing) layoutTextEditor();
+  });
+  fontSizeSlider.addEventListener("change", liveEnd);
+  fontFamilySel.addEventListener("change", ()=>{
+    if(tool === "select"){
+      const sel = selectedShape();
+      if(sel && sel.type === "text") replaceSelectedShape({fontFamily: fontFamilySel.value});
+      return;
+    }
+    textFontFamily = fontFamilySel.value;
+    if(textEditing) layoutTextEditor();
+  });
+
+  function clearAll(){
+    if(!getShapes().length){ return; }
+    if(!confirm("Clear the whole background drawing? You can still undo this once.")) return;
+    snapshotForUndo();
+    setShapes([]);
+    selectedId = null;
+    polyActive = false; polyPoints = [];
+    persist();
+    renderScene();
+  }
+  $("dsClearBtn").addEventListener("click", clearAll);
+
+  // collapse / expand the sidebar
+  const pageMap = $("page-map");
+  function setCollapsed(c){
+    sidebar.classList.toggle("collapsed", c);
+    pageMap.classList.toggle("dsCollapsed", c);
+    $("dsCollapseBtn").title = c ? "Expand sidebar" : "Collapse sidebar";
+    $("dsCollapseBtn").setAttribute("aria-label", $("dsCollapseBtn").title);
+    if(editingBackground){ ensureExtent(false); renderScene(); }
+  }
+  $("dsCollapseBtn").addEventListener("click", ()=> setCollapsed(!sidebar.classList.contains("collapsed")));
+  setCollapsed(window.innerWidth < 700);
+
+  // ---------- Scale: 1 m grid + plot boundary (edit-mode-only visual aid) ----------
+  const gridToggleBtn = $("dsGridToggleBtn");
+  const plotWidthInput = $("dsPlotWidth");
+  const plotLengthInput = $("dsPlotLength");
+  const scaleReadout = $("dsScaleReadout");
+  function plotDims(){
+    const sc = scaleSettings();
+    const w = Number(sc.plotWidthM), l = Number(sc.plotLengthM);
+    return (w > 0 && l > 0) ? {w, l} : null;
+  }
+  function syncScaleUI(){
+    const sc = scaleSettings();
+    gridToggleBtn.textContent = "1 m grid: " + (sc.showGrid ? "On" : "Off");
+    gridToggleBtn.classList.toggle("active", !!sc.showGrid);
+    if(document.activeElement !== plotWidthInput) plotWidthInput.value = sc.plotWidthM != null ? sc.plotWidthM : "";
+    if(document.activeElement !== plotLengthInput) plotLengthInput.value = sc.plotLengthM != null ? sc.plotLengthM : "";
+    const pd = plotDims();
+    scaleReadout.textContent = pd
+      ? `Plot outline: ${pd.w} m × ${pd.l} m (≈ ${(pd.w*pd.l).toFixed(1)} m²), shown dashed. Grid squares are 1 m × 1 m.`
+      : "1 map unit = 1 cm. Grid squares are 1 m × 1 m. Enter both plot dimensions to show its outline.";
+  }
+  gridToggleBtn.addEventListener("click", ()=>{
+    const sc = scaleSettings();
+    sc.showGrid = !sc.showGrid;
+    persist(); syncScaleUI(); renderScaleOverlay();
+  });
+  function onPlotInput(key, input){
+    const sc = scaleSettings();
+    const v = parseFloat(input.value);
+    sc[key] = (input.value === "" || !(v > 0)) ? null : v;
+    persist(); syncScaleUI(); renderScaleOverlay();
+  }
+  plotWidthInput.addEventListener("input", ()=> onPlotInput("plotWidthM", plotWidthInput));
+  plotLengthInput.addEventListener("input", ()=> onPlotInput("plotLengthM", plotLengthInput));
+
+  function renderScaleOverlay(){
+    if(!editingBackground){
+      scaleSvg.style.display = "none";
+      if(scaleSvg.firstChild) scaleSvg.innerHTML = "";
+      return;
+    }
+    const sc = scaleSettings();
+    const pd = plotDims();
+    if(!sc.showGrid && !pd){ scaleSvg.style.display = "none"; scaleSvg.innerHTML = ""; return; }
+    scaleSvg.style.display = "block";
+    scaleSvg.style.left = ext.x + "px";
+    scaleSvg.style.top = ext.y + "px";
+    scaleSvg.setAttribute("width", ext.w);
+    scaleSvg.setAttribute("height", ext.h);
+    scaleSvg.setAttribute("viewBox", `${ext.x} ${ext.y} ${ext.w} ${ext.h}`);
+    const ox = Number(sc.originX) || 0, oy = Number(sc.originY) || 0;
+    const U = UNITS_PER_METER;
+    let html = "";
+    if(sc.showGrid){
+      let d = "";
+      for(let x = ox + Math.ceil((ext.x-ox)/U)*U; x <= ext.x + ext.w; x += U) d += `M${x} ${ext.y}V${ext.y+ext.h}`;
+      for(let y = oy + Math.ceil((ext.y-oy)/U)*U; y <= ext.y + ext.h; y += U) d += `M${ext.x} ${y}H${ext.x+ext.w}`;
+      html += `<path d="${d}" fill="none" stroke="rgba(20,24,27,0.18)" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
+    }
+    if(pd){
+      const w = metersToUnits(pd.w), h = metersToUnits(pd.l);
+      const fs = 12/zoom;
+      html += `<rect x="${ox}" y="${oy}" width="${w}" height="${h}" fill="none" stroke="#14181B" stroke-width="1.5" stroke-dasharray="7 5" vector-effect="non-scaling-stroke"/>`;
+      html += `<text x="${ox}" y="${oy - 5/zoom}" font-size="${fs}" font-weight="700" fill="#14181B" font-family="-apple-system, sans-serif">Plot ${pd.w} m × ${pd.l} m</text>`;
+    }
+    scaleSvg.innerHTML = html;
+  }
+
+  // ======================================================================
+  // POINTER HANDLING (called from the app's shared viewport pointer pipeline)
+  // ======================================================================
+  function toWorld(e){
+    const r = viewport.getBoundingClientRect();
+    return {x:(e.clientX - r.left - panX)/zoom, y:(e.clientY - r.top - panY)/zoom};
+  }
+
+  // live brush-size cursor
+  const CURSOR_TOOLS = new Set(["pen","highlighter","eraser","line","rect","polygon"]);
+  let lastPointerPos = null;
+  function effectiveToolWidth(){
+    if(tool === "highlighter") return width * 2.2;
+    if(tool === "eraser") return width * 1.6;
+    return width;
+  }
+  function refreshCrosshair(){
+    if(!editingBackground || !lastPointerPos || !CURSOR_TOOLS.has(tool)){
+      crosshair.style.display = "none";
+      return;
+    }
+    const w = effectiveToolWidth();
+    crosshair.style.width = w + "px";
+    crosshair.style.height = w + "px";
+    crosshair.style.borderWidth = (1.5/zoom) + "px";
+    crosshair.style.left = lastPointerPos.x + "px";
+    crosshair.style.top = lastPointerPos.y + "px";
+    crosshair.style.display = "block";
+  }
+  // pen "close the loop" ring
+  let penStartPt = null, penMaxDistFromStart = 0, penCanClose = false;
+  function updateCloseRing(){
+    if(tool === "pen" && drawing && penCanClose){
+      const d = closeDist()*2;
+      closeRing.style.width = d + "px";
+      closeRing.style.height = d + "px";
+      closeRing.style.borderWidth = (2/zoom) + "px";
+      closeRing.style.left = penStartPt.x + "px";
+      closeRing.style.top = penStartPt.y + "px";
+      closeRing.style.display = "block";
+    } else {
+      closeRing.style.display = "none";
+    }
+  }
+  viewport.addEventListener("pointermove", (e)=>{
+    if(!editingBackground) return;
+    lastPointerPos = (e.pointerType === "touch") ? null : toWorld(e);
+    refreshCrosshair();
+    if(tool === "polygon" && polyActive && !drawing && !pointers.has(e.pointerId)) drawPolygonPreview(polyPoints, toWorld(e));
+  });
+  viewport.addEventListener("pointerleave", ()=>{ lastPointerPos = null; crosshair.style.display = "none"; });
+
+  function smoothedPoint(raw, prevSmooth){
+    if(!prevSmooth) return {x:raw.x, y:raw.y};
+    const a = 1 - (smoothing * 0.85);
+    return {x: prevSmooth.x + (raw.x - prevSmooth.x) * a, y: prevSmooth.y + (raw.y - prevSmooth.y) * a};
+  }
+  function makeJitterState(){ return {value:0}; }
+  function stepJitter(state){
+    state.value += (Math.random() - 0.5) * 0.6;
+    state.value = Math.max(-1, Math.min(1, state.value * 0.85));
+    return state.value;
+  }
+  function jitteredWidth(baseWidth, state){ return Math.max(1, baseWidth * (1 + stepJitter(state) * WIDTH_JITTER_AMOUNT)); }
+  function subdivide(p0, p1, step){
+    const d = Math.hypot(p1.x-p0.x, p1.y-p0.y);
+    const steps = Math.max(1, Math.round(d/step));
+    const pts = [];
+    for(let i=0;i<=steps;i++){ const t = i/steps; pts.push({x:p0.x+(p1.x-p0.x)*t, y:p0.y+(p1.y-p0.y)*t}); }
+    return pts;
+  }
+  function rectInnerBounds(p0, p1, strokeWidth){
+    const x = Math.min(p0.x,p1.x), y = Math.min(p0.y,p1.y);
+    const w = Math.abs(p1.x-p0.x), h = Math.abs(p1.y-p0.y);
+    return {x:x+strokeWidth/2, y:y+strokeWidth/2, w:Math.max(w-strokeWidth,1), h:Math.max(h-strokeWidth,1)};
+  }
+  function rectPerimeterPoints(p0, p1, strokeWidth){
+    const b = rectInnerBounds(p0, p1, strokeWidth);
+    const corners = [{x:b.x,y:b.y},{x:b.x+b.w,y:b.y},{x:b.x+b.w,y:b.y+b.h},{x:b.x,y:b.y+b.h},{x:b.x,y:b.y}];
+    let pts = [];
+    for(let i=1;i<corners.length;i++){ const seg = subdivide(corners[i-1], corners[i], 4); pts = pts.concat(i===1 ? seg : seg.slice(1)); }
+    return pts;
+  }
+  function widthsFor(points, baseWidth){
+    const state = makeJitterState();
+    const widths = [];
+    for(let i=1;i<points.length;i++) widths.push(jitteredWidth(baseWidth, state));
+    return widths;
+  }
+  function polygonClosedPoints(vertices){
+    const closed = vertices.concat([vertices[0]]);
+    let pts = [];
+    for(let i=1;i<closed.length;i++){ const seg = subdivide(closed[i-1], closed[i], 4); pts = pts.concat(i===1 ? seg : seg.slice(1)); }
+    return pts;
+  }
+  function drawPolygonPreview(vertices, cursorPos){
+    renderScene();
+    ctx.save();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = Math.max(1.5/zoom, width*0.4);
+    ctx.setLineDash([6/zoom, 4/zoom]);
+    ctx.beginPath();
+    vertices.forEach((p,i)=> i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+    ctx.lineTo(cursorPos.x, cursorPos.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    vertices.forEach((p,i)=>{
+      ctx.beginPath();
+      ctx.fillStyle = i===0 ? "#2E6F9E" : color;
+      ctx.arc(p.x, p.y, (i===0 ? 5 : 3)/zoom, 0, Math.PI*2);
+      ctx.fill();
+    });
+    const canClose = vertices.length >= 3 && Math.hypot(cursorPos.x-vertices[0].x, cursorPos.y-vertices[0].y) <= closeDist();
+    if(canClose){
+      ctx.beginPath();
+      ctx.strokeStyle = "#2E6F9E";
+      ctx.lineWidth = 2/zoom;
+      ctx.arc(vertices[0].x, vertices[0].y, closeDist(), 0, Math.PI*2);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function commitShape(shape){
+    snapshotForUndo();
+    getShapes().push(shape);
+    persist();
+    renderScene();
+  }
+  function finishPolygon(){
+    const pts = polygonClosedPoints(polyPoints);
+    const shape = {
+      id:newId(), type:"polygon", layer:"ink", points:pts, widths:widthsFor(pts, width), color,
+      fillColor: rectFillEnabled ? rectFillColor : null,
+      fillVertices: polyPoints.slice()
+    };
+    polyActive = false;
+    polyPoints = [];
+    commitShape(shape);
+  }
+
+  // ---------- flood fill (scanline) on the ink layer's current pixels ----------
+  // Returns {patch canvas, world rect} for the filled region, or null / {open:true}.
+  const readCanvas = document.createElement("canvas");
+  function floodFillAt(p, fillHex, tolerance, allowOpen){
+    const w = inkCanvas.width, h = inkCanvas.height;
+    const sx = Math.floor((p.x - ext.x) * ext.s), sy = Math.floor((p.y - ext.y) * ext.s);
+    if(sx < 0 || sy < 0 || sx >= w || sy >= h) return null;
+    // sample through a CPU-backed scratch canvas (keeps the live ink layer GPU-accelerated)
+    readCanvas.width = w; readCanvas.height = h;
+    const rctx = readCanvas.getContext("2d", {willReadFrequently:true});
+    rctx.clearRect(0, 0, w, h);
+    rctx.drawImage(inkCanvas, 0, 0);
+    const data = rctx.getImageData(0, 0, w, h).data;
+    readCanvas.width = 1; readCanvas.height = 1; // release the memory
+    const si = (sy*w + sx) * 4;
+    const sR = data[si], sG = data[si+1], sB = data[si+2], sA = data[si+3];
+    const thr = tolerance*tolerance*4;
+    const mask = new Uint8Array(w*h);
+    const matches = (idx)=>{
+      const o = idx*4;
+      const dr = data[o]-sR, dg = data[o+1]-sG, db = data[o+2]-sB, da = data[o+3]-sA;
+      return (dr*dr + dg*dg + db*db + da*da) <= thr;
+    };
+    let minX = sx, maxX = sx, minY = sy, maxY = sy, count = 0, touchesEdge = false;
+    const stack = [sx, sy];
+    while(stack.length){
+      const y = stack.pop(), x = stack.pop();
+      const row = y*w;
+      if(mask[row+x] || !matches(row+x)) continue;
+      let lx = x, rx = x;
+      while(lx > 0 && !mask[row+lx-1] && matches(row+lx-1)) lx--;
+      while(rx < w-1 && !mask[row+rx+1] && matches(row+rx+1)) rx++;
+      for(let i=lx;i<=rx;i++) mask[row+i] = 1;
+      count += rx - lx + 1;
+      if(lx < minX) minX = lx; if(rx > maxX) maxX = rx;
+      if(y < minY) minY = y; if(y > maxY) maxY = y;
+      if(lx === 0 || rx === w-1 || y === 0 || y === h-1) touchesEdge = true;
+      for(const ny of [y-1, y+1]){
+        if(ny < 0 || ny >= h) continue;
+        const nrow = ny*w;
+        let inRun = false;
+        for(let i=lx;i<=rx;i++){
+          const ok = !mask[nrow+i] && matches(nrow+i);
+          if(ok && !inRun){ stack.push(i, ny); inRun = true; }
+          else if(!ok) inRun = false;
+        }
+      }
+    }
+    if(count <= 1) return null;
+    if(touchesEdge && !allowOpen) return {open:true};
+    const pw = maxX - minX + 1, ph = maxY - minY + 1;
+    const patch = document.createElement("canvas");
+    patch.width = pw; patch.height = ph;
+    const pctx = patch.getContext("2d");
+    const out = pctx.createImageData(pw, ph);
+    const fc = hexToRgb(fillHex);
+    for(let y=0;y<ph;y++){
+      const srcRow = (y+minY)*w, dstRow = y*pw;
+      for(let x=0;x<pw;x++){
+        if(mask[srcRow + x + minX]){
+          const o = (dstRow + x)*4;
+          out.data[o] = fc.r; out.data[o+1] = fc.g; out.data[o+2] = fc.b; out.data[o+3] = 255;
+        }
+      }
+    }
+    pctx.putImageData(out, 0, 0);
+    return {patch, x: ext.x + minX/ext.s, y: ext.y + minY/ext.s, w: pw/ext.s, h: ph/ext.s};
+  }
+
+  // ---------- inline text editor ----------
+  let textEditing = null; // {id, isNew, x, y, original}
+  function layoutTextEditor(){
+    if(!textEditing) return;
+    const s = textEditing.isNew ? {fontSize:textFontSize, fontFamily:textFontFamily} : (getShapes().find(x=>x.id === textEditing.id) || {});
+    const fs = s.fontSize || textFontSize;
+    const fam = s.fontFamily || textFontFamily;
+    const probe = {text:textEditor.value || " ", fontSize:fs, fontFamily:fam};
+    const sz = textSize(probe);
+    textEditor.style.font = textFont(probe);
+    textEditor.style.lineHeight = String(TEXT_LINE_HEIGHT);
+    textEditor.style.color = s.color || color;
+    textEditor.style.left = textEditing.x + "px";
+    textEditor.style.top = textEditing.y + "px";
+    textEditor.style.width = Math.ceil(sz.w + fs*0.6) + "px";
+    textEditor.style.height = Math.ceil(sz.h) + "px";
+    textEditor.style.outlineWidth = (1.5/zoom) + "px";
+  }
+  function openTextEditor(existing, at){
+    if(textEditing) commitTextEdit();
+    if(existing){
+      textEditing = {id:existing.id, isNew:false, x:existing.x, y:existing.y, original:existing.text};
+      editingTextId = existing.id;
+      if(tool === "select") selectedId = existing.id;
+      textEditor.value = existing.text || "";
+    } else {
+      textEditing = {id:newId(), isNew:true, x:at.x, y:at.y - textFontSize*TEXT_LINE_HEIGHT/2, original:""};
+      textEditor.value = "";
+    }
+    textEditor.hidden = false;
+    layoutTextEditor();
+    renderScene();
+    // focus synchronously (inside the user gesture, so mobile keyboards open), retry once after
+    const focusEditor = ()=>{
+      if(!textEditing || document.activeElement === textEditor) return;
+      try{ textEditor.focus({preventScroll:true}); }catch(err){ textEditor.focus(); }
+      textEditor.select();
+    };
+    focusEditor();
+    setTimeout(focusEditor, 0);
+  }
+  function closeTextEditor(){
+    textEditing = null;
+    editingTextId = null;
+    textEditor.hidden = true;
+    if(document.activeElement === textEditor) textEditor.blur();
+  }
+  function commitTextEdit(){
+    if(!textEditing) return;
+    const te = textEditing;
+    const val = textEditor.value.replace(/\s+$/,"");
+    closeTextEditor();
+    if(te.isNew){
+      if(val.trim()){
+        commitShape({id:te.id, type:"text", layer:"ink", x:te.x, y:te.y, text:val, fontSize:textFontSize, fontFamily:textFontFamily, color});
+        return;
+      }
+    } else {
+      const arr = getShapes();
+      const idx = arr.findIndex(s=>s.id === te.id);
+      if(idx !== -1 && val !== te.original){
+        snapshotForUndo();
+        if(val.trim()) arr[idx] = Object.assign({}, arr[idx], {text:val});
+        else { arr.splice(idx, 1); if(selectedId === te.id) selectedId = null; }
+        persist();
+      }
+    }
+    renderScene();
+  }
+  function cancelTextEdit(){
+    if(!textEditing) return;
+    closeTextEditor();
+    renderScene();
+  }
+  textEditor.addEventListener("pointerdown", (e)=> e.stopPropagation());
+  textEditor.addEventListener("input", layoutTextEditor);
+  textEditor.addEventListener("keydown", (e)=>{
+    e.stopPropagation();
+    if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); commitTextEdit(); }
+    else if(e.key === "Escape"){ e.preventDefault(); cancelTextEdit(); }
+  });
+  textEditor.addEventListener("blur", ()=>{ if(textEditing) commitTextEdit(); });
+
+  // ---------- pointer state ----------
+  let drawing = false;
+  let smoothPts = [];
+  let currentWidths = [];
+  const penJitter = makeJitterState();
+  let dragStart = null;      // rect / line
+  let stampDragStart = null; // tree / bush
+  let selectDrag = null;     // {id, last, moved}
+  let lastSelTap = {id:null, t:0};
+
+  function strokeTargetsFor(t){
+    if(t === "pen") return [{tctx:ctx, mode:"ink"}];
+    if(t === "highlighter") return [{tctx:bgCtx, mode:"highlight"}];
+    if(t === "eraser") return [{tctx:ctx, mode:"erase"}, {tctx:bgCtx, mode:"erase"}];
+    return [];
+  }
+
+  // Returns true if the drawing system takes this pointer (the app then routes moves/up here),
+  // false to let the app pan the map instead.
+  function pointerDown(e){
+    const ae = document.activeElement;
+    if(ae && ae !== document.body && ae !== textEditor && sidebar.contains(ae)) ae.blur();
+    if(textEditing){ commitTextEdit(); return true; }
+    if(e.pointerType === "mouse" && e.button !== 0) return false; // middle/right drag pans
+    if(ensureExtent(false)) renderScene();
+    const p = toWorld(e);
+
+    if(tool === "select"){
+      const hitId = hitTestShapes(p.x, p.y);
+      if(hitId == null){
+        if(selectedId != null){ selectedId = null; renderScene(); }
+        return false;
+      }
+      const now = Date.now();
+      const hitShape = getShapes().find(s=>s.id === hitId);
+      if(hitShape && hitShape.type === "text" && lastSelTap.id === hitId && now - lastSelTap.t < 400){
+        lastSelTap = {id:null, t:0};
+        openTextEditor(hitShape);
+        return true;
+      }
+      lastSelTap = {id:hitId, t:now};
+      selectedId = hitId;
+      selectDrag = {id:hitId, last:p, moved:false};
+      snapshotPendingUndo(); // only committed if a real move happens
+      renderScene();
+      return true;
+    }
+
+    if(tool === "text"){
+      const hitId = hitTestShapes(p.x, p.y);
+      const hitShape = hitId != null ? getShapes().find(s=>s.id === hitId) : null;
+      if(hitShape && hitShape.type === "text") openTextEditor(hitShape);
+      else openTextEditor(null, p);
+      return true;
+    }
+
+    if(tool === "pen" || tool === "highlighter" || tool === "eraser"){
+      drawing = true;
+      smoothPts = [p];
+      currentWidths = [];
+      if(tool === "pen"){
+        penJitter.value = 0;
+        penStartPt = p;
+        penMaxDistFromStart = 0;
+        penCanClose = false;
+        updateCloseRing();
+      }
+      const lineW = effectiveToolWidth();
+      strokeTargetsFor(tool).forEach(({tctx, mode})=>{
+        if(mode === "erase"){ tctx.globalCompositeOperation = "destination-out"; tctx.fillStyle = "#000"; tctx.strokeStyle = "#000"; }
+        else { tctx.globalCompositeOperation = "source-over"; tctx.fillStyle = color; tctx.strokeStyle = color; }
+        tctx.globalAlpha = 1;
+        const w0 = (tool === "pen") ? jitteredWidth(width, penJitter) : lineW;
+        tctx.beginPath();
+        tctx.arc(p.x, p.y, w0/2, 0, Math.PI*2);
+        tctx.fill();
+      });
+      return true;
+    }
+
+    if(tool === "fill"){
+      const res = floodFillAt(p, color, 40, fillMode === "wash");
+      if(res && res.open){
+        modeNote.textContent = "That area isn't closed in — draw a closed outline first, or switch Mode to “Colour wash” to fill open ground.";
+      } else if(res){
+        const id = newId();
+        const src = res.patch.toDataURL("image/png");
+        fillCache.set(id, {src, drawable:res.patch, ready:true, imgData:null});
+        commitShape({id, type:"fill", layer:"ink", x:res.x, y:res.y, w:res.w, h:res.h, src});
+        modeNote.textContent = TOOL_META.fill.note;
+      }
+      return true;
+    }
+
+    if(tool === "polygon"){
+      if(!polyActive){
+        polyActive = true;
+        polyPoints = [p];
+        drawPolygonPreview(polyPoints, p);
+      } else {
+        const first = polyPoints[0];
+        const d = Math.hypot(p.x-first.x, p.y-first.y);
+        if(polyPoints.length >= 3 && d <= closeDist()) finishPolygon();
+        else if(d > closeDist()){ polyPoints.push(p); drawPolygonPreview(polyPoints, p); }
+      }
+      return true;
+    }
+
+    if(tool === "rect" || tool === "line"){ dragStart = p; drawing = true; return true; }
+    if(tool === "plant"){ stampDragStart = p; drawing = true; return true; }
+    return false;
+  }
+
+  function pointerMove(e){
+    const p = toWorld(e);
+    if(tool === "select" && selectDrag){
+      const dx = p.x - selectDrag.last.x, dy = p.y - selectDrag.last.y;
+      if(Math.abs(dx) > 0.5/zoom || Math.abs(dy) > 0.5/zoom){
+        const arr = getShapes();
+        const idx = arr.findIndex(s=>s.id === selectDrag.id);
+        if(idx !== -1){
+          arr[idx] = translateShape(arr[idx], dx, dy);
+          selectDrag.moved = true;
+          selectDrag.last = p;
+          renderScene();
+        }
+      }
+      return;
+    }
+    if(tool === "polygon" && polyActive){ drawPolygonPreview(polyPoints, p); return; }
+    if(!drawing) return;
+
+    if(tool === "pen" || tool === "highlighter" || tool === "eraser"){
+      const sm = smoothedPoint(p, smoothPts[smoothPts.length-1]);
+      smoothPts.push(sm);
+      if(smoothPts.length < 2) return;
+      if(tool === "pen"){
+        const distFromStart = Math.hypot(sm.x-penStartPt.x, sm.y-penStartPt.y);
+        penMaxDistFromStart = Math.max(penMaxDistFromStart, distFromStart);
+        penCanClose = penMaxDistFromStart > closeDist()*2 && distFromStart <= closeDist();
+        updateCloseRing();
+      }
+      const n = smoothPts.length;
+      const segW = (tool === "pen") ? jitteredWidth(width, penJitter) : effectiveToolWidth();
+      if(tool === "pen") currentWidths.push(segW);
+      strokeTargetsFor(tool).forEach(({tctx})=>{
+        tctx.lineWidth = segW;
+        tctx.beginPath();
+        tctx.moveTo(smoothPts[n-2].x, smoothPts[n-2].y);
+        tctx.lineTo(smoothPts[n-1].x, smoothPts[n-1].y);
+        tctx.stroke();
+      });
+      return;
+    }
+    if(tool === "rect" && dragStart){
+      renderScene();
+      if(rectFillEnabled){
+        const b = rectInnerBounds(dragStart, p, width);
+        ctx.save(); ctx.fillStyle = rectFillColor; ctx.fillRect(b.x, b.y, b.w, b.h); ctx.restore();
+      }
+      const pts = rectPerimeterPoints(dragStart, p, width);
+      renderVariableWidthPolyline(ctx, pts, widthsFor(pts, width), color);
+      return;
+    }
+    if(tool === "line" && dragStart){
+      renderScene();
+      const pts = subdivide(dragStart, p, 4);
+      renderVariableWidthPolyline(ctx, pts, widthsFor(pts, width), color);
+      return;
+    }
+    if(tool === "plant" && stampDragStart){
+      const size = Math.max(20, Math.hypot(p.x - stampDragStart.x, p.y - stampDragStart.y));
+      renderScene();
+      drawTopPlant(stampDragStart, size, plantShapeKind, plantStyle, color);
+    }
+  }
+
+  function pointerUp(e){
+    if(tool === "select"){
+      if(selectDrag && selectDrag.moved){ commitPendingUndo(); persist(); }
+      selectDrag = null;
+      return;
+    }
+    if(!drawing) return;
+    drawing = false;
+
+    if(tool === "pen" || tool === "highlighter" || tool === "eraser"){
+      let shape;
+      if(tool === "pen"){
+        const isClosed = penCanClose;
+        const pts = smoothPts.slice();
+        if(isClosed) pts[pts.length-1] = {x:penStartPt.x, y:penStartPt.y};
+        const widths = currentWidths.length ? currentWidths.slice() : [width];
+        shape = {
+          id:newId(), type:"stroke", layer:"ink", points:pts, widths, color,
+          closed: isClosed,
+          fillColor: isClosed && rectFillEnabled ? rectFillColor : null,
+          fillVertices: isClosed ? pts.slice() : null
+        };
+        penStartPt = null; penMaxDistFromStart = 0; penCanClose = false;
+        updateCloseRing();
+      } else if(tool === "highlighter"){
+        shape = {id:newId(), type:"highlight", layer:"highlight", points:smoothPts.slice(), width:effectiveToolWidth(), color};
+      } else {
+        shape = {id:newId(), type:"erase", layer:"both", points:smoothPts.slice(), width:effectiveToolWidth()};
+      }
+      smoothPts = []; currentWidths = [];
+      commitShape(shape);
+      return;
+    }
+    if(tool === "rect" && dragStart){
+      const p = toWorld(e);
+      const pts = rectPerimeterPoints(dragStart, p, width);
+      const fillBounds = rectInnerBounds(dragStart, p, width);
+      dragStart = null;
+      commitShape({
+        id:newId(), type:"rect", layer:"ink", points:pts, widths:widthsFor(pts, width), color,
+        fillColor: rectFillEnabled ? rectFillColor : null,
+        fillBounds
+      });
+      return;
+    }
+    if(tool === "line" && dragStart){
+      const p = toWorld(e);
+      const pts = subdivide(dragStart, p, 4);
+      dragStart = null;
+      commitShape({id:newId(), type:"line", layer:"ink", points:pts, widths:widthsFor(pts, width), color});
+      return;
+    }
+    if(tool === "plant" && stampDragStart){
+      const p = toWorld(e);
+      const size = Math.max(20, Math.hypot(p.x - stampDragStart.x, p.y - stampDragStart.y));
+      const shape = {id:newId(), type:"plant", layer:"ink", center:stampDragStart, size, shapeKind:plantShapeKind, style:plantStyle, color};
+      stampDragStart = null;
+      commitShape(shape);
+    }
+  }
+
+  // A second finger landed (pinch): drop any half-drawn stroke/drag; keep a click-built polygon.
+  function cancel(){
+    if(selectDrag){
+      if(selectDrag.moved){ commitPendingUndo(); persist(); }
+      selectDrag = null;
+    }
+    drawing = false;
+    dragStart = null; stampDragStart = null;
+    smoothPts = []; currentWidths = [];
+    penStartPt = null; penCanClose = false;
+    updateCloseRing();
+    renderScene();
+  }
+
+  // ---------- app hooks ----------
+  let transformTimer = null;
+  function onTransform(){
+    updateDeleteButton();
+    refreshCrosshair();
+    updateCloseRing();
+    if(textEditing) layoutTextEditor();
+    clearTimeout(transformTimer);
+    transformTimer = setTimeout(()=>{
+      if(drawing) return;
+      const resized = ensureExtent(false);
+      if(resized || selectedId != null || editingBackground) renderScene();
+      if(tool === "polygon" && polyActive && polyPoints.length) drawPolygonPreview(polyPoints, polyPoints[polyPoints.length-1]);
+    }, 140);
+  }
+  // STORE was replaced wholesale (undo / import): drop transient state and repaint.
+  function refresh(){
+    if(textEditing) closeTextEditor();
+    liveSnap = null;
+    selectDrag = null;
+    drawing = false; dragStart = null; stampDragStart = null;
+    polyActive = false; polyPoints = [];
+    opacitySlider.value = Math.round((ds().highlightOpacity != null ? ds().highlightOpacity : 0.35) * 100);
+    opacityVal.textContent = opacitySlider.value;
+    syncScaleUI();
+    ensureExtent(true);
+    renderScene();
+  }
+  function setEditing(on){
+    if(!on){
+      if(textEditing) commitTextEdit();
+      polyActive = false; polyPoints = [];
+      selectedId = null;
+      selectDrag = null; drawing = false;
+      lastPointerPos = null;
+      crosshair.style.display = "none";
+      closeRing.style.display = "none";
+      viewport.style.cursor = "";
+    } else {
+      syncScaleUI();
+      viewport.style.cursor = tool === "select" ? "default" : (tool === "text" ? "text" : "crosshair");
+    }
+    ensureExtent(true);
+    renderScene();
+  }
+
+  // initial state
+  applyHighlightOpacity();
+  opacitySlider.value = Math.round((ds().highlightOpacity != null ? ds().highlightOpacity : 0.35) * 100);
+  opacityVal.textContent = opacitySlider.value;
+  syncScaleUI();
+  setTool("pen");
+
+  return {pointerDown, pointerMove, pointerUp, cancel, refresh, setEditing, onTransform, contentBounds, clearAll,
+          // exposed for diagnostics / tests
+          _state: ()=>({tool, selectedId, ext:Object.assign({}, ext), polyActive, textEditing:!!textEditing}),
+          _setTool: setTool, _select: (id)=>{ selectedId = id; renderScene(); }};
+})();
+function renderDrawing(){ if(DRAW) DRAW.refresh(); }
+document.getElementById("resetShapesBtn").addEventListener("click", ()=>{
+  document.getElementById("mapSettingsOverlay").hidden = true;
+  DRAW.clearAll();
 });
 
 /* ============================= PRIORITIES PAGE ============================= */
@@ -2616,14 +4132,11 @@ document.getElementById("pDelete").addEventListener("click", ()=>{
 });
 
 /* ============================= INIT ============================= */
-wireStepper("bgBorderWidthMinus", "bgBorderWidth", "bgBorderWidthPlus", 1, 0, 12);
-wireStepper("bgPlotWidthMinus", "bgPlotWidth", "bgPlotWidthPlus", 0.1, 0.1, null);
-wireStepper("bgPlotLengthMinus", "bgPlotLength", "bgPlotLengthPlus", 0.1, 0.1, null);
 wireStepper("edPlantCountMinus", "edPlantCount", "edPlantCountPlus", 1, 0, null);
 applyTransform();
 applyMapSettings();
 updateZoomLabels();
-renderBg();
+renderDrawing();
 renderBeds();
 fitViewToContent();
 </script>
