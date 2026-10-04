@@ -47,6 +47,12 @@
   .amItem svg{flex:0 0 auto;}
   .amItem.active{background:#EEFBF1; border-color:var(--leaf); color:var(--leaf-dark); font-weight:700;}
   .amDivider{height:1px; background:var(--line); margin:6px 0;}
+  .amMapGroup[hidden]{display:none;}
+  /* on/off switch at the end of a toggle row (e.g. "Notebook paper") — square-cornered to match the app */
+  .amSwitch{margin-left:auto; position:relative; flex:0 0 auto; width:34px; height:20px; box-sizing:border-box; border:1.5px solid #000; border-radius:2px; background:#fff; transition:background .12s ease;}
+  .amSwitch::after{content:""; position:absolute; top:2px; left:2px; width:13px; height:13px; border-radius:1px; background:#000; transition:left .12s ease, background .12s ease;}
+  .amToggle[aria-checked="true"] .amSwitch{background:var(--leaf);}
+  .amToggle[aria-checked="true"] .amSwitch::after{left:16px; background:#fff;}
   .pageHead{display:flex; align-items:center; min-height:44px; padding-right:56px; margin:env(safe-area-inset-top) 0 12px 0;}
   .pageHead h2{font-size:22px;}
 
@@ -57,6 +63,7 @@
   .btn:active{transform:scale(0.96);}
   .btn-leaf{background:var(--leaf); color:#fff; border:none; box-shadow:none;}
   .btn-outline{background:#fff; color:var(--ink); border:1.5px solid #000; box-shadow:none;}
+  .btn-outline.active{background:var(--leaf); border-color:var(--leaf); color:#fff;}
   .undoBtnEl:disabled{opacity:0.3; pointer-events:none;}
   .btn-danger{background:#FEE7E7; color:#C0362C; border:none;}
   .btn-icon{padding:9px 12px; display:inline-flex; align-items:center; justify-content:center;}
@@ -71,6 +78,9 @@
       repeating-linear-gradient(90deg, rgba(92,70,50,0.07) 0 2px, transparent 2px 26px);
   }
   #world{position:absolute; top:0; left:0; transform-origin:0 0;}
+  /* notebook paper on: the whole content layer (beds + background-drawing canvases) drops to 95%,
+     so a faint trace of the paper always shows through — even under fully opaque beds/shapes */
+  #canvasViewport.nbPaper #world{opacity:0.95;}
   /* .bed = bounding-box container (hit-testing is done against the polygon in JS, so the box
      itself ignores the pointer); the visible shape is .bedFill (clip-path) + .bedOutline (SVG stroke) */
   .bed{position:absolute; overflow:visible;}
@@ -145,6 +155,26 @@
   .edNamePencil{position:absolute; right:0; top:50%; transform:translateY(-50%); border:none; background:none; color:var(--muted); padding:4px; display:flex; align-items:center; justify-content:center; pointer-events:none;}
   .sheetHead .stitle{font-family:-apple-system,sans-serif; font-size:20px; font-weight:800; letter-spacing:-0.02em; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .closeX{border:1.5px solid #000; background:#fff; color:var(--ink); width:32px; height:32px; border-radius:2px; font-size:15px; flex-shrink:0;}
+
+  /* ---- Notes & To-Do: fixed quick-access button + its pop-up/pop-down sheet ---- */
+  .notesFabBtn{position:fixed; bottom:calc(14px + env(safe-area-inset-bottom)); right:calc(10px + env(safe-area-inset-right)); z-index:90;
+    width:42px; height:42px; padding:0; border-radius:2px; border:1.5px solid #000; background:var(--sun); color:var(--ink);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation;
+    box-shadow:0 2px 8px rgba(0,0,0,0.18); transition:transform .08s ease;}
+  .notesFabBtn:active{transform:scale(0.92);}
+  .notesBadge{position:absolute; top:-7px; left:-7px; min-width:18px; height:18px; padding:0 4px; box-sizing:border-box;
+    border-radius:9px; background:var(--leaf); color:#fff; border:1.5px solid #000; font:800 10.5px -apple-system,sans-serif;
+    display:flex; align-items:center; justify-content:center;}
+  .notesBadge[hidden]{display:none;}
+  .todoItem{display:flex; align-items:center; gap:10px; padding:8px 10px; border:1.5px solid #000; border-radius:2px; background:#fff;}
+  .todoItem + .todoItem{margin-top:6px;}
+  .todoItem input[type="checkbox"]{width:18px; height:18px; accent-color:var(--leaf); flex:0 0 auto; cursor:pointer;}
+  .todoItem .todoText{flex:1; min-width:0; font-size:14px; color:var(--ink); word-break:break-word;}
+  .todoItem.done .todoText{text-decoration:line-through; color:var(--muted);}
+  .todoItem .todoDel{flex:0 0 auto; border:none; background:none; color:var(--muted); font-size:16px; line-height:1; cursor:pointer; padding:4px;}
+  .todoItem .todoDel:hover{color:var(--danger);}
+  #todoInput{font-family:-apple-system,sans-serif; font-size:14px; border:1.5px solid #000; border-radius:2px; padding:9px 10px; background:#fff; color:var(--ink); min-width:0;}
+  #notesText{font-family:-apple-system,sans-serif; font-size:14px; border:1.5px solid #000; border-radius:2px; padding:10px; resize:vertical; color:var(--ink); background:#fff;}
   .sheet.stickyHead{display:flex; flex-direction:column; padding:0; overflow:hidden;}
   .sheetFixedTop{flex-shrink:0; padding:14px 18px 10px 18px; background:var(--paper); position:relative; z-index:2;}
   .sheetScrollBody{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; touch-action:pan-y; padding:0 18px calc(30px + env(safe-area-inset-bottom)) 18px;}
@@ -399,6 +429,7 @@
 <body>
 
 <button class="appMenuBtn" id="appMenuBtn" aria-label="Menu" title="Menu" aria-haspopup="true" aria-expanded="false" aria-controls="appMenuPop"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+<button class="notesFabBtn" id="notesFabBtn" aria-label="Notes &amp; To-Do" title="Notes &amp; To-Do"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.3"/><path d="M7.5 8h9M7.5 12h9M7.5 16h5.5"/></svg><span class="notesBadge" id="notesBadge" hidden>0</span></button>
 <div class="appMenuPop" id="appMenuPop" role="menu" hidden>
   <div class="amHead">
     <div class="amLogo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-8"/><path d="M12 13c0-4.2-3.1-6.4-7.2-6.4-.1 4.2 3 6.4 7.2 6.4z"/><path d="M12 13c0-5.1 3.2-8.4 8.2-8.4.1 5.1-3.1 8.4-8.2 8.4z"/></svg></div>
@@ -413,6 +444,12 @@
     <button class="amItem" data-page="guide" role="menuitem"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-8"/><path d="M12 13c0-4.2-3.1-6.4-7.2-6.4-.1 4.2 3 6.4 7.2 6.4z"/><path d="M12 13c0-5.1 3.2-8.4 8.2-8.4.1 5.1-3.1 8.4-8.2 8.4z"/></svg><span>Plant Guide</span></button>
   </nav>
   <div class="amDivider"></div>
+  <div class="amMapGroup" id="amMapGroup">
+    <button class="amItem amToggle" id="amNotebookBtn" role="menuitemcheckbox" aria-checked="false" data-keep-open title="Ruled notebook-paper backdrop for the map"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.2"/><path d="M8 3v18"/><path d="M10.5 8.5H17M10.5 12.5H17M10.5 16.5H17"/></svg><span>Notebook paper</span><span class="amSwitch" aria-hidden="true"></span></button>
+    <button class="amItem" id="amMapSettingsBtn" role="menuitem"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2.2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2.2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2.2" fill="currentColor" stroke="none"/></svg><span>Map settings</span></button>
+    <div class="amDivider"></div>
+  </div>
+  <button class="amItem" id="amNotesBtn" role="menuitem"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.3"/><path d="M7.5 8h9M7.5 12h9M7.5 16h5.5"/></svg><span>Notes &amp; To-Do</span></button>
   <button class="amItem" id="menuBtn" role="menuitem"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.6"/><path d="M5 9v8.5a2 2 0 002 2h10a2 2 0 002-2V9"/><path d="M10 13.2h4"/></svg><span>Save &amp; backup</span></button>
   <button class="amItem" id="helpTabBtn" role="menuitem"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.7 2.7 0 015.2.9c0 1.8-2.5 2-2.5 3.6"/><circle cx="12" cy="16.8" r="0.15" fill="currentColor" stroke-width="1.4"/></svg><span>Help</span></button>
 </div>
@@ -645,6 +682,16 @@
               <button class="dsSw" style="background:#2E6F9E" data-fillcolor="#2E6F9E" title="Blue"></button>
               <button class="dsSw" style="background:#D6B13A" data-fillcolor="#D6B13A" title="Yellow"></button>
               <input type="color" id="dsFillCustomColor" value="#3F6B3F" title="Custom fill colour">
+            </div>
+            <div id="dsFillPatternRow" hidden>
+              <div class="dsLbl" style="margin-top:10px;">Pattern</div>
+              <select id="dsFillPatternSelect" style="width:100%;">
+                <option value="solid">Solid</option>
+                <option value="sine">Sinusoidal</option>
+                <option value="hatch">Hatch</option>
+                <option value="cross">Cross-hatch</option>
+              </select>
+              <div id="dsFillPatternParams"></div>
             </div>
           </div>
         </div>
@@ -879,12 +926,45 @@
         <input type="color" id="mapBgColor">
         <button class="btn btn-outline" id="gridToggleBtn" style="flex:1;">Grid: Off</button>
       </div>
+      <div class="colorRow" style="margin-top:8px;">
+        <button class="btn btn-outline" id="notebookToggleBtn" style="flex:1;">Notebook paper: Off</button>
+      </div>
+      <div class="colorRow" id="notebookStyleRow" style="margin-top:8px;" hidden>
+        <button class="btn btn-outline" id="nbStyleLinesBtn" style="flex:1;">Lined</button>
+        <button class="btn btn-outline" id="nbStyleDotsBtn" style="flex:1;">Dotted</button>
+      </div>
+      <div class="readout" id="notebookReadout" style="margin-top:8px;" hidden>Paper backdrop, in the ground colour's place. Only shown in the normal bed view — Background drawing mode keeps its plain ground so your drawing stays easy to see.</div>
     </div>
     <div class="divider"></div>
     <div class="field">
       <label>Danger Zone</label>
       <button class="btn btn-outline" id="resetShapesBtn" style="width:100%; color:#B23A2A; border-color:#EFC9C4;">↺ Clear All Background Drawing</button>
       <div class="readout" style="margin-top:8px;">Removes every pen stroke, shape, tree, fill and label from the background drawing — your beds, crops, and layout stay untouched. The Background sidebar's Undo button can bring it back.</div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTES & TO-DO -->
+<div class="sheetOverlay" id="notesOverlay" hidden>
+  <div class="sheet">
+    <div class="sheetHandle"></div>
+    <div class="sheetHead">
+      <div class="stitle">Notes &amp; To-Do</div>
+      <button class="closeX" id="notesClose">✕</button>
+    </div>
+    <div class="field">
+      <label>To-Do</label>
+      <div class="colorRow">
+        <input type="text" id="todoInput" placeholder="Add a task…" style="flex:1;">
+        <button class="btn btn-leaf" id="todoAddBtn">Add</button>
+      </div>
+      <div id="todoList" style="margin-top:10px;"></div>
+      <div class="readout" id="todoEmptyMsg" style="margin-top:8px;">Nothing on your list yet.</div>
+    </div>
+    <div class="divider"></div>
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="notesText" rows="8" placeholder="Jot anything down…" style="width:100%;"></textarea>
     </div>
   </div>
 </div>
@@ -1405,7 +1485,8 @@ function defaultStore(){
   const store = {
     frostDate: "2026-05-01",
     view: {panX:60, panY:60, zoom:1},
-    mapSettings: {bgColor:"#E9E0CB", showGrid:false},
+    mapSettings: {bgColor:"#E9E0CB", showGrid:false, notebookPaper:false, notebookStyle:"lines"},
+    notepad: {notes:"", todos:[]},
     drawing: {shapes:[], highlightOpacity:0.35, snapEnabled:true, lineAxisLock:false},
     scaleSettings: {showGrid:false, plotWidthM:null, plotLengthM:null, originX:0, originY:0},
     plants: JSON.parse(JSON.stringify(BASE_PLANTS)),
@@ -1422,6 +1503,11 @@ function migrateParsed(parsed){
   if(!parsed.beds) return null;
   if(!parsed.view) parsed.view = {panX:60, panY:60, zoom:1};
   if(!parsed.mapSettings) parsed.mapSettings = {bgColor:"#E9E0CB", showGrid:false};
+  if(parsed.mapSettings.notebookPaper === undefined) parsed.mapSettings.notebookPaper = false;
+  if(!parsed.mapSettings.notebookStyle) parsed.mapSettings.notebookStyle = "lines";
+  if(!parsed.notepad) parsed.notepad = {notes:"", todos:[]};
+  if(!Array.isArray(parsed.notepad.todos)) parsed.notepad.todos = [];
+  if(typeof parsed.notepad.notes !== "string") parsed.notepad.notes = "";
   if(!parsed.scaleSettings) parsed.scaleSettings = {showGrid:false, plotWidthM:null, plotLengthM:null, originX:0, originY:0};
   if(!parsed.drawing || !Array.isArray(parsed.drawing.shapes)) parsed.drawing = {shapes:[], highlightOpacity:0.35};
   if(parsed.drawing.highlightOpacity === undefined) parsed.drawing.highlightOpacity = 0.35;
@@ -1643,12 +1729,15 @@ document.querySelectorAll(".amItem[data-page]").forEach(btn=>{
 const appMenuBtn = document.getElementById("appMenuBtn");
 const appMenuPop = document.getElementById("appMenuPop");
 function setAppMenuOpen(open){
+  // map-only rows (Notebook paper, Map settings) are shown only while the Map page is the one on screen
+  if(open) document.getElementById("amMapGroup").hidden = pages.map.el.hidden;
   appMenuPop.hidden = !open;
   appMenuBtn.setAttribute("aria-expanded", open ? "true" : "false");
 }
 appMenuBtn.addEventListener("click", (e)=>{ e.stopPropagation(); setAppMenuOpen(appMenuPop.hidden); });
-// every item (page links, Save, Help) closes the popover after doing its own job
-appMenuPop.querySelectorAll(".amItem").forEach(b=> b.addEventListener("click", ()=> setAppMenuOpen(false)));
+// every item (page links, Save, Help, Map settings) closes the popover after doing its own job;
+// toggle rows marked data-keep-open stay open so the switch's new state is visible
+appMenuPop.querySelectorAll(".amItem:not([data-keep-open])").forEach(b=> b.addEventListener("click", ()=> setAppMenuOpen(false)));
 // a tap/click anywhere else closes it
 document.addEventListener("pointerdown", (e)=>{
   if(appMenuPop.hidden) return;
@@ -1696,26 +1785,98 @@ function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
 
 function applyTransform(){
   world.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
-  viewport.style.backgroundPosition = `${panX}px ${panY}px, ${panX}px ${panY}px`;
-  viewport.style.backgroundSize = `${GRID*zoom}px ${GRID*zoom}px, ${GRID*zoom}px ${GRID*zoom}px`;
+  applyBackgroundPattern();
   if(typeof DRAW !== "undefined" && DRAW) DRAW.onTransform(); // keeps the drawing canvases' resolution/extent in step
   if(bedDraw) renderBedDrawPreview(); // keep the bed-drawing preview's dots/lines a constant on-screen size
 }
 function saveView(){ STORE.view = {panX,panY,zoom}; save(); }
 const GRID_IMAGE = "repeating-linear-gradient(0deg, rgba(92,70,50,0.09) 0 2px, transparent 2px 26px), repeating-linear-gradient(90deg, rgba(92,70,50,0.07) 0 2px, transparent 2px 26px)";
+/* ---- optional "notebook paper" backdrop: blue ruled lines + one red margin line, all laid out in
+   map units so the page pans/zooms with #world exactly like the grid does. Mutually exclusive with
+   the decorative grid (notebook wins while on; the grid's own on/off choice is kept for when it's off). ---- */
+const NB_PAPER = "#FDFCF7";                     // near-white paper base (replaces the ground color while on)
+const NB_RULE_COLOR = "rgba(90,130,205,0.32)";  // soft blue rules
+const NB_MARGIN_COLOR = "rgba(218,82,70,0.45)"; // red margin line
+const NB_RULE_SPACING = 28;                     // map units between rules
+const NB_MARGIN_X = -64;                        // map-unit x of the margin line (just left of the layout origin)
+const NB_TOP_Y = -84;                           // map-unit y phase offset for the ruling (keeps rules aligned with the margin/page origin)
+const NB_DOT_COLOR = "rgba(92,70,50,0.38)";     // dot-grid dot colour
+const NB_DOT_SPACING = 28;                      // map units between dots (both axes)
+const NB_DOT_RADIUS = 1.7;                      // map-unit dot radius
+// Notebook paper is a "normal bed view" decoration only — Background drawing mode always keeps a
+// plain ground so the user's own strokes and fills stay easy to see against it.
+function notebookPaperActive(){ return STORE.mapSettings.notebookPaper && !editingBackground; }
+let _bgImageCache = null;
+function backgroundLayers(){
+  const ms = STORE.mapSettings;
+  if(notebookPaperActive()){
+    if(ms.notebookStyle === "dots"){
+      const dotSize = NB_DOT_SPACING*zoom;
+      const dotR = Math.max(0.6, +(NB_DOT_RADIUS*zoom).toFixed(2));
+      return [
+        {img:`radial-gradient(circle, ${NB_DOT_COLOR} ${dotR}px, transparent ${dotR}px)`, size:`${dotSize}px ${dotSize}px`, pos:`${panX}px ${panY}px`, rep:"repeat"}
+      ];
+    }
+    const ruleH = NB_RULE_SPACING*zoom;
+    const ruleW = Math.max(1, +(1.5*zoom).toFixed(2));
+    const marginW = Math.max(1, +(2*zoom).toFixed(2));
+    return [
+      // margin line, runs the full height of the screen
+      {img:`linear-gradient(${NB_MARGIN_COLOR}, ${NB_MARGIN_COLOR})`, size:`${marginW}px 100%`, pos:`${panX + NB_MARGIN_X*zoom - marginW/2}px 0px`, rep:"no-repeat"},
+      // horizontal rules: endless, one line at the bottom of each ruleH-tall tile, no blank strip at the top
+      {img:`linear-gradient(to bottom, transparent calc(100% - ${ruleW}px), ${NB_RULE_COLOR} calc(100% - ${ruleW}px))`, size:`100% ${ruleH}px`, pos:`0px ${panY + NB_TOP_Y*zoom}px`, rep:"repeat"}
+    ];
+  }
+  if(ms.showGrid){
+    return [
+      {img:"repeating-linear-gradient(0deg, rgba(92,70,50,0.09) 0 2px, transparent 2px 26px)", size:`${GRID*zoom}px ${GRID*zoom}px`, pos:`${panX}px ${panY}px`, rep:"repeat"},
+      {img:"repeating-linear-gradient(90deg, rgba(92,70,50,0.07) 0 2px, transparent 2px 26px)", size:`${GRID*zoom}px ${GRID*zoom}px`, pos:`${panX}px ${panY}px`, rep:"repeat"}
+    ];
+  }
+  return [];
+}
+function applyBackgroundPattern(){
+  const layers = backgroundLayers();
+  const img = layers.length ? layers.map(l=>l.img).join(", ") : "none";
+  if(img !== _bgImageCache){ viewport.style.backgroundImage = img; _bgImageCache = img; }
+  viewport.style.backgroundSize = layers.map(l=>l.size).join(", ");
+  viewport.style.backgroundPosition = layers.map(l=>l.pos).join(", ");
+  viewport.style.backgroundRepeat = layers.map(l=>l.rep).join(", ");
+}
 function applyMapSettings(){
-  viewport.style.backgroundColor = STORE.mapSettings.bgColor;
-  viewport.style.backgroundImage = STORE.mapSettings.showGrid ? GRID_IMAGE : "none";
+  const ms = STORE.mapSettings;
+  const nbOn = notebookPaperActive();
+  viewport.style.backgroundColor = viewport.classList.contains("futureEditing") ? "#E3E6F3" : (nbOn ? NB_PAPER : ms.bgColor);
+  viewport.classList.toggle("nbPaper", nbOn); // -> #world at 95% so the paper always bleeds through
+  document.getElementById("amNotebookBtn").setAttribute("aria-checked", ms.notebookPaper ? "true" : "false");
+  _bgImageCache = null;
+  applyBackgroundPattern();
 }
 function updateGridButton(){
-  document.getElementById("gridToggleBtn").textContent = "Grid: " + (STORE.mapSettings.showGrid ? "On" : "Off");
+  const ms = STORE.mapSettings;
+  document.getElementById("gridToggleBtn").textContent = "Grid: " + (ms.showGrid && !ms.notebookPaper ? "On" : "Off");
+  document.getElementById("notebookToggleBtn").textContent = "Notebook paper: " + (ms.notebookPaper ? "On" : "Off");
+  const colorIn = document.getElementById("mapBgColor");
+  colorIn.disabled = !!ms.notebookPaper;
+  colorIn.style.opacity = ms.notebookPaper ? "0.4" : "";
+  document.getElementById("notebookReadout").hidden = !ms.notebookPaper;
+  document.getElementById("notebookStyleRow").hidden = !ms.notebookPaper;
+  document.getElementById("nbStyleLinesBtn").classList.toggle("active", (ms.notebookStyle || "lines") === "lines");
+  document.getElementById("nbStyleDotsBtn").classList.toggle("active", ms.notebookStyle === "dots");
 }
-document.getElementById("settingsBtn").addEventListener("click", ()=>{
+function openMapSettings(){
   document.getElementById("settingsFrostDate").value = STORE.frostDate || "";
   document.getElementById("mapBgColor").value = STORE.mapSettings.bgColor;
   updateGridButton();
   document.getElementById("mapSettingsOverlay").hidden = false;
-});
+}
+function toggleNotebookPaper(){
+  STORE.mapSettings.notebookPaper = !STORE.mapSettings.notebookPaper; save(); applyMapSettings(); updateGridButton();
+}
+// two entry points: the Background sidebar's settings icon, and the app menu (reachable from normal map view)
+document.getElementById("settingsBtn").addEventListener("click", openMapSettings);
+document.getElementById("amMapSettingsBtn").addEventListener("click", openMapSettings);
+document.getElementById("amNotebookBtn").addEventListener("click", toggleNotebookPaper);
 document.getElementById("settingsClose").addEventListener("click", ()=>{ document.getElementById("mapSettingsOverlay").hidden = true; });
 document.getElementById("mapSettingsOverlay").addEventListener("click", (e)=>{ if(e.target.id==="mapSettingsOverlay") e.target.hidden = true; });
 document.getElementById("settingsFrostDate").addEventListener("change", (e)=>{
@@ -1725,8 +1886,92 @@ document.getElementById("mapBgColor").addEventListener("input", (e)=>{
   STORE.mapSettings.bgColor = e.target.value; save(); applyMapSettings();
 });
 document.getElementById("gridToggleBtn").addEventListener("click", ()=>{
-  STORE.mapSettings.showGrid = !STORE.mapSettings.showGrid; save(); applyMapSettings(); updateGridButton();
+  const ms = STORE.mapSettings;
+  if(ms.notebookPaper){ ms.notebookPaper = false; ms.showGrid = true; } // grid and notebook are exclusive: picking the grid switches notebook off
+  else ms.showGrid = !ms.showGrid;
+  save(); applyMapSettings(); updateGridButton();
 });
+document.getElementById("notebookToggleBtn").addEventListener("click", toggleNotebookPaper);
+document.getElementById("nbStyleLinesBtn").addEventListener("click", ()=>{
+  STORE.mapSettings.notebookStyle = "lines"; save(); applyMapSettings(); updateGridButton();
+});
+document.getElementById("nbStyleDotsBtn").addEventListener("click", ()=>{
+  STORE.mapSettings.notebookStyle = "dots"; save(); applyMapSettings(); updateGridButton();
+});
+
+/* ============================= NOTES & TO-DO ============================= */
+// A simple, page-independent scratchpad: a free-text note plus a checklist, both just persisted
+// on STORE like everything else. Opened from the fixed corner button or the app menu, from any page.
+function notepad(){ return STORE.notepad; }
+function updateNotesBadge(){
+  const openCount = notepad().todos.filter(t=> !t.done).length;
+  const badge = document.getElementById("notesBadge");
+  badge.textContent = String(openCount);
+  badge.hidden = openCount === 0;
+}
+function renderTodos(){
+  const list = document.getElementById("todoList");
+  const items = notepad().todos;
+  list.innerHTML = items.map(()=>
+    `<div class="todoItem">
+      <input type="checkbox">
+      <span class="todoText"></span>
+      <button class="todoDel" type="button" title="Delete" aria-label="Delete">✕</button>
+    </div>`
+  ).join("");
+  // text set via textContent (not baked into the template string) so a task typed with <, & etc.
+  // in it is shown literally rather than parsed as markup
+  Array.from(list.children).forEach((row, i)=>{
+    const t = items[i];
+    row.dataset.id = t.id;
+    row.classList.toggle("done", !!t.done);
+    row.querySelector("input").checked = !!t.done;
+    row.querySelector(".todoText").textContent = t.text;
+  });
+  document.getElementById("todoEmptyMsg").hidden = items.length > 0;
+  updateNotesBadge();
+}
+function addTodo(text){
+  text = text.trim();
+  if(!text) return;
+  notepad().todos.push({id:"t" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), text, done:false});
+  save(); renderTodos();
+}
+document.getElementById("todoList").addEventListener("click", (e)=>{
+  const row = e.target.closest(".todoItem");
+  if(!row) return;
+  const id = row.dataset.id;
+  if(e.target.matches('input[type="checkbox"]')){
+    const t = notepad().todos.find(x=> x.id === id);
+    if(t){ t.done = e.target.checked; save(); renderTodos(); }
+  } else if(e.target.closest(".todoDel")){
+    notepad().todos = notepad().todos.filter(x=> x.id !== id);
+    save(); renderTodos();
+  }
+});
+document.getElementById("todoAddBtn").addEventListener("click", ()=>{
+  const inp = document.getElementById("todoInput");
+  addTodo(inp.value);
+  inp.value = "";
+  inp.focus();
+});
+document.getElementById("todoInput").addEventListener("keydown", (e)=>{
+  if(e.key === "Enter"){ e.preventDefault(); document.getElementById("todoAddBtn").click(); }
+});
+document.getElementById("notesText").addEventListener("input", (e)=>{
+  notepad().notes = e.target.value; save();
+});
+function openNotesPanel(){
+  document.getElementById("notesText").value = notepad().notes || "";
+  renderTodos();
+  document.getElementById("notesOverlay").hidden = false;
+}
+document.getElementById("notesFabBtn").addEventListener("click", openNotesPanel);
+document.getElementById("amNotesBtn").addEventListener("click", openNotesPanel);
+document.getElementById("notesClose").addEventListener("click", ()=>{ document.getElementById("notesOverlay").hidden = true; });
+document.getElementById("notesOverlay").addEventListener("click", (e)=>{ if(e.target.id === "notesOverlay") e.target.hidden = true; });
+window.addEventListener("keydown", (e)=>{ if(e.key === "Escape" && !document.getElementById("notesOverlay").hidden) document.getElementById("notesOverlay").hidden = true; });
+updateNotesBadge(); // reflect any open tasks from a previous session as soon as the app loads
 
 /* ---- fixed real-world scale: 1 map unit = 1 cm, always ---- */
 const UNITS_PER_METER = 100;
@@ -1862,6 +2107,7 @@ function setBackgroundMode(on){
   document.getElementById("page-map").classList.toggle("drawEditing", on);
   document.getElementById("pageTitle").textContent = on ? "🖌 Edit Background" : pages.map.title;
   updateBedsToggleBtn();
+  applyMapSettings(); // notebook paper is a bed-view-only decoration; switch it off/on with the mode
   renderBeds(); DRAW.setEditing(on);
 }
 function updateBedsToggleBtn(){
@@ -1883,12 +2129,8 @@ function setFutureMode(on){
   editingFuture = on;
   viewport.classList.toggle("futureEditing", on);
   document.body.classList.toggle("futureEditing", on);
-  if(on){
-    viewport.dataset.savedBg = viewport.style.backgroundColor;
-    viewport.style.backgroundColor = "#E3E6F3";
-  } else {
-    viewport.style.backgroundColor = STORE.mapSettings.bgColor;
-  }
+  if(on) viewport.dataset.savedBg = viewport.style.backgroundColor;
+  applyMapSettings(); // future tint while on; ground color / notebook paper restored when off
   document.getElementById("normalToolbar").style.display = on ? "none" : "flex";
   document.getElementById("futureToolbar").style.display = on ? "flex" : "none";
   document.getElementById("pageTitle").textContent = on ? "Future Layout" : pages.map.title;
@@ -3651,6 +3893,151 @@ var DRAW = (function(){
     return e;
   }
 
+  // ---- fill patterns: sinusoidal / hatch / cross-hatch, for background drawing shapes ----
+  // (rect, polygon, closed stroke). A shape's fillType is "sine" | "hatch" | "cross", or unset
+  // for the original plain solid fill. Params are pure geometry computed fresh from the shape's
+  // current fillBounds/fillVertices each render, so resize/move need no special-casing.
+  function fillPatternDefaults(type){
+    if(type === "sine") return {width:3, angle:56, pitch:22, amp:0.85};
+    return {spacing:9, angle:45, width:1.6}; // hatch & cross share the same shape of params
+  }
+  function fillShapeBBox(s){
+    if(s.type === "rect" && s.fillBounds){
+      const b = s.fillBounds;
+      return {minX:b.x, minY:b.y, maxX:b.x+b.w, maxY:b.y+b.h};
+    }
+    let minX=Infinity, minY=Infinity, maxX=-Infinity, maxY=-Infinity;
+    (s.fillVertices || []).forEach(v=>{
+      if(v.x<minX) minX=v.x; if(v.x>maxX) maxX=v.x; if(v.y<minY) minY=v.y; if(v.y>maxY) maxY=v.y;
+    });
+    return {minX, minY, maxX, maxY};
+  }
+  // Plain geometry point test (no canvas isPointInPath involved) — avoids that API's known
+  // misbehaviour under a non-identity transform, which this module's shared inkCanvas has
+  // (ext.s scale + pan offset) whenever anything is actually drawn.
+  function fillShapeInside(s, x, y){
+    if(s.type === "rect" && s.fillBounds){
+      const b = s.fillBounds;
+      return x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h;
+    }
+    return s.fillVertices ? pointInPolygon(x, y, s.fillVertices) : false;
+  }
+  // deterministic pseudo-random in [0,1), stable per-shape so the sine fill's wave-height
+  // jitter doesn't change on every redraw.
+  function fillHash01(n){
+    const x = Math.sin(n*12.9898)*43758.5453;
+    return x - Math.floor(x);
+  }
+  // Shape ids here are strings (e.g. "dmusqn9xw0"), unlike the test tool's numeric ids — turn
+  // one into a stable numeric seed for the per-peak jitter above.
+  function fillSeedFor(id){
+    const str = String(id);
+    let h = 0;
+    for(let i=0;i<str.length;i++) h = (h*31 + str.charCodeAt(i)) | 0;
+    return h;
+  }
+  function renderFillHatchPattern(s, path2d, cross){
+    const p = cross ? (s.fillCross || fillPatternDefaults("cross")) : (s.fillHatch || fillPatternDefaults("hatch"));
+    const bbox = fillShapeBBox(s);
+    const cx = (bbox.minX+bbox.maxX)/2, cy = (bbox.minY+bbox.maxY)/2;
+    const diag = Math.hypot(bbox.maxX-bbox.minX, bbox.maxY-bbox.minY)*0.75 + 20;
+    ctx.save();
+    ctx.clip(path2d);
+    ctx.strokeStyle = s.fillColor;
+    ctx.lineWidth = p.width;
+    ctx.lineCap = "round";
+    const angles = cross ? [p.angle, p.angle+90] : [p.angle];
+    angles.forEach(angDeg=>{
+      const th = angDeg*Math.PI/180;
+      const ux=Math.cos(th), uy=Math.sin(th);
+      const nx=-uy, ny=ux;
+      ctx.beginPath();
+      for(let off=-diag; off<=diag; off+=p.spacing){
+        const ox=cx+nx*off, oy=cy+ny*off;
+        ctx.moveTo(ox-ux*diag, oy-uy*diag);
+        ctx.lineTo(ox+ux*diag, oy+uy*diag);
+      }
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+  function renderFillSinePattern(s, path2d){
+    const p = s.fillSine || fillPatternDefaults("sine");
+    const bbox = fillShapeBBox(s);
+    const cx=(bbox.minX+bbox.maxX)/2, cy=(bbox.minY+bbox.maxY)/2;
+    const maxR = Math.hypot(bbox.maxX-bbox.minX, bbox.maxY-bbox.minY)/2 + 6;
+    const th = p.angle*Math.PI/180;
+    const sweepdir=[Math.sin(th), Math.cos(th)];
+    const perpdir=[Math.cos(th), -Math.sin(th)];
+    const v0=-maxR, v1=maxR;
+    const nV = Math.max(60, Math.min(500, Math.round((v1-v0)/(p.pitch/10))));
+    const nU = 140;
+    const margin = p.width/2 + 1.5;
+    const gap = (1 - p.amp) * maxR * 0.22;
+    const seed = fillSeedFor(s.id)*53 + 7;
+    const jitterStrength = 0.22;
+
+    const rows = [];
+    let vTrueMin=null, vTrueMax=null;
+    for(let i=0;i<=nV;i++){
+      const v = v0 + (v1-v0)*i/nV;
+      let uL=null, uR=null, bestLen=-1, runStart=null, prevIn=false;
+      for(let j=0;j<=nU;j++){
+        const u = -maxR + (2*maxR)*j/nU;
+        const x = cx+v*sweepdir[0]+u*perpdir[0];
+        const y = cy+v*sweepdir[1]+u*perpdir[1];
+        const isIn = fillShapeInside(s, x, y);
+        if(isIn && !prevIn) runStart = u;
+        if(!isIn && prevIn){
+          const len = u-runStart;
+          if(len>bestLen){ bestLen=len; uL=runStart; uR=u; }
+        }
+        prevIn = isIn;
+      }
+      if(prevIn && runStart!=null){
+        const len = maxR-runStart;
+        if(len>bestLen){ bestLen=len; uL=runStart; uR=maxR; }
+      }
+      if(uL==null){ rows.push(null); continue; }
+      if(vTrueMin==null) vTrueMin = v;
+      vTrueMax = v;
+      rows.push({v, uL, uR});
+    }
+
+    const vInset = Math.max(0, gap) + margin;
+    const insetApplies = vTrueMin!=null && (vTrueMax - vTrueMin > 2*vInset);
+    const vStart = insetApplies ? vTrueMin + vInset : (vTrueMin!=null ? vTrueMin : v0);
+    const pts = [];
+    rows.forEach(row=>{
+      if(row==null) return;
+      const { v, uL, uR } = row;
+      if(insetApplies && (v - vTrueMin < vInset || vTrueMax - v < vInset)) return;
+      const half = (uR-uL)/2 - gap - margin;
+      if(half <= 0) return;
+      const rowc = (uL+uR)/2;
+      const phase = 2*Math.PI*(v-vStart)/p.pitch;
+      const halfCycleIdx = Math.floor((v-vStart)/(p.pitch/2) + 0.5);
+      const ampMod = 1 - jitterStrength*fillHash01(seed + halfCycleIdx*131);
+      const u = rowc + ampMod*half*Math.sin(phase);
+      pts.push([cx+v*sweepdir[0]+u*perpdir[0], cy+v*sweepdir[1]+u*perpdir[1]]);
+    });
+
+    ctx.save();
+    ctx.strokeStyle = s.fillColor;
+    ctx.lineWidth = p.width;
+    ctx.lineCap = "round"; ctx.lineJoin = "round";
+    ctx.beginPath();
+    pts.forEach(([x,y], i)=>{ if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+    ctx.stroke();
+    ctx.restore();
+  }
+  function renderShapeFill(s, path2d){
+    if(s.fillType === "sine") renderFillSinePattern(s, path2d);
+    else if(s.fillType === "hatch") renderFillHatchPattern(s, path2d, false);
+    else if(s.fillType === "cross") renderFillHatchPattern(s, path2d, true);
+    else { ctx.fillStyle = s.fillColor; ctx.fill(path2d); }
+  }
+
   let editingTextId = null; // a text shape being edited inline is hidden from the canvas
   function renderShape(s){
     if(s.type === "stroke" || s.type === "line" || s.type === "rect" || s.type === "polygon"){
@@ -3658,19 +4045,19 @@ var DRAW = (function(){
         ctx.save();
         ctx.globalCompositeOperation = "source-over";
         ctx.globalAlpha = 1;
-        ctx.fillStyle = s.fillColor;
-        ctx.fillRect(s.fillBounds.x, s.fillBounds.y, s.fillBounds.w, s.fillBounds.h);
+        const path2d = new Path2D();
+        path2d.rect(s.fillBounds.x, s.fillBounds.y, s.fillBounds.w, s.fillBounds.h);
+        renderShapeFill(s, path2d);
         ctx.restore();
       }
       if((s.type === "polygon" || (s.type === "stroke" && s.closed)) && s.fillColor && s.fillVertices){
         ctx.save();
         ctx.globalCompositeOperation = "source-over";
         ctx.globalAlpha = 1;
-        ctx.fillStyle = s.fillColor;
-        ctx.beginPath();
-        s.fillVertices.forEach((v,i)=> i===0 ? ctx.moveTo(v.x,v.y) : ctx.lineTo(v.x,v.y));
-        ctx.closePath();
-        ctx.fill();
+        const path2d = new Path2D();
+        s.fillVertices.forEach((v,i)=> i===0 ? path2d.moveTo(v.x,v.y) : path2d.lineTo(v.x,v.y));
+        path2d.closePath();
+        renderShapeFill(s, path2d);
         ctx.restore();
       }
       renderVariableWidthPolyline(ctx, s.points, s.widths, s.color);
@@ -3902,10 +4289,13 @@ var DRAW = (function(){
     });
     return {pts, segs};
   }
-  function nearestOnSegment(p, a, b){
+  // Nearest point to p on the INFINITE line through a-b — not clamped to the segment's own span —
+  // so a point can snap onto the line a shape's edge forms even past its actual endpoints (an
+  // "extended guide line"), as long as it lands close enough to that infinite line.
+  function nearestOnLine(p, a, b){
     const dx = b.x-a.x, dy = b.y-a.y, len2 = dx*dx + dy*dy;
-    let t = len2 > 0 ? ((p.x-a.x)*dx + (p.y-a.y)*dy)/len2 : 0;
-    t = Math.max(0, Math.min(1, t));
+    if(len2 === 0) return {x:a.x, y:a.y};
+    const t = ((p.x-a.x)*dx + (p.y-a.y)*dy)/len2;
     return {x:a.x + t*dx, y:a.y + t*dy};
   }
   // Snap a single point (a corner being placed). Returns {p, hit}.
@@ -3916,7 +4306,7 @@ var DRAW = (function(){
     let best = null, bd = thr;
     t.pts.forEach(q=>{ const d = Math.hypot(q.x-p.x, q.y-p.y); if(d <= bd){ bd = d; best = q; } });
     if(best) return {p:{x:best.x, y:best.y}, hit:true};
-    t.segs.forEach(([a,b])=>{ const q = nearestOnSegment(p, a, b); const d = Math.hypot(q.x-p.x, q.y-p.y); if(d <= bd){ bd = d; best = q; } });
+    t.segs.forEach(([a,b])=>{ const q = nearestOnLine(p, a, b); const d = Math.hypot(q.x-p.x, q.y-p.y); if(d <= bd){ bd = d; best = q; } });
     if(best) return {p:best, hit:true};
     return {p, hit:false};
   }
@@ -3942,10 +4332,12 @@ var DRAW = (function(){
     t.pts.forEach(q=>{ const d = Math.hypot(q.x-p.x, q.y-p.y); if(d <= bd){ bd = d; best = {p:onAxis(q), marker:{x:q.x, y:q.y}}; } });
     if(!best){
       t.segs.forEach(([a,b])=>{
-        // where the axis line crosses segment a-b (if it does)
+        // where the axis line crosses the (infinite) line through a-b, even past its actual
+        // endpoints — so the axis can snap onto the line a shape's edge extends along, not just
+        // where it physically crosses that edge's own span.
         const da = c.horiz ? a.y - anchor.y : a.x - anchor.x;
         const db = c.horiz ? b.y - anchor.y : b.x - anchor.x;
-        if(da === db || (da > 0 && db > 0) || (da < 0 && db < 0)) return;
+        if(da === db) return; // parallel to the axis — no single crossing point
         const k = da / (da - db);
         const q = onAxis({x:a.x + (b.x-a.x)*k, y:a.y + (b.y-a.y)*k});
         const d = Math.hypot(q.x-p.x, q.y-p.y);
@@ -3968,7 +4360,7 @@ var DRAW = (function(){
     if(!best){
       ownPts.forEach(o=>{
         const m = {x:o.x+dx, y:o.y+dy};
-        t.segs.forEach(([a,b])=>{ const q = nearestOnSegment(m, a, b); const d = Math.hypot(q.x-m.x, q.y-m.y); if(d <= bd){ bd = d; best = {dx:q.x-m.x, dy:q.y-m.y, marker:q}; } });
+        t.segs.forEach(([a,b])=>{ const q = nearestOnLine(m, a, b); const d = Math.hypot(q.x-m.x, q.y-m.y); if(d <= bd){ bd = d; best = {dx:q.x-m.x, dy:q.y-m.y, marker:q}; } });
       });
     }
     return best || none;
@@ -4233,6 +4625,9 @@ var DRAW = (function(){
   const fillSwatchesEl = $("dsFillSwatches");
   const fillSwatchEls = Array.from(fillSwatchesEl.querySelectorAll(".dsSw"));
   const fillCustomColor = $("dsFillCustomColor");
+  const fillPatternRowEl = $("dsFillPatternRow");
+  const fillPatternSelect = $("dsFillPatternSelect");
+  const fillPatternParamsEl = $("dsFillPatternParams");
   const plantShapeGroup = $("dsPlantShapeGroup");
   const plantShapeBtns = Array.from(plantShapeGroup.querySelectorAll(".dsMini"));
   const flowerShapeGroup = $("dsFlowerShapeGroup");
@@ -4623,6 +5018,23 @@ var DRAW = (function(){
       fillSwatchesEl.style.display = enabled ? "flex" : "none";
       fillSwatchEls.forEach(s=> s.classList.toggle("active", s.dataset.fillcolor.toUpperCase() === String(fc).toUpperCase()));
     }
+    // fill patterns only make sense for an actual shape that already has a fill colour on
+    // (the pre-draw tool defaults stay plain solid, same as before this feature existed)
+    if(selIsFillable && sel.fillColor){
+      fillPatternRowEl.hidden = false;
+      // Every renderScene() (including each tick of a slider drag, via liveReplaceSelected) calls
+      // back in here — rebuilding these sliders' DOM mid-drag would yank the <input> out from under
+      // the pointer and break the drag, exactly like the width/opacity sliders avoid above. Skip the
+      // rebuild while a live edit (from this panel or elsewhere) is in progress; the slider already
+      // reflects the value it's being dragged to, and refreshParamPanel runs again once it ends.
+      if(!liveSnap){
+        fillPatternSelect.value = sel.fillType || "solid";
+        renderFillPatternParams(sel);
+      }
+    } else {
+      fillPatternRowEl.hidden = true;
+      fillPatternParamsEl.innerHTML = "";
+    }
 
     plantShapeGroup.hidden = !(isPlantTool || selIsPlant);
     if(isPlantTool || selIsPlant){
@@ -4781,6 +5193,66 @@ var DRAW = (function(){
     else refreshParamPanel();
   });
   fillCustomColor.addEventListener("change", liveEnd);
+
+  function fillPatternParamRow(id, labelText, min, max, step, value){
+    return `<div class="dpbRow" style="margin-top:6px; align-items:center;"><label style="flex:1; font-size:12px;">${labelText}</label><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${value}" style="flex:2;"><span class="dsVal" id="${id}Val">${value}</span></div>`;
+  }
+  function wireFillPatternSlider(id, makePatch){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener("input", ()=>{
+      const v = parseFloat(el.value);
+      const valEl = document.getElementById(id + "Val");
+      if(valEl) valEl.textContent = v;
+      liveReplaceSelected(makePatch(v));
+    });
+    el.addEventListener("change", liveEnd);
+  }
+  function renderFillPatternParams(sel){
+    const type = sel.fillType || "solid";
+    if(type === "sine"){
+      const p = sel.fillSine || fillPatternDefaults("sine");
+      fillPatternParamsEl.innerHTML = [
+        fillPatternParamRow("fpSineWidth", "Line width", 0.5, 12, 0.5, p.width),
+        fillPatternParamRow("fpSineAngle", "Angle (°)", -90, 90, 1, p.angle),
+        fillPatternParamRow("fpSinePitch", "Pitch", 6, 80, 1, p.pitch),
+        fillPatternParamRow("fpSineAmp", "Edge closeness", 0.3, 1.6, 0.02, p.amp)
+      ].join("");
+      // Read the shape's CURRENT fillSine at the moment each slider fires (not the `sel` this
+      // panel was rendered with) — the panel is deliberately left in place for the whole drag (see
+      // the liveSnap guard above), so a stale closure here would silently discard whatever an
+      // earlier slider in the same visit to this panel had just set (e.g. dragging Edge closeness
+      // after Pitch would reset Pitch back to its value from when the panel first opened).
+      wireFillPatternSlider("fpSineWidth", v=>({fillSine: Object.assign({}, (selectedShape()||{}).fillSine || fillPatternDefaults("sine"), {width:v})}));
+      wireFillPatternSlider("fpSineAngle", v=>({fillSine: Object.assign({}, (selectedShape()||{}).fillSine || fillPatternDefaults("sine"), {angle:v})}));
+      wireFillPatternSlider("fpSinePitch", v=>({fillSine: Object.assign({}, (selectedShape()||{}).fillSine || fillPatternDefaults("sine"), {pitch:v})}));
+      wireFillPatternSlider("fpSineAmp", v=>({fillSine: Object.assign({}, (selectedShape()||{}).fillSine || fillPatternDefaults("sine"), {amp:v})}));
+    } else if(type === "hatch" || type === "cross"){
+      const key = type === "hatch" ? "fillHatch" : "fillCross";
+      const p = sel[key] || fillPatternDefaults(type);
+      fillPatternParamsEl.innerHTML = [
+        fillPatternParamRow("fpHatchSpacing", "Density", 3, 30, 1, p.spacing),
+        fillPatternParamRow("fpHatchAngle", "Angle (°)", 0, 179, 1, p.angle),
+        fillPatternParamRow("fpHatchWidth", "Line width", 0.5, 8, 0.5, p.width)
+      ].join("");
+      wireFillPatternSlider("fpHatchSpacing", v=>({[key]: Object.assign({}, (selectedShape()||{})[key] || fillPatternDefaults(type), {spacing:v})}));
+      wireFillPatternSlider("fpHatchAngle", v=>({[key]: Object.assign({}, (selectedShape()||{})[key] || fillPatternDefaults(type), {angle:v})}));
+      wireFillPatternSlider("fpHatchWidth", v=>({[key]: Object.assign({}, (selectedShape()||{})[key] || fillPatternDefaults(type), {width:v})}));
+    } else {
+      fillPatternParamsEl.innerHTML = "";
+    }
+  }
+  fillPatternSelect.addEventListener("change", ()=>{
+    const sel = selectedShape();
+    if(!sel || !isFillableShape(sel)) return;
+    const type = fillPatternSelect.value;
+    const patch = {fillType: type === "solid" ? null : type};
+    if(type === "sine" && !sel.fillSine) patch.fillSine = fillPatternDefaults("sine");
+    if(type === "hatch" && !sel.fillHatch) patch.fillHatch = fillPatternDefaults("hatch");
+    if(type === "cross" && !sel.fillCross) patch.fillCross = fillPatternDefaults("cross");
+    replaceSelectedShape(patch);
+    refreshParamPanel();
+  });
 
   plantShapeBtns.forEach(b=>{
     b.addEventListener("click", ()=>{
@@ -6000,7 +6472,7 @@ var DRAW = (function(){
       syncScaleUI();
       syncSnapUI();
       updateUndoButton();
-      viewport.style.cursor = tool === "select" ? "default" : (tool === "text" ? "text" : "crosshair");
+      setTool("select"); // always start a background-editing session on Select, whatever tool was last used
     }
     ensureExtent(true);
     renderScene();
