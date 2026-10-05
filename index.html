@@ -69,7 +69,6 @@
   .btn-outline.active{background:var(--leaf); border-color:var(--leaf); color:#fff;}
   .undoBtnEl:disabled{opacity:0.3; pointer-events:none;}
   .btn-danger{background:#FEE7E7; color:#C0362C; border:none;}
-  #cropLabelsBtn[hidden]{display:none;}
   .btn-icon{padding:9px 12px; display:inline-flex; align-items:center; justify-content:center;}
   .zoomGroup{margin-left:auto; display:flex; align-items:center; gap:2px; background:#EFF1ED; border:none; border-radius:2px; overflow:hidden; box-shadow:none;}
   .zoomGroup button{border:none; background:transparent; width:34px; height:34px; font-size:16px; font-weight:700; color:var(--leaf-dark);}
@@ -93,9 +92,9 @@
   .bedOutline{position:absolute; left:0; top:0; overflow:visible; pointer-events:none;}
   .bedIconPattern{position:absolute; left:0; top:0; right:0; bottom:0; display:none; pointer-events:none;}
   .bedIconPattern svg{display:block; width:100%; height:100%;}
-  .bedsIconMode:not(.bgEditing) .bed > *{display:none;}
-  .bedsIconMode:not(.bgEditing) .bed > .bedIconPattern{display:block;}
-  .bedsIconMode:not(.bgEditing) .bed > .bedOutline{display:block;}
+  #canvasViewport:not(.bgEditing) .bed.iconView > *{display:none;}
+  #canvasViewport:not(.bgEditing) .bed.iconView > .bedIconPattern{display:block;}
+  #canvasViewport:not(.bgEditing) .bed.iconView > .bedOutline{display:block;}
   .bedsIconMode:not(.bgEditing) [data-role="bedhandle"]{display:none;}
   #iconDrawFrameWrap{position:fixed; inset:0; z-index:400; background:#F4F1E8;
     padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);}
@@ -106,8 +105,8 @@
   .bedCropLabel{position:absolute; display:none; pointer-events:none; white-space:nowrap; text-align:center; transform:translate(-50%, -50%);
     font-family:'Ovo', 'Cinzel', 'Castoro Titling', 'Times New Roman', serif; font-style:italic; font-size:12.5px; font-weight:400;
     text-transform:uppercase; letter-spacing:0.05em; color:#2B2620; background:none; padding:0.5px 2px; z-index:1;}
-  .bedsIconMode.showCropLabels:not(.bgEditing) .bed > .bedCropLabel{display:block;}
-  .bedsIconMode.showCropLabels:not(.bgEditing) .bedIconPattern{-webkit-mask-image:var(--lblMask); mask-image:var(--lblMask); -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;}
+  .showCropLabels#canvasViewport:not(.bgEditing) .bed.iconView:not(.noTitle) > .bedCropLabel{display:block;}
+  .showCropLabels#canvasViewport:not(.bgEditing) .bed.iconView:not(.noTitle) > .bedIconPattern{-webkit-mask-image:var(--lblMask); mask-image:var(--lblMask); -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;}
   .bedBody{position:absolute; left:0; top:0; right:0; bottom:0; padding:6px 8px; overflow:hidden; pointer-events:none;}
   .bedDrawPreview{position:absolute; left:0; top:0; width:1px; height:1px; overflow:visible; pointer-events:none; z-index:7; display:none;}
   .bedDrawing .handle[data-role="bedhandle"]{display:none;}
@@ -214,7 +213,9 @@
   .sheetFixedTop{flex-shrink:0; padding:14px 18px 10px 18px; background:var(--paper); position:relative; z-index:2;}
   .sheetScrollBody{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; touch-action:pan-y; padding:0 18px calc(30px + env(safe-area-inset-bottom)) 18px;}
   .doneBtn{flex-shrink:0; white-space:nowrap;}
-  .lockToggleSmall{border:none; background:#EFF1ED; width:36px; height:36px; border-radius:2px; font-size:15px; flex-shrink:0;}
+  #edIconViewToggle[aria-pressed="true"], #edIconTitleToggle[aria-pressed="true"]{background:var(--leaf); color:#fff;}
+  .lockToggleSmall[hidden]{display:none;}
+  .lockToggleSmall{display:inline-flex; align-items:center; justify-content:center; padding:0; color:var(--ink);border:none; background:#EFF1ED; width:36px; height:36px; border-radius:2px; font-size:15px; flex-shrink:0;}
   .deleteToggleSmall{border:none; background:#FDEBEA; color:#B23A2A; width:36px; height:36px; border-radius:2px; flex-shrink:0; display:flex; align-items:center; justify-content:center;}
   .deleteToggleSmall:active{transform:scale(0.9);}
   .helpIconPreview{width:30px; height:30px; border-radius:2px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
@@ -505,7 +506,6 @@
       <button class="btn btn-outline btn-icon" id="bgModeBtn" aria-label="Edit Background"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5a8.5 8.5 0 100 17c1.3 0 1.9-.9 1.9-1.8 0-.5-.2-.9-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1 .8-1.6 1.7-1.6h1.9a3 3 0 003-3c0-4.4-3.8-8-7.5-8z"/><circle cx="7.2" cy="10.3" r="1" fill="currentColor" stroke="none"/><circle cx="9.3" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="14.5" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="16.6" cy="10.3" r="1" fill="currentColor" stroke="none"/></svg></button>
       <button class="btn btn-outline btn-icon" id="futureModeBtn" aria-label="Future Layout"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg></button>
       <button class="btn btn-outline btn-icon" id="hideBedsBtn" aria-label="Bed display mode" aria-pressed="false" title="Showing beds as text — tap for Icon pattern view"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="2.6"/></svg></button>
-      <button class="btn btn-outline btn-icon" id="cropLabelsBtn" aria-label="Plant name labels" aria-pressed="false" title="Plant name labels — tap to show" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 7V5h13v2"/><path d="M12 5v14"/><path d="M9 19h6"/></svg></button>
       <div class="addBedGroup">
         <button class="btn btn-leaf addBedBtn" id="addBedBtn" title="Add a rectangle bed — drag on the map to size it">+ Add Bed</button>
         <button class="btn btn-leaf addBedChev" id="addBedChevBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="addBedPop" aria-label="More bed shapes" title="More bed shapes — Polygon"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3"/></svg></button>
@@ -863,6 +863,8 @@
           <button class="edNamePencil" id="edNamePencil" title="Rename" tabindex="-1"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg></button>
         </div>
         <button class="deleteToggleSmall" id="edDelete" title="Delete bed"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/><path d="M6 7l1 13a1 1 0 001 1h8a1 1 0 001-1l1-13"/><path d="M10 11v6M14 11v6"/></svg></button>
+        <button class="lockToggleSmall" id="edIconViewToggle" title="Show icons in this bed" aria-pressed="false"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V11"/><path d="M12 11c-5 1-7-3-7-3s4-3 7 1c3-4 7-1 7-1s-2 4-7 3z"/></svg></button>
+        <button class="lockToggleSmall" id="edIconTitleToggle" title="Include plant name" aria-pressed="false" hidden><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 7V5h13v2"/><path d="M12 5v14"/><path d="M9 19h6"/></svg></button>
         <button class="lockToggleSmall" id="edLockToggle" title="Tap to lock/unlock">🔓</button>
         <button class="btn btn-outline doneBtn" id="edClose"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:4px;"><path d="M4 12.5l5 5L20 6"/></svg>Done</button>
       </div>
@@ -952,6 +954,7 @@
       </button>
     </div>
 
+
     <div class="field" id="edApplyPlanField" style="display:none;">
       <div style="background:#FCF1DC; border-radius:2px; padding:12px;">
         <div style="font-size:12.5px; color:#8A5A16; margin-bottom:8px; display:flex; align-items:center; gap:6px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#8A5A16" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg><span>This bed has a planned layout that isn't applied yet.</span></div>
@@ -1016,9 +1019,9 @@
     <div class="field">
       <label>Plant Name Labels</label>
       <div class="colorRow">
-        <button class="btn btn-outline" id="cropLabelsToggleBtn" style="flex:1;">Plant name labels: Off</button>
+        <button class="btn btn-outline" id="cropLabelsToggleBtn" style="flex:1;">Plant name labels: On</button>
       </div>
-      <div class="readout" style="margin-top:8px;">Writes each bed's current crop in a handwritten label in the middle of the bed, in Icon pattern view only — handy since that view otherwise shows nothing but the icon tiling.</div>
+      <div class="readout" style="margin-top:8px;">Writes each bed's current crop in a handwritten label in the middle of the bed, in icon view (all beds, or the beds you switched to icons) — handy since that view otherwise shows nothing but the icon tiling.</div>
     </div>
     <div class="divider"></div>
     <div class="field">
@@ -1731,7 +1734,7 @@ function defaultStore(){
   const store = {
     frostDate: "2026-05-01",
     view: {panX:60, panY:60, zoom:1},
-    mapSettings: {bgColor:"#E9E0CB", showGrid:false, notebookPaper:false, notebookStyle:"lines", bedDisplayMode:"normal", showCropLabels:false},
+    mapSettings: {bgColor:"#E9E0CB", showGrid:false, notebookPaper:false, notebookStyle:"lines", bedDisplayMode:"normal", showCropLabels:true, labelsOnV2:true},
     notepad: {notes:"", todos:[]},
     cropIcons: {},
     drawing: {shapes:[], highlightOpacity:0.35, snapEnabled:true, lineAxisLock:false},
@@ -1752,7 +1755,8 @@ function migrateParsed(parsed){
   if(!parsed.mapSettings) parsed.mapSettings = {bgColor:"#E9E0CB", showGrid:false};
   if(parsed.mapSettings.notebookPaper === undefined) parsed.mapSettings.notebookPaper = false;
   if(!parsed.mapSettings.notebookStyle) parsed.mapSettings.notebookStyle = "lines";
-  if(parsed.mapSettings.showCropLabels === undefined) parsed.mapSettings.showCropLabels = false;
+  if(parsed.mapSettings.showCropLabels === undefined) parsed.mapSettings.showCropLabels = true;
+  if(!parsed.mapSettings.labelsOnV2){ parsed.mapSettings.showCropLabels = true; parsed.mapSettings.labelsOnV2 = true; } // labels now default to on
   if(!parsed.mapSettings.bedDisplayMode) parsed.mapSettings.bedDisplayMode = "normal";
   if(parsed.mapSettings.bedDisplayMode === "hidden"){
     // "hidden" (beds fully invisible) was removed — fall back to the normal text view
@@ -2108,7 +2112,6 @@ function applyMapSettings(){
   viewport.classList.toggle("bedsIconMode", mode === "icons");
   viewport.classList.toggle("showCropLabels", !!ms.showCropLabels);
   updateBedDisplayModeBtn(mode);
-  updateCropLabelsBtn();
   _bgImageCache = null;
   applyBackgroundPattern();
 }
@@ -2135,19 +2138,6 @@ function cycleBedDisplayMode(){
   save(); applyMapSettings(); renderBeds();
 }
 document.getElementById("hideBedsBtn").addEventListener("click", cycleBedDisplayMode);
-// Plant-name-label quick toggle on the main toolbar. Labels only exist in Icon pattern view, so the
-// button only appears there; it drives the same setting as the toggle in Map Settings.
-function updateCropLabelsBtn(){
-  const ms = STORE.mapSettings, btn = document.getElementById("cropLabelsBtn");
-  btn.hidden = (ms.bedDisplayMode || "normal") !== "icons";
-  btn.classList.toggle("active", !!ms.showCropLabels);
-  btn.setAttribute("aria-pressed", ms.showCropLabels ? "true" : "false");
-  btn.title = ms.showCropLabels ? "Plant name labels on — tap to hide" : "Plant name labels off — tap to show";
-}
-document.getElementById("cropLabelsBtn").addEventListener("click", ()=>{
-  STORE.mapSettings.showCropLabels = !STORE.mapSettings.showCropLabels;
-  save(); applyMapSettings(); updateGridButton();
-});
 function updateGridButton(){
   const ms = STORE.mapSettings;
   document.getElementById("gridToggleBtn").textContent = "Grid: " + (ms.showGrid && !ms.notebookPaper ? "On" : "Off");
@@ -2579,7 +2569,8 @@ function renderBeds(){
     const displayColor = bed.color || DEFAULT_COLOR;
     const bedOpacity = bed.opacity != null ? bed.opacity : 90;
     const div = document.createElement("div");
-    div.className = "bed";
+    const iconView = viewport.classList.contains("bedsIconMode") || !!bed.iconView;
+    div.className = "bed" + (iconView ? " iconView" : "") + (bed.iconTitle === false ? " noTitle" : "");
     div.dataset.id = bed.id;
 
     const fill = document.createElement("div");
@@ -2589,7 +2580,7 @@ function renderBeds(){
 
     const iconPattern = document.createElement("div");
     iconPattern.className = "bedIconPattern";
-    if(viewport.classList.contains("bedsIconMode")) iconPattern.innerHTML = buildBedIconPatternSvg(bed);
+    if(iconView) iconPattern.innerHTML = buildBedIconPatternSvg(bed);
     div.appendChild(iconPattern);
 
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -2597,7 +2588,7 @@ function renderBeds(){
     const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
     poly.setAttribute("fill", "none");
     poly.setAttribute("stroke-linejoin", "round");
-    if(viewport.classList.contains("bedsIconMode")){
+    if(iconView){
       // Icon pattern view: a faint, consistent outline regardless of the bed's own border
       // color/future-dashing, just enough to show where the bed is.
       poly.setAttribute("stroke", "rgba(0,0,0,0.3)"); poly.setAttribute("stroke-width", "1"); poly.setAttribute("stroke-dasharray", "3 2.5");
@@ -2703,6 +2694,10 @@ let pointers = new Map();
 let pinch = null;
 let lastTapTime = 0, lastTapX = 0, lastTapY = 0;
 let lockedTapBedId = null;
+let tapT0 = 0;
+function isQuickTap(e){ // short press that barely moved = a tap (not a drag / long-press)
+  return Date.now() - tapT0 < 450 && (!e || !startClient || Math.hypot(e.clientX-startClient.x, e.clientY-startClient.y) < 10);
+}
 let lastBedTapTime = 0, lastBedTapId = null;
 let zoomDrag = null;
 
@@ -2743,6 +2738,7 @@ function tryStartZoomDrag(e){
 }
 function startSinglePointer(e){
   startClient = {x:e.clientX, y:e.clientY};
+  tapT0 = Date.now();
   moved = false;
 
   if(editingBackground){
@@ -2935,11 +2931,11 @@ viewport.addEventListener("pointermove", (e)=>{
 function endSinglePointer(e){
   if(mode === "pan"){
     saveView();
-    if(!moved && lockedTapBedId){
-      if(lockedTapBedId === lastBedTapId && Date.now() - lastBedTapTime < 350){
-        lastBedTapTime = 0; lastBedTapId = null;
-        openEditor(lockedTapBedId);
-      } else { lastBedTapTime = Date.now(); lastBedTapId = lockedTapBedId; }
+    if(lockedTapBedId && isQuickTap(e)){
+      const id = lockedTapBedId; lockedTapBedId = null;
+      openEditor(id);
+      mode = null; activeId = null; vertexIdx = null; pendingUndoSnapshot = null;
+      return;
     }
     if(!moved){
       const isDouble = (Date.now() - lastTapTime < 350) && (Math.hypot(startClient.x-lastTapX, startClient.y-lastTapY) < 30);
@@ -2952,14 +2948,12 @@ function endSinglePointer(e){
     if(moved){
       commitPendingUndo(); save();
       lastBedTapTime = 0; lastBedTapId = null;
-    } else {
-      const isDoubleBed = (activeId === lastBedTapId) && (Date.now() - lastBedTapTime < 350);
-      if(isDoubleBed){
-        lastBedTapTime = 0; lastBedTapId = null;
-        openEditor(activeId);
-      } else {
-        lastBedTapTime = Date.now(); lastBedTapId = activeId;
-      }
+    } else if(isQuickTap(e)){
+      pendingUndoSnapshot = null;
+      const id = activeId;
+      mode = null; activeId = null; vertexIdx = null;
+      openEditor(id);
+      return;
     }
   }
   else if(mode === "vertex"){ commitPendingUndo(); save(); }
@@ -3302,6 +3296,7 @@ function openEditor(id){
   document.getElementById("edApplyPlanField").style.display = hasPendingPlan(bed) ? "block" : "none";
   document.getElementById("edFreeCornersField").style.display = bed.shape === "rect" ? "block" : "none";
   document.getElementById("edFreeCornersToggle").setAttribute("aria-checked", bed.freeCorners ? "true" : "false");
+  syncIconToggles(bed);
   edPlantCount.value = bed.plantCount || "";
   updateDensity(bed);
   updateColorSwatchSelection(bed.color);
@@ -3348,6 +3343,24 @@ document.getElementById("edResetPlan").addEventListener("click", ()=>{
   save();
   document.getElementById("edApplyPlanField").style.display = "none";
   renderBeds();
+});
+function syncIconToggles(bed){
+  const v = document.getElementById("edIconViewToggle"), t = document.getElementById("edIconTitleToggle");
+  v.setAttribute("aria-pressed", bed.iconView ? "true" : "false");
+  v.title = bed.iconView ? "Showing icons — tap for text" : "Show icons in this bed";
+  t.hidden = !(bed.iconView || (STORE.mapSettings.bedDisplayMode||"normal") === "icons");
+  t.setAttribute("aria-pressed", bed.iconTitle !== false ? "true" : "false");
+  t.title = bed.iconTitle !== false ? "Plant name shown — tap to hide" : "Plant name hidden — tap to show";
+}
+document.getElementById("edIconViewToggle").addEventListener("click", ()=>{
+  if(!editingId) return;
+  const bed = STORE.beds.find(b=>b.id===editingId);
+  bed.iconView = !bed.iconView; save(); syncIconToggles(bed); renderBeds();
+});
+document.getElementById("edIconTitleToggle").addEventListener("click", ()=>{
+  if(!editingId) return;
+  const bed = STORE.beds.find(b=>b.id===editingId);
+  bed.iconTitle = (bed.iconTitle === false); save(); syncIconToggles(bed); renderBeds();
 });
 document.getElementById("edFreeCornersToggle").addEventListener("click", ()=>{
   if(!editingId) return;
@@ -3820,7 +3833,7 @@ window.addEventListener("message", (e)=>{
   setCropIcon(e.data.cropName, e.data.strokes, e.data.fills);
   updateDrawIconPreview();
   renderIconLibraryList();
-  if((STORE.mapSettings.bedDisplayMode||"normal") === "icons") renderBeds();
+  renderBeds();
 });
 
 // ---- icon library: browse every known crop and jump into the editor for any of them ----
