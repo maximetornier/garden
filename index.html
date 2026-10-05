@@ -933,6 +933,11 @@
         <label>Background Opacity <span style="font-weight:400; text-transform:none; color:var(--muted);" id="edOpacityValue">90%</span></label>
         <input type="range" id="edOpacity" min="10" max="100" step="5" style="width:100%;">
       </div>
+      <div style="margin-top:12px;" id="edIconSizeWrap" hidden>
+        <label>Icon Size <span style="font-weight:400; text-transform:none; color:var(--muted);" id="edIconSizeValue">100%</span></label>
+        <input type="range" id="edIconSize" min="50" max="220" step="5" value="100" style="width:100%;">
+        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-top:2px;"><span>Smaller, more</span><span>Bigger, fewer</span></div>
+      </div>
     </div>
 
     <div class="field">
@@ -2522,7 +2527,8 @@ function buildBedIconPatternSvg(bed){
   const icon = iconMarkupForCrop(cropName);
   if(!icon) return "";
   const localPts = pts.map(p=>({x:p.x-r.x, y:p.y-r.y}));
-  const targetCols = Math.max(2, Math.min(16, Math.round(w/24)));
+  const sizeK = Math.max(0.5, Math.min(2.2, (bed.iconSize || 100)/100));
+  const targetCols = Math.max(2, Math.min(Math.round(16/sizeK), Math.round(w/(24*sizeK))));
   const cell = w / targetCols;
   const cols = Math.ceil(w/cell) + 2;
   const rows = Math.ceil(h/(cell*0.86)) + 2;
@@ -2531,7 +2537,7 @@ function buildBedIconPatternSvg(bed){
   const scaleBase = iconSize / Math.max(vb.w, vb.h);
   let tiles = "";
   let count = 0;
-  const MAX_TILES = 400; // safety cap for very large/odd beds
+  const MAX_TILES = 900; // safety cap for very large/odd beds
   for(let row=-1; row<rows; row++){
     for(let col=-1; col<cols; col++){
       if(count > MAX_TILES) break;
@@ -3349,6 +3355,9 @@ function syncIconToggles(bed){
   v.setAttribute("aria-pressed", bed.iconView ? "true" : "false");
   v.title = bed.iconView ? "Showing icons — tap for text" : "Show icons in this bed";
   t.hidden = !(bed.iconView || (STORE.mapSettings.bedDisplayMode||"normal") === "icons");
+  document.getElementById("edIconSizeWrap").hidden = t.hidden;
+  document.getElementById("edIconSize").value = bed.iconSize || 100;
+  document.getElementById("edIconSizeValue").textContent = (bed.iconSize || 100) + "%";
   t.setAttribute("aria-pressed", bed.iconTitle !== false ? "true" : "false");
   t.title = bed.iconTitle !== false ? "Plant name shown — tap to hide" : "Plant name hidden — tap to show";
 }
@@ -3934,6 +3943,13 @@ document.getElementById("edCustomBorderColor").addEventListener("input", (e)=>{
 });
 const edOpacity = document.getElementById("edOpacity");
 const edOpacityValue = document.getElementById("edOpacityValue");
+document.getElementById("edIconSize").addEventListener("input", (ev)=>{
+  if(!editingId) return;
+  const bed = STORE.beds.find(b=>b.id===editingId);
+  bed.iconSize = Number(ev.target.value);
+  document.getElementById("edIconSizeValue").textContent = bed.iconSize + "%";
+  save(); renderBeds();
+});
 edOpacity.addEventListener("input", ()=>{
   if(!editingId) return;
   const bed = STORE.beds.find(b=>b.id===editingId);
