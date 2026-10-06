@@ -110,7 +110,6 @@
   .bedBody{position:absolute; left:0; top:0; right:0; bottom:0; padding:6px 8px; overflow:hidden; pointer-events:none;}
   .bedDrawPreview{position:absolute; left:0; top:0; width:1px; height:1px; overflow:visible; pointer-events:none; z-index:7; display:none;}
   .bedDrawing .handle[data-role="bedhandle"]{display:none;}
-  .bedDrawing .bedOpenTriangle{pointer-events:none;}
   .bedDrawBar{align-items:center;}
   .bedDrawHint{background:#fff; border:1.5px solid #000; border-radius:2px; padding:9px 12px; font-size:12.5px; font-weight:600; color:var(--ink); font-family:-apple-system,sans-serif;}
   .bedDrawBar .btn:disabled{opacity:0.35; pointer-events:none;}
@@ -145,13 +144,6 @@
   .bed .bnext{font-size:10.5px; margin-top:3px; padding-top:3px; border-top:1px dashed rgba(0,0,0,0.15); color:rgba(0,0,0,0.68); font-family:-apple-system,sans-serif;}
   .bed .bnextdate{font-size:10.5px; font-weight:700; color:rgba(0,0,0,0.7); font-family:-apple-system,sans-serif;}
 
-  .bedOpenTriangle{
-    position:absolute; top:0; right:0; width:0; height:0;
-    border-style:solid; border-width:0 16px 16px 0;
-    border-color:transparent var(--leaf) transparent transparent;
-    pointer-events:auto; z-index:3;
-  }
-  .bedOpenTriangle:active{opacity:0.7;}
   .perennialBadge{position:absolute; bottom:4px; right:4px; width:18px; height:18px; border-radius:50%; background:var(--leaf-dark);
     color:#fff; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; box-shadow:none; z-index:3;}
   .bedAreaLabel{position:absolute; bottom:4px; right:4px; font-size:9.5px; font-weight:700; color:var(--muted); font-family:-apple-system,sans-serif; pointer-events:none;}
@@ -2484,8 +2476,6 @@ function layoutBedGeometry(el, bed){
   const tr = nearestVertex(pts, r.x + r.w, r.y);
   const br = nearestVertex(pts, r.x + r.w, r.y + r.h);
   const brRight = r.x + r.w - br.x, brBottom = r.y + r.h - br.y;
-  const tri = el.querySelector(".bedOpenTriangle");
-  if(tri){ tri.style.top = (tr.y - r.y) + "px"; tri.style.right = (r.x + r.w - tr.x) + "px"; }
   const badge = el.querySelector(".perennialBadge");
   if(badge){ badge.style.right = (brRight + 4) + "px"; badge.style.bottom = (brBottom + 4) + "px"; }
   const areaEl = el.querySelector(".bedAreaLabel");
@@ -2652,11 +2642,6 @@ function renderBeds(){
     div.appendChild(cropLabelEl);
 
     if(!editingBackground){
-      const openBtn = document.createElement("div");
-      openBtn.className = "bedOpenTriangle";
-      openBtn.dataset.role = "openicon";
-      openBtn.dataset.id = bed.id;
-      div.appendChild(openBtn);
       if(isPerennialBadgeShown){
         const p = document.createElement("div");
         p.className = "perennialBadge";
@@ -2764,12 +2749,6 @@ function startSinglePointer(e){
     if(bedDraw){
       // placing a new bed's corners: a tap adds a vertex (on release); a drag pans the map instead
       mode = "beddraw"; startPan = {x:panX, y:panY};
-      return;
-    }
-    const openIcon = e.target.closest('[data-role="openicon"]');
-    if(openIcon){
-      openEditor(openIcon.dataset.id);
-      mode = null;
       return;
     }
     const bedHandle = e.target.closest('[data-role="bedhandle"]');
